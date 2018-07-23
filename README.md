@@ -27,10 +27,5 @@ are required to compile.
     $ go generate ./...
     $ go build
 
-
-## Demo
-
-https://rawgit.com/AidosKuneen/akwallet/master/gui/build/index.html
-
 ## Usage
 
