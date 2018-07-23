@@ -1,5 +1,4 @@
 language: go
-sudo: required
 
 go:
 - "1.10.x"
@@ -16,7 +15,7 @@ before_install:
 - export PATH=$PATH:$GOPATH/bin
 - gometalinter --install --update
 - go generate -x ./...
-- sudo npm install --global yarn
+- npm install --global yarn
 - cd gui
 - yarn install
 - yarn build
