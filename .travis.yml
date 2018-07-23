@@ -1,8 +1,13 @@
 language: go
-sudo: required
 
 go:
 - "1.10.x"
+
+addons:
+  apt:
+    update: true
+  packages:
+    - npm
 
 cache:
   directories:
@@ -16,7 +21,6 @@ before_install:
 - export PATH=$PATH:$GOPATH/bin
 - gometalinter --install --update
 - go generate -x ./...
-- sudo apt-get install -y npm
 - npm install --global yarn
 - cd gui
 - yarn install
