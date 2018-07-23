@@ -28,5 +28,9 @@ are required to compile.
     $ go build
 
 
+## Demo
+
+https://rawgit.com/AidosKuneen/akwallet/master/gui/build/index.html
+
 ## Usage
 
