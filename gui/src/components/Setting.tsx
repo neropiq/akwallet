@@ -17,8 +17,9 @@ import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
 import * as React from 'react';
-import {  RouteComponentProps } from 'react-router-dom'
+import { RouteComponentProps } from 'react-router-dom'
 import AKAppBar from './AKAppBar';
+import LeftImage from './LeftImage';
 
 const styles = (theme: Theme) => createStyles({
     collapse: {
@@ -28,7 +29,6 @@ const styles = (theme: Theme) => createStyles({
         align: "center",
         backgroundColor: theme.palette.background.paper,
         margin: "0 auto",
-        marginTop: 100,
         maxWidth: 360,
         width: "100%",
     },
@@ -38,7 +38,7 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
-interface ISettingProps extends WithStyles<typeof styles>, RouteComponentProps<any>{
+interface ISettingProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
     logined: boolean,
 }
 interface ISettingState {
@@ -67,74 +67,67 @@ class Setting extends React.Component<ISettingProps, ISettingState> {
         const prop = this.props;
         return (
             <Slide direction="right" in={true} mountOnEnter={true} unmountOnExit={true}>
-            <div>
-                <AKAppBar logined={prop.logined} appname="Setting" history={this.props.history} />
-                <div className={classes.root} >
-                    <List subheader={<ListSubheader>Settings</ListSubheader>}>
-                        <ListItem button={true} onClick={this.handleClickM}>
-                            <ListItemIcon>
-                                <MonetizationOnIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Mining" />
-                            {this.state.mopen ? <ExpandLess /> : <ExpandMore />}
-                        </ListItem>
-                        <Collapse className={classes.collapse} in={this.state.mopen} timeout="auto" unmountOnExit={true}>
-                            <ListItem className={classes.server}>
-                                <ListItemIcon >
-                                    <MonetizationOnIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Self Mining" />
-                                <ListItemSecondaryAction>
-                                    <Switch
-                                    />
-                                </ListItemSecondaryAction>
-                            </ListItem>
+                <div>
+                    <AKAppBar logined={prop.logined} appname="Setting" history={this.props.history} />
+                    <LeftImage>
+                        <div className={classes.root} >
+                            <List subheader={<ListSubheader>Settings</ListSubheader>}>
+                                <ListItem button={true} onClick={this.handleClickM}>
+                                    <ListItemIcon>
+                                        <MonetizationOnIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Mining" />
+                                    {this.state.mopen ? <ExpandLess /> : <ExpandMore />}
+                                </ListItem>
+                                <Collapse className={classes.collapse} in={this.state.mopen} timeout="auto" unmountOnExit={true}>
+                                    <ListItem className={classes.server}>
+                                        <ListItemText primary="Self Mining" />
+                                        <ListItemSecondaryAction>
+                                            <Switch
+                                            />
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
 
-                            <ListItem className={classes.server}>
-                                <ListItemIcon>
-                                    <MonetizationOnIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Ticket Mining" />
-                                <ListItemSecondaryAction>
-                                    <Switch
-                                    />
-                                </ListItemSecondaryAction>
-                            </ListItem>
+                                    <ListItem className={classes.server}>
+                                        <ListItemText primary="Ticket Mining" />
+                                        <ListItemSecondaryAction>
+                                            <Switch
+                                            />
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
 
 
-                            <ListItem className={classes.server}>
-                                <ListItemIcon>
-                                    <MonetizationOnIcon />
-                                </ListItemIcon>
-                                <ListItemText primary="Coin Mining" />
-                                <ListItemSecondaryAction>
-                                    <Switch
-                                    />
-                                </ListItemSecondaryAction>
-                            </ListItem>
-                        </Collapse>
+                                    <ListItem className={classes.server}>
+                                        <ListItemText primary="Coin Mining" />
+                                        <ListItemSecondaryAction>
+                                            <Switch
+                                            />
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                </Collapse>
 
-                        <ListItem button={true} onClick={this.handleClickS}>
-                            <ListItemIcon>
-                                <ComputerIcon />
-                            </ListItemIcon>
-                            <ListItemText primary="Servers" />
-                            {this.state.sopen ? <ExpandLess /> : <ExpandMore />}
-                        </ListItem>
-                        <Collapse className={classes.collapse} in={this.state.sopen} timeout="auto" unmountOnExit={true}>
-                            {
-                                [0, 1, 2, 3, 4].map(value => (
-                                    <TextField className={classes.server} key={"setting"+value}
-                                        id={"serve" + value}
-                                        label={"Server " + value}
-                                        fullWidth={true}
-                                    />
-                                ))
-                            }
-                        </Collapse>
-                    </List>
+                                <ListItem button={true} onClick={this.handleClickS}>
+                                    <ListItemIcon>
+                                        <ComputerIcon />
+                                    </ListItemIcon>
+                                    <ListItemText primary="Servers" />
+                                    {this.state.sopen ? <ExpandLess /> : <ExpandMore />}
+                                </ListItem>
+                                <Collapse className={classes.collapse} in={this.state.sopen} timeout="auto" unmountOnExit={true}>
+                                    {
+                                        [0, 1, 2, 3, 4].map(value => (
+                                            <TextField className={classes.server} key={"setting" + value}
+                                                id={"serve" + value}
+                                                label={"Server " + value}
+                                                fullWidth={true}
+                                            />
+                                        ))
+                                    }
+                                </Collapse>
+                            </List>
+                        </div>
+                    </LeftImage>
                 </div>
-            </div>
             </Slide>
         );
     }

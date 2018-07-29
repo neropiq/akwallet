@@ -1,5 +1,6 @@
 
 import { createStyles, WithStyles } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import List from '@material-ui/core/List';
@@ -12,18 +13,21 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import AccountIcon from '@material-ui/icons/AccountBalance';
 import * as React from 'react';
 import { Link } from "react-router-dom";
-import { apps,logout } from "./apps"
+import { apps, logout } from "./apps"
 
 const styles = (theme: Theme) => createStyles({
     aicon: {
-        marginRight: "10pt",
+        paddingRight:10,
     },
     amount: {
         color: "white",
-        fontSize: "14pt",
+        fontSize: "12pt",
         fontWeight: "bold",
         margin: "20px 20px",
         textAlign: "center",
+    },
+    p: {
+        marginBottom: 10,
     },
     root: {
         flexGrow: 1,
@@ -70,8 +74,6 @@ function LeftMenu(prop: ILeftMenuProps) {
                         {!prop.logined && (
                             <div>
                                 <List>{listItems(["Login"])}</List>
-
-
                                 <List>{listItems(["Register"])}</List>
                             </div>
                         )}
@@ -79,9 +81,14 @@ function LeftMenu(prop: ILeftMenuProps) {
                         {prop.logined && (
                             <div>
                                 <List component="nav" subheader={
-                                    <ListSubheader component="div" className={classes.amount}><AccountIcon className={classes.aicon} />12,345,678+ ADK</ListSubheader>
+                                    <ListSubheader component="div" >
+                                        <Button className={classes.amount}>
+                                            <AccountIcon className={classes.aicon} />
+                                            12,345,678+ ADK
+                                        </Button>
+                                    </ListSubheader>
                                 }>
-                                    {listItems(["My Wallet", "Address", "Send", "Transaction","Setting"])}
+                                    {listItems(["My Wallet", "My Addresses", "Send", "Transactions", "Setting", "Migration"])}
                                 </List>
                                 <Divider />
                             </div>

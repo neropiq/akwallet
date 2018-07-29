@@ -30,7 +30,7 @@ function FAQ(prop: IFAQProps) {
         <Slide direction="right" in={true} mountOnEnter={true} unmountOnExit={true}>
         <div  >
             <AKAppBar logined={prop.logined} appname="FAQ" history={prop.history} />
-            <LeftImage imgSrc="logo.png">
+            <LeftImage>
                 <div className={classes.root}>
                     <Typography gutterBottom={true} variant="display2" color="default" >
                         FAQ

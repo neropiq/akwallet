@@ -7,12 +7,14 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import PersonIcon from '@material-ui/icons/PersonAdd';
 import QuestionAnswer from '@material-ui/icons/QuestionAnswer';
 import SendIcon from '@material-ui/icons/Send';
-import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from '@material-ui/icons/SettingsApplications';
 import SwapHorizIcon from '@material-ui/icons/SwapHoriz';
+import TransformIcon from '@material-ui/icons/Transform';
 import * as React from 'react';
-import Address from "./Address"
 import FAQ from "./FAQ"
 import Login from "./Login"
+import Migration from "./Migration"
+import MyAddress from "./MyAddress"
 import MyWallet from "./MyWallet"
 import NodeStatus from "./NodeStatus"
 import Register from "./Register"
@@ -20,6 +22,7 @@ import Send from "./Send"
 import Setting from "./Setting"
 import Terms from "./Terms"
 import Transaction from "./Transaction"
+import TxDetails from "./TxDetails"
 
 
 interface Iinfo{
@@ -39,11 +42,6 @@ export const logout:Iinfo={
 }
 
 export const apps: Iapps = {
-    "Address": {
-        app: Address,
-        icon: <LibraryBooksIcon />,
-        path:"address",
-    },
     "FAQ": {
         app: FAQ,
         icon: <QuestionAnswer />,
@@ -53,6 +51,16 @@ export const apps: Iapps = {
         app: Login,
         icon: < InboxIcon />,
         path:"login",
+    },
+    "Migration": {
+        app: Migration,
+        icon: <TransformIcon />,
+        path:"migration",
+    },
+    "My Addresses": {
+        app: MyAddress,
+        icon: <LibraryBooksIcon />,
+        path:"myaddress",
     },
     "My Wallet": {
         app: MyWallet,
@@ -84,9 +92,14 @@ export const apps: Iapps = {
         icon: <BeenhereIcon />,
         path:"terms",
     },
-    "Transaction": {
+    "Transactions": {
         app: Transaction,
         icon: <SwapHorizIcon />,
         path:"transaction",
+    },
+    "Tx Details": {
+        app: TxDetails,
+        icon: <SwapHorizIcon />,
+        path:"tx_details",
     },
 }

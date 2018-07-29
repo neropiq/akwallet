@@ -7,8 +7,8 @@ import * as React from 'react';
 
 const styles = (theme: Theme) => createStyles({
     img: {
-        align:"center",
-        display:"block",
+        align: "center",
+        display: "block",
         height: "80%",
         margin: "0 auto",
         width: "80%",
@@ -16,9 +16,7 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface ILIeftmageProps extends WithStyles<typeof styles>, React.Props<any> {
-    imgSrc: string,
 }
-
 
 function LeftImage(prop: ILIeftmageProps) {
     const classes = prop.classes;
@@ -26,7 +24,7 @@ function LeftImage(prop: ILIeftmageProps) {
         <div  >
             <Grid container={true} justify="center" alignItems="center">
                 <Grid item={true} xs={12} sm={6} >
-                    <img className={classes.img} src={prop.imgSrc} />
+                    <img className={classes.img} src="logo.png" />
                 </Grid>
                 <Grid item={true} xs={12} sm={6} >
                     {prop.children}

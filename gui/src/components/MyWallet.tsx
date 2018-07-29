@@ -26,9 +26,6 @@ const styles = (theme: Theme) => createStyles({
     receive: {
         color: "lightgreen"
     },
-    root: {
-        marginTop: 100,
-    },
     sent: {
         color: "yellow"
     },
@@ -52,10 +49,9 @@ class MyWallet extends React.Component<IMyWalletProps, IMyWalletState> {
         this.state = {
             span: "All",
         }
-        this.handleChangeSpan = this.handleChangeSpan.bind(this);
     }
 
-    public handleChangeSpan(event: any) {
+    public handleChangeSpan = (event: any) => {
         this.setState({
             span: event.target.value,
         })
@@ -65,9 +61,9 @@ class MyWallet extends React.Component<IMyWalletProps, IMyWalletState> {
         const classes = this.props.classes;
         return (
             <Slide direction="right" in={true} mountOnEnter={true} unmountOnExit={true}>
-                <div  >
+                <div>
                     <AKAppBar logined={this.props.logined} appname="My Wallet" history={this.props.history} />
-                    <LeftImage imgSrc="logo.png">
+                    <LeftImage>
                         <Typography variant="display3" color="default" className={classes.title} align="center" >
                             Welcome Back !
                     </Typography>
@@ -88,7 +84,7 @@ class MyWallet extends React.Component<IMyWalletProps, IMyWalletState> {
                             </Grid>
                             <Grid item={true} xs={6} >
                                 <Typography variant="body2" color="default" align="center" >
-                                <CountUp start={0} end={12345678.12345678}     decimals={8} /> ADK
+                                    <CountUp start={0} end={12345678.12345678} decimals={8} /> ADK
                         <Typography variant="subheading" color="default" className={classes.receive} align="center" >
                                         Receive
                         </Typography>
@@ -97,7 +93,7 @@ class MyWallet extends React.Component<IMyWalletProps, IMyWalletState> {
 
                             <Grid item={true} xs={6} >
                                 <Typography variant="body2" align="center" >
-                                <CountUp start={0} end={12345678.12345678}     decimals={8} /> ADK
+                                    <CountUp start={0} end={12345678.12345678} decimals={8} /> ADK
                         <Typography variant="subheading" className={classes.sent} align="center" >
                                         Sent
                         </Typography>
@@ -108,7 +104,7 @@ class MyWallet extends React.Component<IMyWalletProps, IMyWalletState> {
                         <Grid container={true} justify="center" alignItems="center">
                             <Grid item={true} xs={12} >
                                 <Typography variant="headline" color="default" align="center" className={classes.available}>
-                                <CountUp start={0} end={12345678.12345678}     decimals={8} /> ADK
+                                    <CountUp start={0} end={12345678.12345678} decimals={8} /> ADK
                         <Typography variant="title" color="default" align="center" >
                                         Available
                         </Typography>

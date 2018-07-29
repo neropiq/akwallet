@@ -30,7 +30,7 @@ function Terms(prop: ITermsProps) {
 
         <div  >
             <AKAppBar logined={prop.logined} appname="Terms" history={prop.history} />
-            <LeftImage imgSrc="logo.png">
+            <LeftImage>
                 <div className={classes.root}>
                     <Typography gutterBottom={true} variant="display2" color="default" >
                         Terms &amp; Agreement

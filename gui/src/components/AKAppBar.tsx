@@ -17,28 +17,14 @@ import LeftMenu from "./LeftMenu"
 
 
 const styles = (theme: Theme) => createStyles({
-    aicon: {
-        marginRight: "10pt",
-    },
-    amount: {
-        color: "white",
-        fontSize: "14pt",
-        fontWeight: "bold",
-        margin: "20px 20px",
-        textAlign: "center",
-    },
     appbar: {
         background: " linear-gradient(135deg, rgba(32,35,33,1) 0%,rgba(61,151,44,1) 51%,rgba(32,35,33,1) 100%);",
     },
     root: {
         flexGrow: 1,
     },
-    subtitle: {
-        fontStyle: "italic",
-    },
     title: {
         flexGrow: 1,
-        // fontWeight: "bold",
     },
 });
 
@@ -106,7 +92,7 @@ class AKAppBar extends React.Component<IAKAppBarProps, IAKAppBarState> {
                         <Hidden xsDown={true}>
                             {
                                 prop.logined &&
-                                listIcons(prop.appname, ["My Wallet", "Address", "Send", "Transaction"])
+                                listIcons(prop.appname, ["My Wallet", "My Addresses", "Send", "Transactions"])
                             }
                             {
                                 !prop.logined &&
