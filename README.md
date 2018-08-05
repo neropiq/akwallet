@@ -37,11 +37,13 @@ https://aidoskuneen.github.io/
 
 
 
-# Dependencies and Licenses
+## Dependencies and Licenses
 
 This software includes the work that is distributed in the Apache License 2.0.
 
+```
 github.com/AidosKuneen/akwallet/cmd/akwallet  MIT License
 github.com/AidosKuneen/gogui/browser          MIT License
 github.com/gorilla/websocket                  BSD 2-clause "Simplified" License
 Golang Standard Library                       BSD 3-clause License
+```
