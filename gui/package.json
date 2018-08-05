@@ -17,6 +17,7 @@
     "react-copy-to-clipboard": "^5.0.1",
     "react-countup": "^3.0.3",
     "react-dom": "^16.4.1",
+    "react-qr-reader": "^2.1.0",
     "react-router": "^4.3.1",
     "react-router-dom": "^4.3.1",
     "react-scripts-ts": "2.16.0",

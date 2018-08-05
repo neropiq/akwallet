@@ -1,4 +1,24 @@
-import { createStyles, WithStyles } from '@material-ui/core';
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+import {  createStyles, Dialog, DialogContent, DialogContentText, DialogTitle, WithStyles } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
@@ -9,9 +29,9 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import ArrowBackIcon from '@material-ui/icons/ArrowBack';
 import MenuIcon from '@material-ui/icons/Menu';
-import * as H from 'history';
 import * as React from 'react';
 import { Link } from "react-router-dom";
+import IDefaultProp from '../defaultProp';
 import { apps } from './apps';
 import LeftMenu from "./LeftMenu"
 
@@ -28,10 +48,8 @@ const styles = (theme: Theme) => createStyles({
     },
 });
 
-interface IAKAppBarProps extends WithStyles<typeof styles> {
-    logined: boolean;
+interface IAKAppBarProps extends WithStyles<typeof styles>, IDefaultProp {
     appname: string;
-    history: H.History;
 }
 
 interface IAKAppBarState {
@@ -63,26 +81,25 @@ function listIcons(loc: string, lists: string[]) {
 }
 
 class AKAppBar extends React.Component<IAKAppBarProps, IAKAppBarState> {
-    public constructor(prop: IAKAppBarProps) {
-        super(prop)
+    public constructor(props: IAKAppBarProps) {
+        super(props)
         this.state = {
             menuOpen: false,
         }
     }
 
     public render() {
-        const classes = this.props.classes;
-        const prop = this.props;
+        const {classes,appname,...props} = this.props
         return (
-            <div className={prop.classes.root}>
-                <LeftMenu logined={prop.logined} toggleDrawer={this.toggleDrawer} menuOpen={this.state.menuOpen} />
+            <div className={classes.root}>
+                <LeftMenu {...props} toggleDrawer={this.toggleDrawer} menuOpen={this.state.menuOpen} />
                 <AppBar position="static" className={classes.appbar}>
                     <Toolbar>
                         <IconButton color="inherit" aria-label="Menu" onClick={this.toggleDrawer(true)}>
                             <MenuIcon />
                         </IconButton>
                         <Typography variant="title" color="inherit" className={classes.title}>
-                            {prop.appname}
+                            {appname}
                         </Typography>
                         <Tooltip title="Back">
                             <IconButton color="default" aria-label={"Back"} onClick={this.goBack()}>
@@ -91,16 +108,17 @@ class AKAppBar extends React.Component<IAKAppBarProps, IAKAppBarState> {
                         </Tooltip>
                         <Hidden xsDown={true}>
                             {
-                                prop.logined &&
-                                listIcons(prop.appname, ["My Wallet", "My Addresses", "Send", "Transactions"])
+                                props.logined &&
+                                listIcons(appname, ["My Wallet", "My Addresses", "Send", "Transactions"])
                             }
                             {
-                                !prop.logined &&
-                                listIcons(prop.appname, ["Login", "Register"])
+                                !props.logined &&
+                                listIcons(appname, ["Login", "Register"])
                             }
                         </Hidden>
                     </Toolbar>
                 </AppBar>
+                {props.disconnected && this.dialog()}
             </div>
         );
     }
@@ -111,6 +129,26 @@ class AKAppBar extends React.Component<IAKAppBarProps, IAKAppBarState> {
     }
     private goBack = () => () => {
         this.props.history.goBack()
+    }
+    private dialog = () => {
+        return (
+            <div>
+                <Dialog
+                    open={this.props.disconnected}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                    Info
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Connecting to Backend...
+            </DialogContentText>
+                    </DialogContent>
+                </Dialog>
+            </div>
+        )
     }
 }
 

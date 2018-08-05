@@ -1,4 +1,24 @@
 
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 import { createStyles, WithStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
@@ -13,6 +33,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import AccountIcon from '@material-ui/icons/AccountBalance';
 import * as React from 'react';
 import { Link } from "react-router-dom";
+import IDefaultProp from '../defaultProp';
 import { apps, logout } from "./apps"
 
 const styles = (theme: Theme) => createStyles({
@@ -54,31 +75,30 @@ function listItems(lists: string[]) {
     )
 }
 
-interface ILeftMenuProps extends WithStyles<typeof styles> {
-    logined: boolean;
+interface ILeftMenuProps extends WithStyles<typeof styles>,IDefaultProp {
     menuOpen: boolean;
     toggleDrawer: ((open: boolean) => () => void);
 }
 
-function LeftMenu(prop: ILeftMenuProps) {
-    const classes = prop.classes;
+function LeftMenu(props: ILeftMenuProps) {
+    const classes = props.classes;
     return (
-        <div className={prop.classes.root}>
-            <Drawer open={prop.menuOpen} onClose={prop.toggleDrawer(false)}>
+        <div className={classes.root}>
+            <Drawer open={props.menuOpen} onClose={props.toggleDrawer(false)}>
                 <div
                     tabIndex={0}
                     role="button"
-                    onClick={prop.toggleDrawer(false)}
+                    onClick={props.toggleDrawer(false)}
                 >
                     <div>
-                        {!prop.logined && (
+                        {!props.logined && (
                             <div>
                                 <List>{listItems(["Login"])}</List>
                                 <List>{listItems(["Register"])}</List>
                             </div>
                         )}
 
-                        {prop.logined && (
+                        {props.logined && (
                             <div>
                                 <List component="nav" subheader={
                                     <ListSubheader component="div" >
@@ -94,7 +114,7 @@ function LeftMenu(prop: ILeftMenuProps) {
                             </div>
                         )}
                         <List>{listItems(["Node Status", "FAQ", "Terms"])}</List>
-                        {prop.logined && (
+                        {props.logined && (
                             <div>
                                 <Divider />
                                 <List>

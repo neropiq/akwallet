@@ -1,4 +1,23 @@
 
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 import { createStyles, WithStyles } from '@material-ui/core';
 import AppBar from '@material-ui/core/AppBar';
@@ -21,8 +40,8 @@ import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import SearchIcon from '@material-ui/icons/Search';
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom'
 import SwipeableViews from 'react-swipeable-views';
+import IDefaultProp from '../defaultProp';
 import AKAppBar from './AKAppBar';
 
 const styles = (theme: Theme) => createStyles({
@@ -84,9 +103,9 @@ enum ticket_stat {
     spent,
 }
 
-interface ITxSubProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
-    logined: boolean,
+interface ITxSubProps extends WithStyles<typeof styles>, IDefaultProp{
 }
+
 interface ITxSubState {
     span: string,
     tabvalue: number,
@@ -116,11 +135,11 @@ class Transaction extends React.Component<ITxSubProps, ITxSubState> {
     };
 
     public render() {
-        const classes = this.props.classes;
+        const {classes,...props} = this.props;
         return (
             <Slide direction="right" in={true} mountOnEnter={true} unmountOnExit={true}>
                 <div>
-                    <AKAppBar logined={this.props.logined} appname="Transactions" history={this.props.history} />
+                    <AKAppBar {...props} appname="Transactions" />
                     <div className={classes.container}>
                         <div className={classes.search}>
                             <TextField

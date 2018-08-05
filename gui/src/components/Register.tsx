@@ -1,4 +1,24 @@
 
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 import { createStyles, WithStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -15,7 +35,7 @@ import Typography from '@material-ui/core/Typography';
 import Lock from '@material-ui/icons/Lock';
 import * as React from 'react';
 import * as CopyToClipboard from 'react-copy-to-clipboard';
-import { RouteComponentProps } from 'react-router-dom'
+import IDefaultProp from '../defaultProp';
 import AKAppBar from './AKAppBar';
 import LeftImage from './LeftImage';
 import Snap from './Snap';
@@ -57,12 +77,12 @@ const styles = (theme: Theme) => createStyles({
     }
 });
 
-interface IRegisterProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
-    logined: boolean,
+interface IRegisterProps extends WithStyles<typeof styles>, IDefaultProp {
 }
 interface IRegisterState {
     copied: boolean,
     open: boolean,
+    privkey:string,
 }
 
 class Register extends React.Component<IRegisterProps, IRegisterState> {
@@ -71,6 +91,7 @@ class Register extends React.Component<IRegisterProps, IRegisterState> {
         this.state = {
             copied: false,
             open: false,
+            privkey:"",
         }
     }
 
@@ -85,7 +106,12 @@ class Register extends React.Component<IRegisterProps, IRegisterState> {
     };
 
     public handleClickOpen = () => {
-        this.setState({ open: true });
+        this.props.socket.emit("register", "aaa",(privkey:string) =>{
+            this.setState({ 
+                open: true ,
+                privkey,
+            });
+        })
     };
 
     public handleClose = () => {
@@ -93,11 +119,11 @@ class Register extends React.Component<IRegisterProps, IRegisterState> {
     };
 
     public render() {
-        const classes = this.props.classes;
+        const {classes,...props} = this.props;
         return (
             <Slide direction="right" in={true} mountOnEnter={true} unmountOnExit={true}>
                 <div  >
-                    <AKAppBar logined={this.props.logined} appname="Register" history={this.props.history} />
+                    <AKAppBar {...props} appname="Register" />
                     <LeftImage>
                         <Typography variant="title" color="default" align="center" className={classes.title} >
                             Create a private key
@@ -142,7 +168,7 @@ class Register extends React.Component<IRegisterProps, IRegisterState> {
                     onCopy={this.onCopy}>
                     <DialogContentText className={this.props.classes.key}  >
                         <div className={this.props.classes.key}>
-                            AKPRIVT1GTmXS8ybvEqJDM4XbLFC8KamweH1WUUummtMrK5df1TmPCtYacQfFTf
+                            {this.state.privkey}
                     </div>
                     </DialogContentText>
                 </CopyToClipboard>

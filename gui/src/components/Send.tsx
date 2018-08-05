@@ -1,4 +1,24 @@
 
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 import { createStyles, WithStyles } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
@@ -18,7 +38,8 @@ import ClearIcon from '@material-ui/icons/Clear';
 import MoneyIcon from '@material-ui/icons/Money';
 import classNames from 'classnames';
 import * as React from 'react';
-import { RouteComponentProps } from 'react-router-dom'
+import IDefaultProp from '../defaultProp';
+// import QrReader from 'react-qr-reader'
 import AKAppBar from './AKAppBar';
 import LeftImage from './LeftImage';
 
@@ -100,14 +121,14 @@ interface IMulti {
     txid: string,
 }
 
-interface ISendProps extends WithStyles<typeof styles>, RouteComponentProps<any> {
-    logined: boolean,
+interface ISendProps extends WithStyles<typeof styles>, IDefaultProp {
 }
 interface ISendState {
     inputs: IPayment[],
     multiin: string[],
     multiout: IMulti[],
     pow: string,
+    result: string,
 }
 
 class Send extends React.Component<ISendProps, ISendState> {
@@ -121,6 +142,7 @@ class Send extends React.Component<ISendProps, ISendState> {
             multiin: [],
             multiout: [],
             pow: "pow",
+            result: "",
         }
     }
 
@@ -157,86 +179,106 @@ class Send extends React.Component<ISendProps, ISendState> {
         })
     }
 
+    public handleScan = (data: string) => {
+        if (data) {
+            this.setState({
+                result: data,
+            })
+        }
+        //
+    }
 
+    public handleError = (err: string) => {
+        //
+    }
 
     public render() {
-        const classes = this.props.classes;
+        const {classes,...props} = this.props;
         return (
             <Slide direction="right" in={true} mountOnEnter={true} unmountOnExit={true}>
                 <div  >
-                    <AKAppBar logined={this.props.logined} appname="Send" history={this.props.history} />
+                    <AKAppBar {...props} appname="Send" />
                     <LeftImage>
-                            <div className={classes.container}>
-                                <TextField
-                                    className={classes.comment}
-                                    fullWidth={true}
-                                    id="comment"
-                                    label="comment (255 chars)"
-                                />
-                                <Button color="secondary" aria-label="Remove" className={classes.fab} onClick={this.handleOutRemove}>
-                                    <ClearIcon /> Remove  Empty Fields
+                        <div className={classes.container}>
+                            <TextField
+                                className={classes.comment}
+                                fullWidth={true}
+                                id="comment"
+                                label="comment (255 chars)"
+                            />
+                            <Button color="secondary" aria-label="Remove" className={classes.fab} onClick={this.handleOutRemove}>
+                                <ClearIcon /> Remove  Empty Fields
                             </Button>
-                                <Button color="secondary" aria-label="Add" className={classes.fab} onClick={this.handleOutAdd}>
-                                    <AddIcon /> Add a Payment Address
+                            <Button color="secondary" aria-label="Add" className={classes.fab} onClick={this.handleOutAdd}>
+                                <AddIcon /> Add a Payment Address
                             </Button>
-                                {
-                                    this.state.inputs.map(value =>
-                                        (
-                                            <div>
-                                                <TextField key={"input" + value.address + value.amount}
-                                                    className={classes.address}
-                                                    fullWidth={true}
-                                                    id="Address to Send"
-                                                    label="Address To Send"
-                                                    InputProps={{
-                                                        startAdornment: (
-                                                            <InputAdornment position="start">
-                                                                <i className={classNames(this.props.classes.icon, 'fa fa-address-card')} />
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                />
-                                                <TextField
-                                                    className={classes.amount}
-                                                    fullWidth={true}
-                                                    id="Amount to Send"
-                                                    label="Amount to Send"
-                                                    InputProps={{
-                                                        startAdornment: (
-                                                            <InputAdornment position="start">
-                                                                <MoneyIcon />
-                                                            </InputAdornment>
-                                                        ),
-                                                    }}
-                                                />
-                                            </div>
-                                        ))}
-                                <div className={classes.powdiv}>
-                                    <FormGroup row={true} className={classes.pow} >
-                                        <FormLabel component="legend" className={classes.pow} >PoW Type:</FormLabel>
-                                        <RadioGroup row={true}
-                                            aria-label="pow"
-                                            name="pow"
-                                            value={this.state.pow}
-                                            onChange={this.handleChangePoW}
+                            {
+                                this.state.inputs.map(value =>
+                                    (
+                                        <div>
+                                            <TextField key={"input" + value.address + value.amount}
+                                                className={classes.address}
+                                                fullWidth={true}
+                                                id="Address to Send"
+                                                label="Address To Send"
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <i className={classNames(this.props.classes.icon, 'fa fa-address-card')} />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                            <TextField
+                                                className={classes.amount}
+                                                fullWidth={true}
+                                                id="Amount to Send"
+                                                label="Amount to Send"
+                                                InputProps={{
+                                                    startAdornment: (
+                                                        <InputAdornment position="start">
+                                                            <MoneyIcon />
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                            />
+                                        </div>
+                                    ))}
+                            <div className={classes.powdiv}>
+                                <FormGroup row={true} className={classes.pow} >
+                                    <FormLabel component="legend" className={classes.pow} >PoW Type:</FormLabel>
+                                    <RadioGroup row={true}
+                                        aria-label="pow"
+                                        name="pow"
+                                        value={this.state.pow}
+                                        onChange={this.handleChangePoW}
 
-                                        >
-                                            <FormControlLabel value="pow" control={<Radio color="secondary" />} label="Do PoW" />
-                                            <FormControlLabel value="ticket" control={<Radio />} label="Use Ticket" />
-                                            <FormControlLabel value="feeee" control={<Radio />} label="Pay Fee" />
-                                        </RadioGroup>
-                                    </FormGroup>
-                                </div>
-
-                                <Button variant="outlined" size="large" className={classes.button} >
-                                    Send
-                    </Button>
+                                    >
+                                        <FormControlLabel value="pow" control={<Radio color="secondary" />} label="Do PoW" />
+                                        <FormControlLabel value="ticket" control={<Radio />} label="Use Ticket" />
+                                        <FormControlLabel value="feeee" control={<Radio />} label="Pay Fee" />
+                                    </RadioGroup>
+                                </FormGroup>
                             </div>
+
+                            <Button variant="outlined" size="large" className={classes.button} >
+                                Send
+                    </Button>
+                        </div>
                     </LeftImage>
                     <Typography variant="title" color="secondary" align="center" >
-                            Doing PoW, please be patient.
+                        Doing PoW, please be patient.
                     </Typography>
                     <LinearProgress color="secondary" className={classes.progress} />
+                    {/* <div>
+                        <QrReader
+                            delay={300}
+                            onError={this.handleError}
+                            onScan={this.handleScan}
+                            style={{ width: '100%' }}
+                        />
+                        <p>{this.state.result}</p>
+                    </div> */}
                 </div>
             </Slide >
         );
