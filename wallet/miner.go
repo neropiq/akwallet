@@ -45,16 +45,17 @@ func getaddress(s *setting.Setting) ([]byte, error) {
 	return adr.Address(s.Config), nil
 }
 
-func mine(s *setting.Setting) error {
+func mine(s *setting.Setting) (tx.Hash, error) {
 	madr, err := getaddress(s)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	var tr *tx.Transaction
 	err = s.CallRPC(func(cl setting.RPCIF) error {
 		var err2 error
 		if s.RunFeeMiner {
 			tr, err2 = cl.GetMinableFeeTx(s.MinimumFee * aklib.ADK)
+			log.Println(tr, err2)
 			if err2 != nil {
 				return err2
 			}
@@ -79,18 +80,20 @@ func mine(s *setting.Setting) error {
 		return err2
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
+	log.Println(tr, tr.Hash())
 	log.Println("mining", hex.EncodeToString(tr.Hash()))
+	log.Println(tr)
 	if err := tr.PoW(); err != nil {
-		return err
+		return nil, err
 	}
 	if err := sendtx(s, tr); err != nil {
-		return err
+		return nil, err
 	}
-	log.Println("succeeded to mine, txid=", hex.EncodeToString(tr.Hash()))
-	return nil
+	log.Println("succeeded to mine, txid=", tr.Hash())
+	return tr.Hash(), nil
 }
 
 func issueTicket(s *setting.Setting) (tx.Hash, error) {
@@ -136,7 +139,7 @@ func RunMiner(ctx context.Context, s *setting.Setting) {
 		ctx2, cancel2 := context.WithCancel(ctx)
 		defer cancel2()
 		for {
-			if err := mine(s); err != nil {
+			if _, err := mine(s); err != nil {
 				log.Println(err)
 			}
 			select {

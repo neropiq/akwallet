@@ -433,16 +433,17 @@ func TestWallet(t *testing.T) {
 	if len(st.Outputs) != 3 {
 		t.Error("invalid out")
 	}
-	if !bytes.Equal(st.Outputs[0].Address, a.Address(s.Config)) {
+	loc := len(st.Outputs) - 1
+	if !bytes.Equal(st.Outputs[loc-1].Address, a.Address(s.Config)) {
 		t.Error("invalid out")
 	}
-	if st.Outputs[0].Value != 1*aklib.ADK {
+	if st.Outputs[loc-1].Value != 1*aklib.ADK {
 		t.Error("invalid out val")
 	}
-	if st.Outputs[1].Address.String() != adr.Normal[0].String {
+	if st.Outputs[loc].Address.String() != adr.Normal[0].String {
 		t.Error("invalid out")
 	}
-	if st.Outputs[1].Value != 2*aklib.ADK {
+	if st.Outputs[loc].Value != 2*aklib.ADK {
 		t.Error("invalid out val")
 	}
 	if string(st.Message) != "moemoe" {

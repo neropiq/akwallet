@@ -65,11 +65,11 @@ func (w *trWallet) GetLeaves() ([]tx.Hash, error) {
 }
 
 //GetTicketout returns a tx hash including ticket output for the wallet.
-func (w *trWallet) GetTicketout() (tx.Hash, error) {
+func (w *trWallet) GetTicketout() (tx.Hash, *address.Address, error) {
 	for adrname := range wallet.AddressPublic {
 		hs, err := imesh.GetHisoty2(&w.conf.DBConfig, adrname, true)
 		if err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 		for _, h := range hs {
 			if h.Type != tx.TypeTicketout {
@@ -77,15 +77,16 @@ func (w *trWallet) GetTicketout() (tx.Hash, error) {
 			}
 			tr, err := imesh.GetTxInfo(w.conf.DB, h.Hash)
 			if err != nil {
-				return nil, err
+				return nil, nil, err
 			}
 			if !tr.IsAccepted() {
 				continue
 			}
-			return h.Hash, nil
+			adr, err := wallet.GetAddress(&w.conf.DBConfig, adrname, pwd)
+			return h.Hash, adr.Address, err
 		}
 	}
-	return nil, errors.New("Ticket is not found")
+	return nil, nil, errors.New("Ticket is not found")
 }
 
 //NewChangeAddress returns a new address for change.
@@ -130,6 +131,7 @@ func Send(conf *setting.Setting, p *tx.BuildParam) (tx.Hash, error) {
 		log.Println("finished PoW. hash=", tr.Hash())
 	}
 	if err = tr.Check(conf.Config, p.PoWType); err != nil {
+		log.Println(err)
 		return nil, err
 	}
 	err = conf.CallRPC(func(cl setting.RPCIF) error {

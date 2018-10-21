@@ -1,6 +1,7 @@
 [![Build Status](https://travis-ci.org/AidosKuneen/akwallet.svg?branch=master)](https://travis-ci.org/AidosKuneen/akwallet)
 [![GoDoc](https://godoc.org/github.com/AidosKuneen/akwallet?status.svg)](https://godoc.org/github.com/AidosKuneen/akwallet)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/AidosKuneen/akwallet/master/LICENSE)
+[![Coverage Status](https://coveralls.io/repos/github/AidosKuneen/akwallet/badge.svg?branch=master)](https://coveralls.io/github/AidosKuneen/akwallet?branch=master)
 
 Aidos Wallet (AKWallet)
 =====
