@@ -167,7 +167,7 @@ func baseDir(root string, cfg *aklib.Config) string {
 //SetClient sets http.Client objs from cfg.Servers.
 func (cfg *Setting) SetClient() error {
 	cl := http.Client{
-		Timeout: 10 * time.Second,
+		Timeout: 5 * time.Second,
 	}
 	if cfg.Proxy != "" {
 		p, err := url.Parse(cfg.Proxy)
@@ -199,6 +199,11 @@ func (cfg *Setting) SetClient() error {
 //CallRPC calls an RPC by servers in config.
 func (cfg *Setting) CallRPC(f func(RPCIF) error) error {
 	var err error
+	if len(cfg.Client) != len(cfg.Servers) {
+		if err := cfg.SetClient(); err != nil {
+			return err
+		}
+	}
 	for _, cl := range cfg.Client {
 		if err = f(cl); err != nil {
 			log.Println(err)

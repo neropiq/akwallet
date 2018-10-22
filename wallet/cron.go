@@ -62,7 +62,7 @@ func Start(ctx context.Context, s *setting.Setting) {
 				}
 				//addresses for changes should not be used for receiving from others.
 				//so update db only if change addresses were updated by other wallets.
-				if updatedAdr2 {
+				if updatedAdr2 > 0 {
 					if _, err = syncDB(s, false); err != nil {
 						log.Println(err)
 					}
@@ -80,7 +80,7 @@ func Start(ctx context.Context, s *setting.Setting) {
 }
 
 //create addresses which were created by other wallets.
-func searchLastAddress(s *setting.Setting, isPublic bool) (bool, error) {
+func searchLastAddress(s *setting.Setting, isPublic bool) (int, error) {
 	mutex.Lock()
 	defer mutex.Unlock()
 	adrmap := wallet.AddressChange
@@ -90,36 +90,39 @@ func searchLastAddress(s *setting.Setting, isPublic bool) (bool, error) {
 	last := len(adrmap)
 	i := 0
 	for i = 0; i*50 < math.MaxInt32; i++ {
-		exist, err := isUsed(s, isPublic, uint32(last+i*50))
+		used, err := isUsed(s, isPublic, uint32(last+i*50))
 		if err != nil {
-			return false, err
+			return 0, err
 		}
-		if !exist {
+		if !used {
 			break
 		}
 	}
+	log.Println(i)
 	if i*50 == math.MaxInt32 {
-		return false, errors.New("used too many addresses")
+		return 0, errors.New("used too many addresses")
 	}
 	if i == 0 {
-		return false, nil
+		return 0, nil
 	}
 	j := 0
 	for j = 0; j < 50; j++ {
-		exist, err := isUsed(s, isPublic, uint32(last+(i-1)*50+j))
+		used, err := isUsed(s, isPublic, uint32(last+(i-1)*50+j))
 		if err != nil {
-			return false, err
+			return 0, err
 		}
-		if !exist {
+		if !used {
 			break
 		}
 	}
-	for k := 0; k < (i-1)*50+j; k++ {
+	log.Println(j)
+	k := 0
+	for k = 0; k < (i-1)*50+j; k++ {
 		if _, err := wallet.NewAddress(&s.DBConfig, pwd, isPublic); err != nil {
-			return false, err
+			return 0, err
 		}
 	}
-	return true, nil
+	return k, nil
 }
 
 func isUsed(s *setting.Setting, isPublic bool, index uint32) (bool, error) {
@@ -127,7 +130,11 @@ func isUsed(s *setting.Setting, isPublic bool, index uint32) (bool, error) {
 	if !isPublic {
 		idx = 1
 	}
-	seed := address.HDseed(wallet.EncSeed, idx, index)
+	master, err := address.DecryptSeed(wallet.EncSeed, pwd)
+	if err != nil {
+		return false, err
+	}
+	seed := address.HDseed(master, idx, index)
 	a, err := address.New(s.Config, seed)
 	if err != nil {
 		return false, err
@@ -138,6 +145,7 @@ func isUsed(s *setting.Setting, isPublic bool, index uint32) (bool, error) {
 		hist, err2 = cl.GetLastHistory(a.Address58(s.Config))
 		return err2
 	})
+	log.Println(index, hist)
 	return len(hist) > 0, err
 }
 
