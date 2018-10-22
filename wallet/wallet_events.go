@@ -148,6 +148,8 @@ func newAddress(s *setting.Setting) error {
 }
 
 //addressRecv is a pair of address string and its adk.
+//Value of Recv/Sent maybe not what is intuitive.
+//So just use the calculated value remain=recv-sent
 type addressRecv struct {
 	String string
 	Recv   uint64

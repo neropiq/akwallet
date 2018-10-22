@@ -116,25 +116,25 @@ func TestSetting(t *testing.T) {
 	}
 	servers := s.Servers
 	s.Servers = []string{"http://localhost:1010"}
-	if err := s.SetClient(); err == nil {
+	if err = s.SetClient(); err == nil {
 		t.Error("should be error")
 	}
 	s.Servers = servers
-	if err := s.SetClient(); err != nil {
+	if err = s.SetClient(); err != nil {
 		t.Error(err)
 	}
 	err = s.CallRPC(func(cl RPCIF) error {
-		_, err := cl.GetNodeinfo()
-		return err
+		_, err2 := cl.GetNodeinfo()
+		return err2
 	})
 	if err != nil {
 		t.Error(err)
 	}
 	s.Servers = []string{"localhost:1010"}
-	if err := s.Save(); err != nil {
+	if err = s.Save(); err != nil {
 		t.Error(err)
 	}
-	if err := s.DB.Close(); err != nil {
+	if err = s.DB.Close(); err != nil {
 		t.Error(err)
 	}
 	s2, err := Load(".", 2)

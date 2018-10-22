@@ -90,10 +90,10 @@ func TestMine(t *testing.T) {
 	time.Sleep(6 * time.Second)
 	tr2 := tx.NewMinableTicket(s1.Config, tkt.Hash(), genesis)
 	tr2.AddInput(preh, 0)
-	if err := tr2.AddOutput(s.Config, a.Address58(s.Config), aklib.ADKSupply-10); err != nil {
+	if err = tr2.AddOutput(s.Config, a.Address58(s.Config), aklib.ADKSupply-10); err != nil {
 		t.Error(err)
 	}
-	if err := tr2.Sign(a); err != nil {
+	if err = tr2.Sign(a); err != nil {
 		t.Error(err)
 	}
 	_, err = s.Client[0].SendRawTX(tr2, tx.TypeRewardTicket)
@@ -176,7 +176,7 @@ func TestSendMinable(t *testing.T) {
 	if !c {
 		t.Error("invalid conf")
 	}
-	h, err := issueTicket(s)
+	_, err = issueTicket(s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -195,7 +195,7 @@ func TestSendMinable(t *testing.T) {
 		t.Error(err)
 	}
 
-	h, err = sendEvent(s, &tx.BuildParam{
+	h, err := sendEvent(s, &tx.BuildParam{
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
 				Address: a.Address58(s.Config),
