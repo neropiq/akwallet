@@ -16,6 +16,7 @@ This is the wallet for Aidos Kuneen step2.
 * git
 * go 1.9+
 * yarn
+
 are required to compile.
 
 
