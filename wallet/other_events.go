@@ -23,6 +23,7 @@ package wallet
 import (
 	"encoding/hex"
 	"errors"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -136,7 +137,7 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 		}
 	})
 	gui.On("claim", func(p *claimParam) interface{} {
-		return errString(claim(cfg, p))
+		return errString(claim(cfg, p, false))
 	})
 	gui.On("logout", func() interface{} {
 		logout(cfg)
@@ -145,19 +146,25 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 
 }
 
-func getOldAPIs() []*gadk.API {
-	apis := make([]*gadk.API, 2)
+var oldServers = []string{
+	"http://wallet1.aidoskuneen.com:14266",
+	"http://wallet2.aidoskuneen.com:14266",
+}
+
+func getOldAPIs(w []string) []*gadk.API {
+	apis := make([]*gadk.API, len(w))
 	cl := http.Client{
 		Timeout: 10 * time.Second,
 	}
-	apis[0] = gadk.NewAPI("http://wallet1.aidoskuneen.com", &cl)
-	apis[1] = gadk.NewAPI("http://wallet2.aidoskuneen.com", &cl)
+	for i, ww := range w {
+		apis[i] = gadk.NewAPI(ww, &cl)
+	}
 	return apis
 }
 
 //getOldUTXOs gets UTXOs in old wallet.
 func getOldUTXOs(cfg *setting.Setting, seed gadk.Trytes) (int64, error) {
-	apis := getOldAPIs()
+	apis := getOldAPIs(oldServers)
 	var err error
 	var adrs []gadk.Address
 	for _, api := range apis {
@@ -165,6 +172,10 @@ func getOldUTXOs(cfg *setting.Setting, seed gadk.Trytes) (int64, error) {
 		if err == nil {
 			break
 		}
+	}
+	if err != nil {
+		log.Println(err)
+		return 0, err
 	}
 	var utxos gadk.Balances
 	for _, api := range apis {
@@ -174,6 +185,7 @@ func getOldUTXOs(cfg *setting.Setting, seed gadk.Trytes) (int64, error) {
 		}
 	}
 	if err != nil {
+		log.Println(err)
 		return 0, err
 	}
 	var bal int64
@@ -190,27 +202,32 @@ type claimParam struct {
 }
 
 //claim clams a migration adk from old wallet to new one.
-func claim(cfg *setting.Setting, param *claimParam) error {
+func claim(cfg *setting.Setting, param *claimParam, debug bool) error {
 	dest, err := wallet.NewAddress(&cfg.DBConfig, pwd, true)
 	if err != nil {
 		return err
 	}
 	adrstr := strings.ToUpper(hex.EncodeToString(dest.Address(cfg.Config)))
-	enc := make([]rune, len(adrstr))
+	enc := make([]rune, len(adrstr)+1)
 	for i, c := range adrstr {
 		if c >= '0' && c <= '8' {
 			c = c - '0' + 'G'
 		}
 		enc[i] = c
 	}
-	apis := getOldAPIs()
+	enc[len(adrstr)] = 'Z'
+	apis := getOldAPIs(oldServers)
 	tr := gadk.Transfer{
 		Address: pobAddress,
 		Value:   param.Amount,
 		Message: gadk.Trytes(enc),
 	}
+	_, f := gadk.GetBestPoW()
+	if debug {
+		f = nil
+	}
 	for _, api := range apis {
-		_, err = gadk.Send(api, param.Seed, 2, []gadk.Transfer{tr}, nil)
+		_, err = gadk.Send(api, param.Seed, 2, []gadk.Transfer{tr}, f)
 		if err == nil {
 			break
 		}
@@ -237,7 +254,7 @@ func getNodesStatus(cfg *setting.Setting) []bool {
 	r := make([]bool, len(cfg.Client))
 	for i, cl := range cfg.Client {
 		_, err := cl.GetNodeinfo()
-		if err != nil {
+		if err == nil {
 			r[i] = true
 		}
 	}

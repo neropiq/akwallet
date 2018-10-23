@@ -24,13 +24,19 @@ import (
 	"bytes"
 	"context"
 	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
 	"log"
 	"math/rand"
 	"net"
+	"net/http"
 	"os"
 	"strconv"
 	"testing"
 	"time"
+
+	"github.com/AidosKuneen/gadk"
 
 	"github.com/AidosKuneen/aklib"
 	"github.com/AidosKuneen/aklib/address"
@@ -200,5 +206,202 @@ func teardown(t *testing.T) {
 	}
 	if err := os.RemoveAll("./rpc_db"); err != nil {
 		t.Log(err)
+	}
+}
+
+func setupOldServer(ctx context.Context, t *testing.T) (gadk.Trytes, int64, chan struct{}) {
+	bal := make(map[gadk.Address]int64)
+	seed := gadk.NewSeed()
+	var total int64
+	for index := 0; index < 3; index++ {
+		adr, err := gadk.NewAddress(seed, index, 2)
+		if err != nil {
+			t.Error(err)
+		}
+		bal[adr] = int64(index) + 1
+		total += bal[adr]
+	}
+	mux := http.NewServeMux()
+	ch := make(chan struct{}, 2)
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		handle(t, seed, bal, w, r, ch)
+	})
+
+	s := &http.Server{
+		Addr:    ":14266",
+		Handler: mux,
+	}
+	fmt.Println("Starting old RPC Server on 14266")
+	ll, err := net.Listen("tcp", s.Addr)
+	if err != nil {
+		log.Fatal(err)
+	}
+	go func() {
+		log.Println(s.Serve(ll))
+	}()
+	go func() {
+		ctx2, cancel2 := context.WithCancel(ctx)
+		defer cancel2()
+		<-ctx2.Done()
+		if err := s.Shutdown(ctx2); err != nil {
+			log.Print(err)
+		}
+	}()
+	return seed, total, ch
+}
+
+//need
+//getBalances
+//BroadcastTransactions
+//GetTransactionsToApprove
+//FindTransactions / address
+func handle(t *testing.T, seed gadk.Trytes, bal map[gadk.Address]int64,
+	w http.ResponseWriter, r *http.Request, ch chan struct{}) {
+	defer func() {
+		if err := r.Body.Close(); err != nil {
+			t.Log(err)
+		}
+	}()
+	p, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		t.Error(err)
+	}
+	cmd := struct {
+		Command string `json:"command"`
+	}{}
+	if err := json.Unmarshal(p, &cmd); err != nil {
+		t.Error(err)
+	}
+	t.Log(cmd.Command, " is requested")
+
+	var result []byte
+	switch cmd.Command {
+	case "getBalances":
+		var req gadk.GetBalancesRequest
+		if err = json.Unmarshal(p, &req); err != nil {
+			t.Error(err)
+		}
+		type getBalancesResponse struct {
+			Duration       int64       `json:"duration"`
+			Balances       []string    `json:"balances"`
+			Milestone      gadk.Trytes `json:"milestone"`
+			MilestoneIndex int64       `json:"milestoneIndex"`
+		}
+		resp := getBalancesResponse{}
+		for _, adr := range req.Addresses {
+			resp.Balances = append(resp.Balances, strconv.Itoa(int(bal[adr])))
+		}
+		result, err = json.Marshal(&resp)
+	case "attachToMesh":
+		var req gadk.AttachToMeshRequest
+		if err = json.Unmarshal(p, &req); err != nil {
+			t.Error(err)
+		}
+		resp := gadk.AttachToMeshResponse{}
+		resp.Trytes = req.Trytes
+		result, err = json.Marshal(&resp)
+	case "broadcastTransactions":
+		var req gadk.BroadcastTransactionsRequest
+		if err = json.Unmarshal(p, &req); err != nil {
+			t.Error(err)
+		}
+		checkTrytes(t, seed, bal, req.Trytes)
+		result, err = json.Marshal(&struct{}{})
+		ch <- struct{}{}
+	case "getTransactionsToApprove":
+		resp := gadk.GetTransactionsToApproveResponse{
+			TrunkTransaction:  gadk.EmptyHash,
+			BranchTransaction: gadk.EmptyHash,
+		}
+		result, err = json.Marshal(&resp)
+
+	case "findTransactions":
+		var req gadk.FindTransactionsRequest
+		if err = json.Unmarshal(p, &req); err != nil {
+			t.Error(err)
+		}
+		if len(req.Addresses) != 1 || len(req.Bundles) != 0 || len(req.Approvees) != 0 {
+			t.Error("invalid findtr")
+		}
+		resp := gadk.FindTransactionsResponse{}
+		if _, ok := bal[req.Addresses[0]]; ok {
+			resp.Hashes = append(resp.Hashes, gadk.EmptyHash)
+		}
+		result, err = json.Marshal(&resp)
+	default:
+		t.Error("invalid cmd")
+	}
+	if err != nil {
+		t.Log(err, string(p))
+		t.Error(err)
+		http.Error(w, err.Error(), 400)
+		return
+	}
+	if _, err := w.Write(result); err != nil {
+		log.Fatal(err)
+	}
+
+}
+
+func checkTrytes(t *testing.T, seed gadk.Trytes, bal map[gadk.Address]int64, trs []gadk.Transaction) {
+	var total int64
+	for _, a := range bal {
+		total += a
+	}
+	if len(trs) != 2*3+1 {
+		t.Error("invalid trytes", len(trs))
+	}
+	for index, tr := range trs {
+		// t.Log(tr.Trytes())
+		if index == 0 {
+			if tr.Address != pobAddress {
+				t.Error("invalid address")
+			}
+			if tr.Value != total {
+				t.Error("invalid out val")
+			}
+			var newadr []rune
+			for _, t := range tr.SignatureMessageFragment {
+				if t == 'Z' {
+					break
+				}
+				if t >= 'G' {
+					t = t - 'G' + '0'
+				}
+				newadr = append(newadr, t)
+			}
+			nadr, err := hex.DecodeString(string(newadr))
+			if err != nil {
+				t.Error(err)
+			}
+			nnadr, err := address.Address58(s.Config, nadr)
+			if err != nil {
+				t.Error(err)
+			}
+			t.Log(nnadr)
+			adr, err := getAddresses(s)
+			if err != nil {
+				t.Error(err)
+			}
+			if adr.Normal[0].String != nnadr {
+				t.Error("invalid adr")
+			}
+			continue
+		}
+		//sig only 2,4,6
+		if index%2 == 0 {
+			continue
+		}
+		//content 1,3,5
+		adr, err := gadk.NewAddress(seed, index/2, 2)
+		if err != nil {
+			t.Error(err)
+		}
+		if tr.Address != adr {
+			t.Error("invalid address")
+		}
+		if tr.Value != -bal[tr.Address] {
+			t.Error("invalid in val", tr.Value, bal[tr.Address])
+		}
 	}
 }

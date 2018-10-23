@@ -447,4 +447,50 @@ func TestEvents(t *testing.T) {
 	if resp.Testnet != 2 {
 		t.Error("invalid nodeinfo", resp.Testnet)
 	}
+	res := getNodesStatus(s)
+	if len(res) != 1 || !res[0] {
+		t.Error("invalid node status", len(res), res[0])
+	}
+}
+
+func TestClaim(t *testing.T) {
+	oldServers = []string{"http://localhost:14266"}
+	ctx, cancel := context.WithCancel(context.Background())
+	setupRPC(ctx, t)
+	setup(t)
+	seed, total, ch := setupOldServer(ctx, t)
+	defer teardown(t)
+	defer cancel()
+
+	pk, err := register(s, "test")
+	if err != nil {
+		t.Error(err)
+	}
+	err = login(s, &loginParam{
+		PrivKey:  pk,
+		Password: "test",
+	})
+	if err != nil {
+		t.Error(err)
+	}
+	time.Sleep(2 * time.Second)
+	bal, err := getOldUTXOs(s, seed)
+	if err != nil {
+		t.Error(err)
+	}
+	if bal != total {
+		t.Error("invalid utxo")
+	}
+	err = claim(s, &claimParam{
+		Amount: bal,
+		Seed:   seed,
+	}, true)
+	if err != nil {
+		t.Error(err)
+	}
+	select {
+	case <-ch:
+	case <-time.After(3 * time.Second):
+		t.Error("invalid send")
+	}
 }
