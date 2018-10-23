@@ -200,7 +200,7 @@ func (cfg *Setting) SetClient() error {
 func (cfg *Setting) CallRPC(f func(RPCIF) error) error {
 	var err error
 	if len(cfg.Client) != len(cfg.Servers) {
-		if err := cfg.SetClient(); err != nil {
+		if err = cfg.SetClient(); err != nil {
 			return err
 		}
 	}

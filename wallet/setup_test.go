@@ -269,7 +269,7 @@ func handle(t *testing.T, seed gadk.Trytes, bal map[gadk.Address]int64,
 	cmd := struct {
 		Command string `json:"command"`
 	}{}
-	if err := json.Unmarshal(p, &cmd); err != nil {
+	if err = json.Unmarshal(p, &cmd); err != nil {
 		t.Error(err)
 	}
 	t.Log(cmd.Command, " is requested")

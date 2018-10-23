@@ -434,10 +434,10 @@ func TestEvents(t *testing.T) {
 	if len(adr.Normal) != 1 {
 		t.Error("# should be 1", len(adr.Normal))
 	}
-	if err := validateAddress(s, adr.Normal[0].String); err != nil {
+	if err = validateAddress(s, adr.Normal[0].String); err != nil {
 		t.Error(err)
 	}
-	if err := validateAddress(s, adr.Normal[0].String[:len(adr.Normal[0].String)-1]); err == nil {
+	if err = validateAddress(s, adr.Normal[0].String[:len(adr.Normal[0].String)-1]); err == nil {
 		t.Error("should be err")
 	}
 	resp, err := getNodeinfo(s)

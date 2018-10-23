@@ -60,7 +60,7 @@ func TestMine(t *testing.T) {
 	tr.AddInput(genesis, 0)
 	tr.AddOutput(s.Config, a.Address58(s.Config), aklib.ADKSupply-10)
 	tr.AddOutput(s.Config, "", 10)
-	if err := tr.Sign(a); err != nil {
+	if err = tr.Sign(a); err != nil {
 		t.Error(err)
 	}
 	_, err = s.Client[0].SendRawTX(tr, tx.TypeRewardFee)

@@ -96,10 +96,10 @@ func TestSync(t *testing.T) {
 	}
 	logout(s)
 
-	if err := s.DB.Close(); err != nil {
+	if err = s.DB.Close(); err != nil {
 		t.Error(err)
 	}
-	if err := os.RemoveAll("./test_db"); err != nil {
+	if err = os.RemoveAll("./test_db"); err != nil {
 		t.Log(err)
 	}
 	s.DB, err = db.Open("./test_db")
