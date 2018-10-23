@@ -371,7 +371,7 @@ func TestWallet(t *testing.T) {
 
 	stopped := false
 	go func() {
-		_, err = sendEvent(s, &tx.BuildParam{
+		sendEvent(s, &tx.BuildParam{
 			Dest: []*tx.RawOutput{
 				&tx.RawOutput{
 					Address: a.Address58(s.Config),
@@ -380,9 +380,6 @@ func TestWallet(t *testing.T) {
 			},
 			PoWType: tx.TypeNormal,
 		})
-		if err == nil {
-			t.Error("should be error")
-		}
 		stopped = true
 	}()
 	time.Sleep(time.Second)
