@@ -1,0 +1,34 @@
+{
+    "data": [
+        {
+            "linkActive": "active",
+            "link": "/dashboard",
+            "iconClass": "icofont-wallet",
+            "iconTitle": "My Wallet"
+        },
+        {
+            "linkActive": "",
+            "link": "/address",
+            "iconClass": "icofont-address-book",
+            "iconTitle": "My Addresses"
+        },
+        {
+            "linkActive": "",
+            "link": "/sendAdk",
+            "iconClass": "icofont-paper-plane",
+            "iconTitle": "Send ADK"
+        },
+        {
+            "linkActive": "",
+            "link": "/transaction",
+            "iconClass": "icofont-exchange",
+            "iconTitle": "Transactions"
+        },
+        {
+            "linkActive": "",
+            "link": "/setting",
+            "iconClass": "icofont-gear",
+            "iconTitle": "Settings"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "data":  [
+        {
+            "cardBackgroundClass": "card-body p-4 adk-ic-bg",
+            "cardTitle": "Received",
+            "cardPriceClass": "card-adk-price counter",
+            "cardPrice": 12.34567812
+        },
+        {
+            "cardBackgroundClass": "card-body p-4 adk-ic-bg-send",
+            "cardTitle": "Send",
+            "cardPriceClass": "card-adk-price counter",
+            "cardPrice": 43.16567812
+        },
+        {
+            "cardBackgroundClass": "card-body p-4 wallet-ic-bg",
+            "cardTitle": "Balance",
+            "cardPriceClass": "card-adk-price",
+            "cardPrice": 97.6467812
+        }
+    ]
+}
+  

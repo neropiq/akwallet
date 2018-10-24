@@ -1,0 +1,24 @@
+{
+    "fields": ["QR Code", "From Address", "Available", "Received"],
+    "data":  [
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"],
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "#Avail : 100/1024", "Recv: 1.12345678 ADK"]         
+    ]
+}
+  

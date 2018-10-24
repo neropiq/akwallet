@@ -1,0 +1,302 @@
+/*-Login Page Stylesheet-*/
+
+body {
+    font-family: 'Open Sans', sans-serif !important;
+    -webkit-font-smoothing: antialiased;
+}
+body.login-body {
+    background: url("../images/login-bg.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+img {
+    max-width: 100%;
+}
+html body a {
+    color: #000;
+    transition: all 0.25s ease;
+}
+.pace .pace-progress {
+    background: #63c37c;
+}
+.form-group {
+    margin-bottom: 1.2rem;
+}
+.w-80 {
+    width: 80%;
+}
+/* For Firefox */
+input[type='number'] {
+    -moz-appearance:textfield;
+}
+/* Webkit browsers like Safari and Chrome */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+/*--Login Header--*/
+.login-header .navbar {
+    padding: 30px 0;
+}
+span.brand-name {
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1.266;
+    color: #fff;
+    margin-left: 0.5rem;
+}
+.btn-white-outline {
+    border-radius: 90px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
+    padding: 0.6rem 2.5rem;
+}
+.btn-light-white {
+    background: #f9f9f9;
+    border-color: #f9f9f9;
+    color: #000;
+    border-radius: 90px;
+    font-weight: bold;
+    text-transform: uppercase;
+    font-size: 16px;
+    padding: 0.6rem 2.5rem;
+}
+.btn-light-white-hover:hover {
+    background: #63C37C;
+    border-color: #63C37C;
+    color: #fff;
+}
+/*-main-content-*/
+.login-content {
+    padding: 5rem 0 2rem 0;
+}
+.welcome-title {
+    margin-bottom: 5rem;
+}
+.welcome-title h4 {
+    color: #fff;
+    font-size: 30px;
+    font-weight: 400;
+}
+
+.welcome-title h1{
+    color: #fff;
+    font-size: 50px;
+    font-weight: 700;
+}
+
+.custom-control {
+    border-radius: 90px;
+    height: calc(3.25rem + 2px);
+    color: #888;
+    font-size: 18px;
+    font-weight: 400;
+}
+.custom-control:focus {
+    border-color: #63c37c;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgb(99, 195, 124, 0.25);
+}
+.custom-control::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: #888;
+}
+.custom-control::-moz-placeholder { /* Firefox 19+ */
+    color: #888;
+}
+.custom-control:-ms-input-placeholder { /* IE 10+ */
+    color: #888;
+}
+.custom-control:-moz-placeholder { /* Firefox 18- */
+    color: #888;
+}
+.wallet-img {
+    /*padding-top: 2rem;*/
+}
+.check-md {
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 14px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    color: #fff;
+}
+
+.check-md input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.check-md input:checked~.checkmark-md {
+    background-color: transparent;
+}
+
+.checkmark-md {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 1px solid #63C37C;
+}
+
+.check-md input:checked~.checkmark-md:after {
+    display: block;
+}
+
+.check-md .checkmark-md:after {
+    left: 7px;
+    top: 3px;
+    width: 5px;
+    height: 9px;
+    border: solid #63C37C;
+    border-width: 0 2px 2px 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.checkmark-md:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+a.tNc {
+    color: #63c37c;
+}
+/*------@media Rules------*/
+
+@media (min-width: 1441px) and (max-width: 1600px) {
+
+}
+
+@media only screen and (min-width:1366px) and (max-width:1440px) {
+
+}
+
+@media only screen and (min-width:1200px) and (max-width:1365px) {
+
+}
+
+@media only screen and (min-width:992px) and (max-width:1200px) {
+
+}
+
+@media only screen and (min-width:768px) and (max-width:991px) {
+    .welcome-title {
+        margin-bottom: 4rem;
+    }
+    .welcome-title h4 {
+        font-size: 24px;
+    }
+    .welcome-title h1 {
+        font-size: 40px;
+    }
+    .custom-control.w-80 {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width:640px) and (max-width:767px) {
+    .login-header .navbar {
+        padding: 20px 0;
+    }
+    .welcome-title {
+        margin-bottom: 3rem;
+    }
+    .welcome-title h4 {
+        font-size: 24px;
+    }
+    .welcome-title h1 {
+        font-size: 40px;
+    }
+    .custom-control.w-80 {
+        width: 100%;
+    }
+    .login-content {
+        padding: 3rem 0 2rem 0;
+    }
+    .wallet-img {
+         padding-bottom: 4rem;
+         width: 350px;
+    }
+}
+
+@media only screen and (min-width:480px) and (max-width:639px) {
+    .login-header .navbar {
+        padding: 20px 0;
+    }
+    .welcome-title {
+        margin-bottom: 3rem;
+    }
+    .welcome-title h4 {
+        font-size: 24px;
+    }
+    .welcome-title h1 {
+        font-size: 40px;
+    }
+    .custom-control.w-80 {
+        width: 100%;
+    }
+    .login-content {
+        padding: 2rem 0 2rem 0;
+    }
+    .wallet-img {
+        padding-bottom: 3rem;
+        width: 350px;
+    }
+}
+
+@media only screen and (min-width:320px) and (max-width:479px) {
+    .login-header .navbar {
+        padding: 20px 0;
+    }
+    span.brand-name {
+        font-size: 14px;
+    }
+    .welcome-title {
+        margin-bottom: 2.5rem;
+    }
+    .welcome-title h4 {
+        font-size: 20px;
+    }
+    .welcome-title h1 {
+        font-size: 32px;
+    }
+    .custom-control.w-80 {
+        width: 100%;
+    }
+    .login-content {
+        padding: 2rem 0 2rem 0;
+    }
+    .wallet-img {
+        padding-bottom: 3rem;
+        width: 275px;
+    }
+    .btn-white-outline, .btn-light-white {
+        padding: 0.6rem 1.5rem;
+        font-size: 14px;
+    }
+}
+@media (max-width: 576px) {
+
+}
+@media (max-width: 767px) {
+    .order-set-form {
+        order: 12;
+        padding-left: 2rem;
+        padding-right: 2rem;
+    }
+    .order-set-image {
+        order: 1;
+    }
+}
