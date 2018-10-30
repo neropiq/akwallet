@@ -29,6 +29,8 @@ export * from './popupAction';
 export * from './signupAction';
 export * from './sendAdkAction';
 export * from './config';
+export * from './popupAction';
+export * from './notificationAction';
 
 export  const updateConnnected = (connected:boolean) => {
     return {

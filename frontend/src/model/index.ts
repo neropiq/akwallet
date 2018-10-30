@@ -27,4 +27,4 @@ export * from './settings';
 export * from './sendAdk';
 export * from './popup'
 export * from './config'
-
+export * from './notification';

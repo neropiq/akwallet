@@ -35,8 +35,8 @@ class Table extends React.Component<IProps> {
         return (
             <div className="card-body px-4 py-0">
                 <div className="table-responsive custom-table-theme scroll-table ">
-                    <table className="table table-hover">
-
+                    <table className="table table-hover text-center">
+                    
                         <thead>
                             <tr>
                                 {
@@ -50,7 +50,7 @@ class Table extends React.Component<IProps> {
                                 this.props.data.map((rows: any, index: number) => (
                                     <tr key={index}>
                                         {
-                                            rows.map((row: string, i: number) => <td key={i}>{row}</td>)
+                                            rows.map((row: string, i: number) => <td className="td-set" key={i} title={row}><span>{row}</span></td>)
                                         }
                                     </tr>
                                 ))

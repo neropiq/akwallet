@@ -47,10 +47,11 @@ export const CHANGE_SELECT = 'CHANGE_SELECT';
  * @address Route
  */
 
-export const CHANGE_VIEW = 'CHANGE_VIEW';
-export const CHANGE_GRID_FLAG = 'CHANGE_GRID_FLAG';
-export const ADDRESS_VALUE = 'ADDRESS_VALUE';
-export const PUSH_ADDRESS_DATA = 'PUSH_ADDRESS_DATA';
+ export const CHANGE_VIEW = 'CHANGE_VIEW';
+ export const CHANGE_GRID_FLAG = 'CHANGE_GRID_FLAG';
+ export const ADDRESS_VALUE = 'ADDRESS_VALUE';
+ export const PUSH_ADDRESS_DATA = 'PUSH_ADDRESS_DATA';
+ export const CHANGE_ADDRESS_TAB = 'CHANGE_ADDRESS_TAB';   
 /**
  * @SendAdk Routes
  */
@@ -85,3 +86,8 @@ export const POPUP_VALUE = 'POPUP_VALUE';
 */
 export const UPDATE_CONFIG = 'UPDATE_CONFIG';
 export const UPDATE_CONNECTED = 'UPDATE_CONNECTED';
+
+ /*
+ * @Notification 
+ */
+export const NOTIFICATION_COUNT = 'NOTIFICATION_COUNT';

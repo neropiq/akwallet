@@ -20,20 +20,20 @@
 
 import { CHANGE_FILTER, CHANGE_SELECT } from './types';
 
-interface Props {
+interface IProps {
     value?: string;
     newFilter?: any;
     oldFilter?: any;
 }
 
-export const changeSelect = ({ value }: Props) => {
+export const changeSelect = ({ value }: IProps) => {
     return {
+        payload: { value },
         type: CHANGE_SELECT,
-        payload: { value }
     }
 }
 
-export const changeFilter = ({ newFilter, oldFilter }: Props) => {
+export const changeFilter = ({ newFilter, oldFilter }: IProps) => {
     const newFilters = oldFilter.map((filter: any) => {
         if(filter.value === newFilter) {
             return {
@@ -47,7 +47,7 @@ export const changeFilter = ({ newFilter, oldFilter }: Props) => {
         };
     });
     return {
+        payload: { newFilters },
         type: CHANGE_FILTER,
-        payload: { newFilters }
     }
 };

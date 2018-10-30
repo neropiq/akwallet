@@ -18,11 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { ADDRESS_VALUE ,CHANGE_GRID_FLAG ,CHANGE_VIEW,PUSH_ADDRESS_DATA} from '../actions/types';
+import { ADDRESS_VALUE ,CHANGE_ADDRESS_TAB ,CHANGE_GRID_FLAG,CHANGE_VIEW,PUSH_ADDRESS_DATA} from '../actions/types';
 import { IAddressEntity } from '../model';
 
 const INITIAL_STATE = (): IAddressEntity => ({
     addressValue:[],
+    cardHeaderTab:{
+        tab: [
+            {
+                active: true,
+                controle:"tab-1",
+                value: 'Normal',
+            },           
+            {
+                active: false,
+                controle:"tab-3",
+                value: "Multisigs",
+            },
+            {
+                active: false,
+                controle:"tab-4",
+                value: "Anon",
+            }
+        ]
+    },
     showGrid: true,
     subHeader: {
         title: 'My Address',
@@ -44,6 +63,7 @@ const INITIAL_STATE = (): IAddressEntity => ({
             }
         ]
     },
+ 
 })
 
 const AddressReducer = (state = INITIAL_STATE(), action: any) => {
@@ -61,9 +81,16 @@ const AddressReducer = (state = INITIAL_STATE(), action: any) => {
         case ADDRESS_VALUE:
             return { ...state, addressValue: action.payload.addressValue }
         case PUSH_ADDRESS_DATA:
-            console.log('reducer');
-            console.log(action.payload.addressData)
+            
             return { ...state, addressValue: state.addressValue.concat(action.payload.addressData ) }
+        case CHANGE_ADDRESS_TAB:
+            return {
+                ...state,
+                cardHeaderTab: {
+                    ...state.cardHeaderTab,
+                    tab: action.payload.newFilters
+                }    
+            }
         default:
             return state;
     }

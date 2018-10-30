@@ -30,10 +30,21 @@ interface IProps {
     icons: any;
     location: any;
     testnet: number;
+    notiCount: number;
     changeHeader: () => void;
+    onNotificationClick: () => void;
+}
+interface IState {
+    showNotification: boolean
 }
 
-class Header extends React.Component<IProps> {
+class Header extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
+        super(props);
+        this.state = {
+            showNotification: false
+        }
+    }
     public componentDidMount() {
         if (window.innerWidth < 992) {
             $('body').addClass('pushmenu-push');
@@ -65,7 +76,6 @@ class Header extends React.Component<IProps> {
             $('body').removeClass('custome-active-menu');
         });
     }
-
     public render() {
         const iconArray: any[] = this.props.icons;
         return (
@@ -74,25 +84,41 @@ class Header extends React.Component<IProps> {
                     <nav className="nav fixed-header navbar fixed-top">
                         <div className="page-header-inner d-flex flex-row">
                             <div className="navbar-brand mr-0 py-0 page-logo">
-                                <a href='/dashboard'>
-                                    <img src={require("../../assets/images/logo-small.png")} className="img-fluid dashboard-logo" alt="logo" />
-                                    <span className="brand-name">
-                                        {this.props.testnet === 0 ? "" : nets[this.props.testnet]}
-                                    </span>
+                                <a href='/' className="navbar-brand dashboard-logo">
+                                    <img src={require("../../assets/images/logo-small.png")} className="img-fluid" alt="logo" />
+                                    <span className="brand-name">{this.props.testnet === 0 ? "" : nets[this.props.testnet]}</span>
                                 </a>
                             </div>
                         </div>
                         <div className="header-tool-action d-inline-flex">
                             <div className="top-menu">
-                                <ul className="notification-group d-inline-block">
-                                    <li>
-                                        <a href='#' data-balloon="Whats up!" data-balloon-pos="down" id="notify" data-toggle="dropdown"  >
+                                <ul className="notification-group d-inline-block profile-list ">
+                                    <li className="dropdown">
+                                        <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
                                             <i className="icon-bell" />
-                                            <span className="badge badge-danger">4</span>
+                                            <span className="badge badge-danger">{this.props.notiCount > 0 ? this.props.notiCount : ''}</span>
                                         </a>
-                                        <div className="dropdown-menu profile-dropdown" aria-labelledby="notify">
-                                            <a href='#' className="dropdown-item"><i className="icon-logout" /> Logout</a>
+                                        <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
+
+                                            <a href='#' className="dropdown-item"> <i className="icon-user" />You Received Payment from Jack</a>
+                                            <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
+                                            <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
+                                            <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
                                         </div>
+                                    </li>
+
+                                    <li className="dropdown">
+                                        <a href='#' className="dropdown-toggle" id="dropdownMsg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i className="icon-envelope-letter" />
+                                        </a>
+
+                                    </li>
+
+                                    <li className="dropdown">
+                                        <a href='#' className="dropdown-toggle" id="dropdownCalender" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <i className="icon-calendar"/>
+                                        </a>
+
                                     </li>
                                 </ul>
 
@@ -136,11 +162,20 @@ class Header extends React.Component<IProps> {
                             <div className="float-right d-flex">
                                 <div className="top-menu">
                                     <ul className="notification-group d-inline-block">
-                                        <li>
-                                            <a href="#">
+                                        <li className="dropdown">
+                                            <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
+                                                {/* data-balloon="Whats up!" data-balloon-pos="down" */}
+                                                {/* data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" */}
                                                 <i className="icon-bell" />
-                                                <span className="badge badge-danger">4</span>
+                                                <span className="badge badge-danger">{this.props.notiCount > 0 ? this.props.notiCount : ''}</span>
                                             </a>
+                                            <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
+
+                                                <a href='#' className="dropdown-item"> <i className="icon-user" /> You Received Payment from Jack</a>
+                                                <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
+                                                <a href='#' className="dropdown-item"><i className="icon-user" /> You Received Payment from Jack</a>
+                                                <a href='#' className="dropdown-item"><i className="icon-user" /> You Received Payment from Jack</a>
+                                            </div>
                                         </li>
                                     </ul>
 

@@ -22,6 +22,8 @@ import loadjs = require('loadjs');
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect, Route, Switch } from "react-router-dom";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions';
 import GUI from '../../GUI'
@@ -30,12 +32,12 @@ import { IStoreState } from '../../reducers';
 import dashboardRoutes from "../../routes/route";
 import { allPrivkeys, getAettings, Iprivatekeys } from '../../utils/remote';
 import Header from "../header/header";
+import Popup from '../popup/popup';
 import Sidebar from '../sidebar/sidebar';
 import './../../assets/css/animate.css';
 import './../../assets/css/bootstrap.min.css';
 import './../../assets/css/hover-min.css';
 import './../../assets/css/icofont.css';
-import './../../assets/css/jquery.mCustomScrollbar.css';
 import './../../assets/css/nav-menu-mobile.css';
 import './../../assets/css/style.css';
 import sidebar from './sidebar.json'
@@ -61,6 +63,7 @@ interface IchangeCardTabSettingProps {
 interface IProps {
 	connected: boolean;
 	isAuthenticated: boolean;
+	notification_count:number;
 	history: any;
 	location: any;
 	settingTab: any;
@@ -68,10 +71,13 @@ interface IProps {
 	updateConfig: (cfg: IConfigEntity) => void;
 	updateConnected: (con: boolean) => void;
 	updatePrivkeys: (privkeys: string[]) => void,
+	updateNotificationCount: ( notificationCount:number ) => void;
 }
 
 interface IState {
-	previousLocation: string;
+	popup:boolean;
+	value:string;
+	// previousLocation:any;
 }
 
 export let socket: GUI
@@ -79,20 +85,21 @@ export let socket: GUI
 class AdminPanel extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
-		this.state = {
-			previousLocation: ''
+		this.state = {			
+			popup:true,
+			value:'You Received Payment from Jack',
+			
 		}
 	}
-
 	public componentDidMount() {
 		window.scrollTo(0, 0);
 		socket = new GUI()
 		if (this.props.isAuthenticated === false) {
 			this.props.history.push('/login');
 		}
-		this.setState(() => ({
-			previousLocation: this.props.history.location.pathname
-		}));
+		// this.setState(() => ({
+		// 	previousLocation: this.props.history.location.pathname
+		// }));
 		if (this.props.connected) {
 			return
 		}
@@ -132,15 +139,6 @@ class AdminPanel extends React.Component<IProps, IState> {
 		socket.connect()
 	}
 
-	public componentDidUpdate() {
-		window.scrollTo(0, 0);
-		if (this.state.previousLocation !== this.props.history.location.pathname) {
-			this.setState(() => ({
-				previousLocation: this.props.history.location.pathname
-			}));
-		}
-	}
-
 	public componentWillUnmount() {
 		socket.close()
 	}
@@ -150,7 +148,10 @@ class AdminPanel extends React.Component<IProps, IState> {
 			(this.props.location.pathname === '/login' || this.props.location.pathname === '/signup') ?
 				<div>{switchRoutes}</div> :
 				<div>
-					<Header icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} />
+									<ToastContainer  />
+				{/* {this.state.popup ? <Popup textvalue={this.state.value} onclosepopup={this.closepopup}/>: ''} */}
+				{/* {this.state.popup ? <ToastContainer  />: ''} */}
+					<Header icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} notiCount={this.props.notification_count} onNotificationClick={this.onNotificationClick}  />
 					<div className="clearfix" />
 					<div className="page-container">
 						<Sidebar icons={sidebar.data} location={this.props.location.pathname} />
@@ -161,11 +162,34 @@ class AdminPanel extends React.Component<IProps, IState> {
 		);
 	}
 
+	private toasterCalled(){
+		console.log('totacer functin called');
+		toast.success("Success Notification !", {
+			position: toast.POSITION.TOP_RIGHT
+		});
+		if(this.props.notification_count >= 0){
+			const count = this.props.notification_count+1;
+			this.props.updateNotificationCount(count);
+		}
+	}
+
+	private closepopup = () =>{
+		this.setState(() => ({
+			popup: false
+		}));
+	}
+
 	private changeHeader = () => {
 		const newFilter: any = 'Migration';
 		setTimeout(() => {
 			this.props.changeCardTabSetting({ newFilter, oldFilter: this.props.settingTab });
 		});
+	}
+
+
+	private onNotificationClick =() =>{
+		console.log('notification click');
+		this.props.updateNotificationCount(0);
 	}
 }
 
@@ -174,14 +198,16 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
 		changeCardTabSetting: ({ newFilter, oldFilter }: IchangeCardTabSettingProps) => dispatch(actions.changeCardTabSetting({ newFilter, oldFilter })),
 		updateConfig: (cfg: IConfigEntity) => dispatch(actions.updateConfig(cfg)),
 		updateConnected: (con: boolean) => dispatch(actions.updateConnnected(con)),
+		updateNotificationCount: ( notificationCount:any) => dispatch(actions.updateNotificationCount( notificationCount )),
 		updatePrivkeys: (pks: string[]) => dispatch(actions.updatePrivkeys(pks)),
 	}
 }
 
 export function mapStateToProps(state: IStoreState) {
 	const { isAuthenticated } = state.login;
+	const { notification_count } = state.notification;
 	const { settingTab } = state.setting.cardSettingTab;
-	return { isAuthenticated, settingTab, connected: state.connected };
+	return { isAuthenticated, settingTab, notification_count,connected: state.connected };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminPanel);

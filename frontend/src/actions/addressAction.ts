@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { ADDRESS_VALUE , CHANGE_GRID_FLAG ,CHANGE_VIEW,PUSH_ADDRESS_DATA} from './types';
+import { ADDRESS_VALUE, CHANGE_ADDRESS_TAB, CHANGE_GRID_FLAG, CHANGE_VIEW, PUSH_ADDRESS_DATA } from './types';
 
 interface IProps {
     value?: boolean;
@@ -26,6 +26,8 @@ interface IProps {
     oldView?: any;
     addressValue?: any;
     addressData?: any;
+    newFilter?: any;
+    oldFilter?: any;
 }
 
 export const changeGridFlag = ({ value }: IProps) => {
@@ -35,16 +37,16 @@ export const changeGridFlag = ({ value }: IProps) => {
     }
 }
 
-export const changeAddressValue = ( addressValue : IProps) => {
-    
+export const changeAddressValue = (addressValue: IProps) => {
+
     return {
         payload: { addressValue },
         type: ADDRESS_VALUE,
     }
 }
 
-export const pushAddressValue = ( addressData : IProps) => {
-    
+export const pushAddressValue = (addressData: IProps) => {
+
     return {
         payload: { addressData },
         type: PUSH_ADDRESS_DATA,
@@ -53,7 +55,7 @@ export const pushAddressValue = ( addressData : IProps) => {
 
 export const changeView = ({ newView, oldView }: IProps) => {
     const newViews = oldView.map((view: any) => {
-        if(view.value === newView || view.value === '') {
+        if (view.value === newView || view.value === '') {
             return {
                 ...view,
                 active: true,
@@ -69,5 +71,26 @@ export const changeView = ({ newView, oldView }: IProps) => {
     return {
         payload: { newViews },
         type: CHANGE_VIEW,
+    }
+};
+
+
+export const changeCardTabAddress = ({ newFilter, oldFilter }: IProps) => {
+
+    const newFilters = oldFilter.map((filter: any) => {
+        if (filter.value === newFilter) {
+            return {
+                active: true,
+                value: filter.value
+            }
+        }
+        return {
+            active: false,
+            value: filter.value
+        };
+    });
+    return {
+        payload: { newFilters },
+        type: CHANGE_ADDRESS_TAB,
     }
 };

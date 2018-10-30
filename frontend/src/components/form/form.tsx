@@ -90,10 +90,22 @@ const renderMembers = ({ fields, meta: { error, submitFailed } }: IfieldProps) =
 
 interface ICustomProps {
 	loading: boolean;
+
+}
+
+interface IState {
+	feeField: boolean;
 }
 
 
-class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, ICustomProps>> {
+class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, ICustomProps>, IState> {
+	constructor(props: ICustomProps & InjectedFormProps<{}, ICustomProps>) {
+		super(props);
+		this.state = {
+			feeField: false,
+		}
+	}
+
 	public render() {
 		const { handleSubmit, pristine, reset, submitting } = this.props
 		return (
@@ -118,8 +130,9 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 								component="input"
 								type="radio"
 								value="0"
+								onClick={this.radioClick('doPow') }
 							/>{' '}
-							<span/>
+							<span />
 							Do PoW
 						</label>
 						<label className="mt-radio">
@@ -128,8 +141,9 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 								component="input"
 								type="radio"
 								value="1"
+								onClick={this.radioClick('useTicket') }
 							/>{' '}
-							<span/>
+							<span />
 							Use Ticket
 						</label>
 						<label className="mt-radio">
@@ -138,20 +152,42 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 								component="input"
 								type="radio"
 								value="2"
-							/>{' '}
-							<span/>
+								onClick={this.radioClick('payFee') }
+								/>{' '}
+							<span />
 							Pay Fee
 						</label>
 					</div>
 				</div>
+				{
+					this.state.feeField ?
+						<div className="form-group">
+							<Field
+								name="Fee"
+								type="text"
+								component={renderField}
+								label="Fee"
+							/>
+						</div> : ''
+				}
+
 				<div className="form-group">
 					<button type="submit" disabled={submitting} className="btn btn-send btn-primary">
-						Send
-						{this.props.loading && <div className="loader"><i className="icofont-spinner"/></div>}
+						{this.props.loading ? 'Cancel' : 'Send'}
+						{this.props.loading && <div className="loader"><i className="icofont-spinner" /></div>}
 					</button>
 				</div>
 			</div>
 		)
+	}
+	private radioClick = (value: any) => {
+		return () => {
+			if (value === 'payFee') {
+				this.setState({ feeField: true });
+			} else {
+				this.setState({ feeField: false });
+			}
+		}
 	}
 }
 

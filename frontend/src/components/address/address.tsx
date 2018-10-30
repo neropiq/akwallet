@@ -26,6 +26,8 @@ import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';
 import { getAddresses, getNewaddress, IAddress, IaddressRecv, INewAddress, toADK } from '../../utils/remote';
+// import { AddressModel } from './addressmodel';
+import CardTab from '../cardTab/cardTab';
 import Grid from '../grid/grid';
 import List from '../list/list';
 import SubHeader from '../subheader/subheader';
@@ -40,10 +42,17 @@ interface IchangeGridFlagProps {
     value: boolean;
 }
 
+interface IchangeProps {
+    newFilter: any;
+    oldFilter: any;
+}
 
 interface IProps {
     connected: boolean;
     title: string;
+    tab: any;
+    tables: any[];
+    titleList: any;
     views: string;
     addressValue: [];
     showGrid: boolean;
@@ -53,6 +62,7 @@ interface IProps {
     changeGridFlag: ({ value }: IchangeGridFlagProps) => void;
     changeAddressValue: (address: any) => void;
     pushAddressValue: (address: any) => void;
+    changeCardTabAddress: ({ newFilter, oldFilter }: IchangeProps) => void;
 }
 
 
@@ -61,6 +71,7 @@ class Address extends React.Component<IProps> {
         super(props);
         this.props.changeAddressValue(address.data);
     }
+
     public componentDidMount() {
         document.title = "Address || Aidos Wallet";
         Scrollbar.init(document.querySelector('#scrolle'));
@@ -77,6 +88,7 @@ class Address extends React.Component<IProps> {
         })
     }
 
+
     public render() {
         return (
             <div>
@@ -84,8 +96,8 @@ class Address extends React.Component<IProps> {
                 <div className="modal fade c-t-modal qr-code-modal" id="myModal123">
                     <div className="modal-dialog">
                         <div className="modal-content">
-                            <div className="modal-header">
-                                <span className="modal-title">{this.props.popup_Value}</span>
+                            <div className="modal-header ">
+                                <span className="modal-title model-set" title={this.props.popup_Value}><span>{this.props.popup_Value}</span></span>
                                 <button type="button" className="close" data-dismiss="modal" >×</button>
                             </div>
                             <div className="modal-body text-center">
@@ -104,6 +116,7 @@ class Address extends React.Component<IProps> {
                             <div className="col">
                                 <div id="scrolle" className="card-height card bg-dark-green black-shadow mCustomScrollbar" data-mcs-theme="dark">
                                     <div className="card-content">
+                                        <CardTab addressTab={this.props.tab} onCardChange={this.onCardChange} />
                                         {
                                             this.props.showGrid ?
                                                 <div className="card-body p-4">
@@ -120,7 +133,7 @@ class Address extends React.Component<IProps> {
                     </div>
                 </div>
                 <div className="d-md-none d-block clearfix add-plus-btn">
-                    <div className="float-right">
+                    <div className="float-right" onClick={this.onViewChange}>
                         <a href="#"><i className="icon-plus"/></a>
                     </div>
                 </div>
@@ -129,6 +142,9 @@ class Address extends React.Component<IProps> {
         );
     }
 
+    private onCardChange = (newFilter: any) => {
+        this.props.changeCardTabAddress({ newFilter, oldFilter: this.props.tab });
+    }
 
     private onViewChange = (newView: any) => {
         if (newView === 'Grid' || newView === 'List') {
@@ -154,6 +170,7 @@ class Address extends React.Component<IProps> {
 export const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         changeAddressValue: (addressValue: any) => dispatch(actions.changeAddressValue(addressValue)),
+        changeCardTabAddress: ({ newFilter, oldFilter }: IchangeProps) => dispatch(actions.changeCardTabAddress({ newFilter, oldFilter })),
         changeGridFlag: ({ value }: IchangeGridFlagProps) => dispatch(actions.changeGridFlag({ value })),
         changeView: ({ newView, oldView }: IchangeViewProps) => dispatch(actions.changeView({ newView, oldView })),
         pushAddressValue: (addressData: any) => dispatch(actions.pushAddressValue(addressData)),
@@ -164,7 +181,8 @@ export const mapStateToProps = (state: IStoreState) => {
     const { title, views } = state.address.subHeader;
     const { showGrid, addressValue } = state.address;
     const { popup, popup_Value } = state.popup;
-    return { title, views, showGrid, popup, popup_Value, addressValue, connected: state.connected };
+    const { tab } = state.address.cardHeaderTab;
+    return { title, views, showGrid, popup, popup_Value, addressValue, connected: state.connected, tab };
 }
 
 

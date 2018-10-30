@@ -45,7 +45,7 @@ class Card extends React.Component<IProps> {
                                             {cardTitle}
                                         </div>
                                         <div className={cardPriceClass}>
-                                            {cardPrice}  ADK
+                                            <span>{cardPrice}</span> ADK
                                         </div>
                                     </div>
                                 </div>

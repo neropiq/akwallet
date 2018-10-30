@@ -21,11 +21,12 @@
 import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form'
 import { UPDATE_CONNECTED } from '../actions/types';
-import { IAddressEntity, IConfigEntity,IDashboardEntity, ILoginEntity, IPopupEntity, ISendAdkEntity, ISettingsEntity, ISignupEntity, ITransactionEntity } from '../model';
+import { IAddressEntity, IConfigEntity, IDashboardEntity, ILoginEntity, INotificationEntity, IPopupEntity, ISendAdkEntity, ISettingsEntity, ISignupEntity, ITransactionEntity } from '../model';
 import AddressReducer from './addressReducer';
 import ConfigReducer from './configReducer';
 import DashboardReducer from './dashboardReducer';
 import LoginReducer from './loginReducer';
+import NotificationReducer from './notificationReducer';
 import PopUpReducer from './popup';
 import SendAdkReducer from './sendAdkReducer';
 import SettingReducer from './settingsReducer';
@@ -35,10 +36,10 @@ import TransactionReducer from './transactionReducer';
 
 const ConnectedReducer = (statee = false, action: any) => {
   switch (action.type) {
-      case UPDATE_CONNECTED:
-          return  action.payload 
-      default:
-          return statee;
+    case UPDATE_CONNECTED:
+      return action.payload
+    default:
+      return statee;
   }
 };
 
@@ -48,24 +49,26 @@ export interface IStoreState {
   dashboard: IDashboardEntity;
   address: IAddressEntity;
   form: any;
+  config: IConfigEntity;
+  connected: boolean;
   transaction: ITransactionEntity;
   setting: ISettingsEntity;
   sendAdk: ISendAdkEntity;
-  popup:IPopupEntity;
-  config:IConfigEntity;
-  connected:boolean;
+  popup: IPopupEntity;
+  notification: INotificationEntity;
 };
 
 export const state = combineReducers<IStoreState>({
   address: AddressReducer,
-  config:ConfigReducer,
-  connected:ConnectedReducer,
+  config: ConfigReducer,
+  connected: ConnectedReducer,
   dashboard: DashboardReducer,
   form: formReducer,
   login: LoginReducer,
+  notification: NotificationReducer,
   popup: PopUpReducer,
   sendAdk: SendAdkReducer,
   setting: SettingReducer,
-  signup:SignupReducer,
+  signup: SignupReducer,
   transaction: TransactionReducer,
 });

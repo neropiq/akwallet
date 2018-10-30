@@ -30,6 +30,7 @@ import AdminPanel from './components/adminPanel/adminpanel';
 ReactDOM.render(
   <Provider store={store}>
     <BrowserRouter >
+        {/* basename="aidoswallet" */}
         <div>
             <Switch>
                 <Route path='/' component={AdminPanel} />                         

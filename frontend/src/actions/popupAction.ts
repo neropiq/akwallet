@@ -42,8 +42,6 @@ export const popupValue = ({ popupvalue }: IProps) => {
     }
 }
 
-
-
 // export  const setAuths = ({ value }: Props) => {
 //     return {
 //         type: SET_AUTHENTICATION,

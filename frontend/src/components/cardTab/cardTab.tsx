@@ -23,6 +23,7 @@ import * as React from 'react';
 interface IProps {
     tab: any;
     settingTab: any;
+    addressTab: any;
     onCardChange?: (value: any) => void;
     onFilterChange?: (value: any) => void;
 }
@@ -34,10 +35,12 @@ interface IState {
 interface IDefaultProps {
     tab: any;
     settingTab: any;
+    addressTab: any;
 }
 
 class CardTab extends React.Component<IProps, IState> {
     public static defaultProps: IDefaultProps = {
+        addressTab: [],
         settingTab: [],
         tab: [],
     }
@@ -55,6 +58,9 @@ class CardTab extends React.Component<IProps, IState> {
         if (this.props.settingTab.length !== 0) {
             this.props.onCardChange(this.props.settingTab[0].value);
         }
+        if (this.props.addressTab.length !== 0) {
+            this.props.onCardChange(this.props.addressTab[0].value);
+        }
     }
 
     public render() {
@@ -65,6 +71,24 @@ class CardTab extends React.Component<IProps, IState> {
                     <ul className="nav nav-tabs custom-tabs px-4" id="myTab" role="tablist">
                         {
                             this.props.tab.map((tab: any, index: number) => (
+
+                                <li className="nav-item" key={index}>
+                                    <a className={tab.active ? "nav-link active" : "nav-link "}
+                                        id="tab1" data-toggle="tab" href="#" role="tab"
+                                        aria-controls={tab.controle} aria-selected={tab.active ? "true" : "false"}
+                                        onClick={this.onCardChangeFunc(tab.value)}>
+                                        {tab.value}
+                                    </a>
+                                </li>
+                            ))
+                        }
+                    </ul>
+                }
+                {
+                    (this.props.addressTab.length !== 0) &&
+                    <ul className="nav nav-tabs custom-tabs px-4" id="myTab" role="tablist">
+                        {
+                            this.props.addressTab.map((tab: any, index: number) => (
 
                                 <li className="nav-item" key={index}>
                                     <a className={tab.active ? "nav-link active" : "nav-link "}
@@ -100,8 +124,8 @@ class CardTab extends React.Component<IProps, IState> {
         );
     }
 
-    private onCardChangeFunc = (v:string)=>{
-        return ()=>this.props.onCardChange(v)
+    private onCardChangeFunc = (v: string) => {
+        return () => this.props.onCardChange(v)
     }
 
     private optionChange = (e: any) => {

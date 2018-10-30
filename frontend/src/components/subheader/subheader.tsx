@@ -42,24 +42,26 @@ interface IDefaultProps {
 }
 
 class SubHeader extends React.Component<IProps, IState> {
-    private static defaultProps: IDefaultProps = {
+    public static defaultProps: IDefaultProps = {
         filters: [],
         transaction: [],
         views: [],
     }
 
     constructor(props: IProps) {
-
         super(props);
         this.state = {
             trancactionValue: (this.props.filters.length === 0) || this.props.filters[0],
             value: (this.props.filters.length === 0) || this.props.filters[0],
         };
+      
+        // window.onclick = function(event) {
+           
+        // }
     }
-
-
+    
     public componentDidMount() {
-        if (this.props.filters.length !== 0) {
+        if(this.props.filters.length !== 0) {
             this.props.onFilterChange(this.props.filters[0].value);
         }
         if (this.props.transaction.length !== 0) {

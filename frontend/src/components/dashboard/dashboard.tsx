@@ -20,6 +20,7 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
 import { Dispatch } from 'redux';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
@@ -46,15 +47,15 @@ interface IProps {
     connected: boolean;
     title: string;
     filters: Ifilter[];
+    notification_count: number;
     changeFilter: ({ newFilter, oldFilter }: IchangeFilterProps) => void;
     changeSelect: ({ value }: IchangeSelectProps) => void;
+    updateNotificationCount: (notificationCount: number) => void;
 }
-
 interface IStates {
     carddata: ICardProps[]
     data: string[][]
 }
-
 
 class Dashboard extends React.Component<IProps, IStates> {
     constructor(props: IProps) {
@@ -67,11 +68,18 @@ class Dashboard extends React.Component<IProps, IStates> {
     public componentDidMount() {
         document.title = "Dashboard || Aidos Wallet";
         Scrollbar.init(document.querySelector('#scrolle'));
+        toast.success("Success Notification !", {
+            position: toast.POSITION.TOP_RIGHT
+        });
+        if (this.props.notification_count >= 0) {
+            const count = this.props.notification_count + 1;
+            this.props.updateNotificationCount(count);
+        }
         this.updateBalance(this.props.filters[0].value)
         this.updateTx(this.props.filters[0].value)
     }
 
-   public render() {
+    public render() {
         return (
             <div className="page-content-wrapper" >
                 <div className="page-content">
@@ -80,7 +88,7 @@ class Dashboard extends React.Component<IProps, IStates> {
                     <SubHeader title={this.props.title} filters={this.props.filters} onFilterChange={this.onFilterChange} />
                     <Card cards={this.state.carddata} />
                     <div className="row">
-                        <div className="col bg-color-overlay bg-dark-green black-shadow"/>
+                        <div className="col bg-color-overlay bg-dark-green black-shadow" />
                     </div>
                     <div className="row">
                         <div className="col-12">
@@ -153,7 +161,7 @@ class Dashboard extends React.Component<IProps, IStates> {
         this.updateBalance(newFilter)
     }
 
-    private  onSelectChange = (value: string) => {
+    private onSelectChange = (value: string) => {
         console.log(value)
         this.props.changeSelect({ value });
         this.updateTx(value)
@@ -164,13 +172,14 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
         changeFilter: ({ newFilter, oldFilter }: IchangeFilterProps) => dispatch(actions.changeFilter({ newFilter, oldFilter })),
         changeSelect: ({ value }: IchangeSelectProps) => dispatch(actions.changeSelect({ value })),
+        updateNotificationCount: (notificationCount: any) => dispatch(actions.updateNotificationCount(notificationCount)),
     }
 }
 
 
 export const mapStateToProps = (state: IStoreState) => {
     const { title, filters } = state.dashboard.subHeader;
-    return { title, filters, connected: state.connected };
+    return { title, filters, connected: state.connected, notification_count: state.notification.notification_count };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

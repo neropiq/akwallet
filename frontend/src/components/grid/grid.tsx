@@ -22,6 +22,7 @@ import QRCode from 'qrcode.react';
 import * as  React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions/popupAction';
 import { IStoreState } from '../../reducers';
 
@@ -43,11 +44,15 @@ interface IState {
     alert: false
 }
 class Gride extends React.Component<IProps, IState> {
-    public render() {
-        return (
-            // <Popup />
-            <div className="row">
 
+    public componentDidMount(){
+        // Scrollbar.init(document.querySelector('#scrolleGride'));
+    }
+
+    public render() {
+        return( 
+            // <Popup />
+            <div className="row" >
                 {
                     this.props.address.map((rows: any, index: number) => (
                         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 qr-code-address" key={index}>
@@ -57,9 +62,9 @@ class Gride extends React.Component<IProps, IState> {
                                     <QRCode value={rows.value1} size={80} level="M" data-toggle="modal" data-target="#myModal123" />
                                 </div>
                                 <div className="col-lg-8 col-md-8 col-sm-9 col-8 address-qr-details align-self-center align-content-center">
-                                    <p>{rows.value1}</p>
-                                    <p>{rows.value2}</p>
-                                    <p>{rows.value3}</p>
+                                    <p className="grid-dot" title={rows.value1}>{rows.value1}</p>
+                                    <p className="grid-dot" title={rows.value2}>{rows.value2}</p>
+                                    <p className="grid-dot" title={rows.value3}>{rows.value3}</p>
                                 </div>
                             </div>
                         </div>

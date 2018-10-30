@@ -25,6 +25,7 @@ import * as actions from '../../actions/loginAction';
 import TermText from '../../constants';
 import { IStoreState } from '../../reducers';
 import { allPrivkeys, Iprivatekeys, login } from '../../utils/remote';
+// import Scrollbar from 'smooth-scrollbar';
 
 
 interface IProps {

@@ -22,5 +22,5 @@ export interface IAddressEntity {
     subHeader: any,
     showGrid: boolean ,
     addressValue: any   
-    
+    cardHeaderTab:any
 }
