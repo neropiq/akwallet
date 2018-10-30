@@ -29,7 +29,7 @@ before_install:
 - npm install --global yarn
 
 script:
-- cd gui
+- cd frontend
 - yarn install
 - yarn build
 - cp -r build ../cmd/akwallet/asset

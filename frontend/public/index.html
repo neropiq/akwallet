@@ -1,31 +1,47 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <link rel="icon" href="favicon.ico" type="image/x-icon" sizes="16x16">
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/black/pace-theme-minimal.min.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" />
-        <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css">
-        <link rel="stylesheet" href="assets/css/icofont.css" type="text/css">
-        <link rel="stylesheet" href="assets/css/animate.css" type="text/css">
-        <link rel="stylesheet" href="assets/css/hover-min.css" type="text/css">
-        <link rel="stylesheet" href="assets/css/nav-menu-mobile.css" type="text/css">
-        <!-- <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.css" type="text/css"> -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css">
-        <link rel="stylesheet" href="assets/css/style.css" type="text/css">
 
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-        <meta name="theme-color" content="#000000">
-    </head>
-    <body id="body">
-        <div id="app"></div>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>        
-        <script src="assets/js/jquery-3.3.1.min.js" rel="script" type="text/javascript"></script>
-        <script src="assets/js/bootstrap.min.js" rel="script" type="text/javascript"></script>
-        <script src="assets/js/wow.js" rel="script" type="text/javascript"></script>
-        <!-- <script src="assets/js/jquery.mCustomScrollbar.js" rel="script" type="text/javascript"></script> -->
-        <script src="assets/js/nav-menu-mobile.js" rel="script" type="text/javascript"></script>
-        <script src="assets/js/custom.js" rel="script" type="text/javascript"></script>
-        <script src="./bundle.js"></script>
-    </body>
+<head>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" sizes="16x16">
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/themes/black/pace-theme-minimal.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/simple-line-icons/2.4.1/css/simple-line-icons.min.css" />
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/icofont.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/animate.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/hover-min.css" type="text/css">
+    <link rel="stylesheet" href="assets/css/nav-menu-mobile.css" type="text/css">
+    <!-- <link rel="stylesheet" href="assets/css/jquery.mCustomScrollbar.css" type="text/css"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/balloon-css/0.5.0/balloon.min.css">
+    <link rel="stylesheet" href="assets/css/style.css" type="text/css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#000000">
+    <title>AIDOS WALLET</title>
+</head>
+
+<body id="body">
+    <div id="app"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.0.2/pace.min.js"></script>
+    <script src="assets/js/jquery-3.3.1.min.js" rel="script" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
+    <!-- <script src="assets/js/bootstrap.min.js" rel="script" type="text/javascript"></script> loaded in react--> 
+    <script src="assets/js/wow.js" rel="script" type="text/javascript"></script>
+    <!-- <script src="assets/js/jquery.mCustomScrollbar.js" rel="script" type="text/javascript"></script> -->
+    <script src="assets/js/nav-menu-mobile.js" rel="script" type="text/javascript"></script>
+    <script src="assets/js/custom.js" rel="script" type="text/javascript"></script>
+    <script src="./bundle.js"></script>
+
+    <script>
+        window.onload = function () {
+            const w = 1250
+            const h = 850
+            window.resizeTo(w, h)
+            const x = (window.screen.width - w) / 2
+            const y = (window.screen.height - h) / 2;
+            window.moveTo(x, y)
+        }
+    </script>
+</body>
+
 </html>

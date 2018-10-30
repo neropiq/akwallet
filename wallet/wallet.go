@@ -35,7 +35,7 @@ var wallet *walletImpl.Wallet
 var pwd []byte
 
 //Load initialize wallet struct.
-func Load(s *setting.Setting, pwdd []byte, priv string) error {
+func load(s *setting.Setting, pwdd []byte, priv string) error {
 	pwd = pwdd
 	var err error
 	wallet, err = walletImpl.Load(&s.DBConfig, pwd, priv)
@@ -43,7 +43,7 @@ func Load(s *setting.Setting, pwdd []byte, priv string) error {
 }
 
 //New creates a new wallet.
-func New(s *setting.Setting, pwdd []byte, priv string) error {
+func new(s *setting.Setting, pwdd []byte, priv string) error {
 	pwd = pwdd
 	var err error
 	wallet, err = walletImpl.NewFromPriv(&s.DBConfig, pwd, priv)

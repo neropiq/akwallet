@@ -1,25 +1,45 @@
-import { DashboardEntity } from '../model';
-import { CHANGE_FILTER, CHANGE_SELECT }  from '../actions/types';
+// Copyright (c) 2018 Aidos Developer
 
-const INITIAL_STATE = (): DashboardEntity => ({
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+import { CHANGE_FILTER, CHANGE_SELECT } from '../actions/types';
+import { IDashboardEntity } from '../model';
+
+const INITIAL_STATE = (): IDashboardEntity => ({
+    select: false,
     subHeader: {
-        title: 'My Wallet',
         filters: [
             {
                 active: true,
-                value: 'Daily'
+                value: 'All',
             },
             {
                 active: false,
-                value: "Weekend"
+                value: "Monthly",
             },
             {
                 active: false,
-                value: "Monthly"
+                value: "Weekly",
             }
-        ]
+        ],
+        title: 'My Wallet',
     },
-    select: false
 });
 
 const DashboardReducer = (state = INITIAL_STATE(), action: any) => {

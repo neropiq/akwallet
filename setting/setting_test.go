@@ -116,11 +116,11 @@ func TestSetting(t *testing.T) {
 	}
 	servers := s.Servers
 	s.Servers = []string{"http://localhost:1010"}
-	if err = s.SetClient(); err == nil {
+	if err = s.SetClient(s.Servers); err == nil {
 		t.Error("should be error")
 	}
 	s.Servers = servers
-	if err = s.SetClient(); err != nil {
+	if err = s.SetClient(s.Servers); err != nil {
 		t.Error(err)
 	}
 	err = s.CallRPC(func(cl RPCIF) error {

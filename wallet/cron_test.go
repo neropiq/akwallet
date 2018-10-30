@@ -42,22 +42,22 @@ func TestSync(t *testing.T) {
 	s.RunFeeMiner = true
 	s.RunTicketMiner = false
 
-	pk, err := register(s, "test")
+	pk, err := Register(s, "test")
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
 	if err != nil {
 		t.Error(err)
 	}
-	if err = newAddress(s); err != nil {
+	if _, err = NewAddress(s); err != nil {
 		t.Error(err)
 	}
 
-	adr, err := getAddresses(s)
+	adr, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -94,7 +94,7 @@ func TestSync(t *testing.T) {
 	if up != 0 {
 		t.Error("invalid search")
 	}
-	logout(s)
+	Logout(s)
 
 	if err = s.DB.Close(); err != nil {
 		t.Error(err)
@@ -106,7 +106,7 @@ func TestSync(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -127,7 +127,7 @@ func TestSync(t *testing.T) {
 	if !newtx {
 		t.Error("invalid sync")
 	}
-	adr2, err := getAddresses(s)
+	adr2, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}

@@ -23,6 +23,7 @@ package wallet
 import (
 	"bytes"
 	"context"
+	"encoding/hex"
 	"testing"
 	"time"
 
@@ -38,18 +39,18 @@ func TestWallet(t *testing.T) {
 	defer teardown(t)
 	defer cancel()
 
-	pk, err := register(s, "test")
+	pk, err := Register(s, "test")
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test1",
 	})
 	if err == nil {
 		t.Error("should be error")
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -57,11 +58,11 @@ func TestWallet(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = newAddress(s); err != nil {
+	if _, err = NewAddress(s); err != nil {
 		t.Error(err)
 	}
 
-	adr, err := getAddresses(s)
+	adr, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -154,7 +155,7 @@ func TestWallet(t *testing.T) {
 		t.Error("invalid sync")
 	}
 
-	h, err := issueTicket(s)
+	h, err := issueTicket(context.Background(), s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -205,7 +206,7 @@ func TestWallet(t *testing.T) {
 		t.Error("invalid sync")
 	}
 
-	b, err := getBalance(s, 0)
+	b, err := GetBalance(s, 0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -223,7 +224,7 @@ func TestWallet(t *testing.T) {
 		t.Error("should be confirmed")
 	}
 
-	h, err = sendEvent(s, &tx.BuildParam{
+	h, err = SendEvent(s, &tx.BuildParam{
 		Comment: "moemoe",
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
@@ -288,7 +289,7 @@ func TestWallet(t *testing.T) {
 		t.Fatal("should be confirmed")
 	}
 
-	b, err = getBalance(s, 0)
+	b, err = GetBalance(s, 0)
 	if err != nil {
 		t.Error(err)
 	}
@@ -297,7 +298,7 @@ func TestWallet(t *testing.T) {
 		t.Error("should be 10*aklib.ADK")
 	}
 
-	adrs, err := getAddresses(s)
+	adrs, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -310,7 +311,7 @@ func TestWallet(t *testing.T) {
 	if adrs.Normal[0].Recv != 32*aklib.ADK {
 		t.Error("invalid recv", adrs.Normal[0].Recv)
 	}
-	txresp, err := transaction(s, txAll)
+	txresp, err := Transaction(s, txAll)
 	if err != nil {
 		t.Error(err)
 	}
@@ -334,10 +335,10 @@ func TestWallet(t *testing.T) {
 
 	for i, ntx := range txresp.NormalTx {
 		t.Log(ntx.Hash)
-		if ntx.Hash.String() != trs[i].Hash().String() {
+		if ntx.Hash != trs[i].Hash().String() {
 			t.Error("invalid hash")
 		}
-		if ntx.IsRejected || ntx.StatNo == imesh.StatusPending {
+		if ntx.IsRejected || ntx.StatNo == hex.EncodeToString(imesh.StatusPending[:]) {
 			t.Error("invalid status")
 		}
 	}
@@ -345,13 +346,14 @@ func TestWallet(t *testing.T) {
 	if len(txresp.Ticket) != 1 {
 		t.Error("invalid #Ticket tx")
 	}
-	if txresp.Ticket[0].Hash.String() != tsent1.Hash().String() {
+	if txresp.Ticket[0].Hash != tsent1.Hash().String() {
 		t.Error("invalid ticket tx hash")
 	}
 	if txresp.Ticket[0].Reason != reasonIssued {
 		t.Error("invalid ticket tx reason")
 	}
-	if txresp.Ticket[0].IsRejected || txresp.Ticket[0].StatNo == imesh.StatusPending {
+	if txresp.Ticket[0].IsRejected ||
+		txresp.Ticket[0].StatNo == hex.EncodeToString(imesh.StatusPending[:]) {
 		t.Error("invalid status")
 	}
 
@@ -359,19 +361,19 @@ func TestWallet(t *testing.T) {
 		t.Error("invalid #Multisig tx")
 	}
 	mul := txresp.Multisig[0]
-	if mul.Hash.String() != tr3.Hash().String() {
+	if mul.Hash != tr3.Hash().String() {
 		t.Error("invalid mul")
 	}
 	if mul.Amount != int64(tr3.MultiSigOuts[0].Value) {
 		t.Error("invalid mul value")
 	}
-	if mul.IsRejected || mul.StatNo == imesh.StatusPending {
+	if mul.IsRejected || mul.StatNo == hex.EncodeToString(imesh.StatusPending[:]) {
 		t.Error("invalid status")
 	}
 
 	stopped := false
 	go func() {
-		sendEvent(s, &tx.BuildParam{
+		SendEvent(s, &tx.BuildParam{
 			Dest: []*tx.RawOutput{
 				&tx.RawOutput{
 					Address: a.Address58(s.Config),
@@ -383,7 +385,7 @@ func TestWallet(t *testing.T) {
 		stopped = true
 	}()
 	time.Sleep(time.Second)
-	if err = cancelPoW(s); err != nil {
+	if err = CancelPoW(s); err != nil {
 		t.Error(err)
 	}
 	time.Sleep(time.Second)
@@ -391,8 +393,8 @@ func TestWallet(t *testing.T) {
 		t.Error("invalid cancelpow")
 	}
 
-	logout(s)
-	err = login(s, &loginParam{
+	Logout(s)
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -408,11 +410,11 @@ func TestEvents(t *testing.T) {
 	defer teardown(t)
 	defer cancel()
 
-	pk, err := register(s, "test")
+	pk, err := Register(s, "test")
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -420,31 +422,31 @@ func TestEvents(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = newAddress(s); err != nil {
+	if _, err = NewAddress(s); err != nil {
 		t.Error(err)
 	}
 
-	adr, err := getAddresses(s)
+	adr, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}
 	if len(adr.Normal) != 1 {
 		t.Error("# should be 1", len(adr.Normal))
 	}
-	if err = validateAddress(s, adr.Normal[0].String); err != nil {
+	if err = ValidateAddress(s, adr.Normal[0].String); err != nil {
 		t.Error(err)
 	}
-	if err = validateAddress(s, adr.Normal[0].String[:len(adr.Normal[0].String)-1]); err == nil {
+	if err = ValidateAddress(s, adr.Normal[0].String[:len(adr.Normal[0].String)-1]); err == nil {
 		t.Error("should be err")
 	}
-	resp, err := getNodeinfo(s)
+	resp, err := GetNodeinfo(s)
 	if err != nil {
 		t.Error(err)
 	}
 	if resp.Testnet != 2 {
 		t.Error("invalid nodeinfo", resp.Testnet)
 	}
-	res := getNodesStatus(s)
+	res := GetNodesStatus(s)
 	if len(res) != 1 || !res[0] {
 		t.Error("invalid node status", len(res), res[0])
 	}
@@ -459,11 +461,11 @@ func TestClaim(t *testing.T) {
 	defer teardown(t)
 	defer cancel()
 
-	pk, err := register(s, "test")
+	pk, err := Register(s, "test")
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -471,14 +473,14 @@ func TestClaim(t *testing.T) {
 		t.Error(err)
 	}
 	time.Sleep(2 * time.Second)
-	bal, err := getOldUTXOs(s, seed)
+	bal, err := GetOldUTXOs(s, seed)
 	if err != nil {
 		t.Error(err)
 	}
 	if bal != total {
 		t.Error("invalid utxo")
 	}
-	err = claim(s, &claimParam{
+	err = Claim(s, &ClaimParam{
 		Amount: bal,
 		Seed:   seed,
 	}, true)

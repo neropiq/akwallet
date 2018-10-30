@@ -67,7 +67,6 @@ var s = &setting.Setting{}
 var s1 = &isetting.Setting{}
 var a, b *address.Address
 var genesis tx.Hash
-var l net.Listener
 
 func confirmAll(t *testing.T, confirm bool) {
 	var txs []tx.Hash
@@ -161,7 +160,7 @@ func setupRPC(ctx context.Context, t *testing.T) {
 	genesis = gs[0]
 
 	var err error
-	l, err = node.Start(ctx, s1, true)
+	_, err = node.Start(ctx, s1, true)
 	if err != nil {
 		t.Error(err)
 	}
@@ -193,7 +192,7 @@ func setup(t *testing.T) {
 
 	g := gui{}
 	s.Servers = []string{"http://localhost:" + strconv.Itoa(int(s1.RPCPort))}
-	if err := s.SetClient(); err != nil {
+	if err := s.SetClient(s.Servers); err != nil {
 		t.Error(err)
 	}
 	s.GUI = &g
@@ -379,7 +378,7 @@ func checkTrytes(t *testing.T, seed gadk.Trytes, bal map[gadk.Address]int64, trs
 				t.Error(err)
 			}
 			t.Log(nnadr)
-			adr, err := getAddresses(s)
+			adr, err := GetAddresses(s)
 			if err != nil {
 				t.Error(err)
 			}

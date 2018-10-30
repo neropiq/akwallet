@@ -1,30 +1,49 @@
-import { AddressEntity } from '../model';
-import { CHANGE_VIEW ,CHANGE_GRID_FLAG ,ADDRESS_VALUE,PUSH_ADDRESS_DATA} from '../actions/types';
+// Copyright (c) 2018 Aidos Developer
 
-const INITIAL_STATE = (): AddressEntity => ({
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+import { ADDRESS_VALUE ,CHANGE_GRID_FLAG ,CHANGE_VIEW,PUSH_ADDRESS_DATA} from '../actions/types';
+import { IAddressEntity } from '../model';
+
+const INITIAL_STATE = (): IAddressEntity => ({
+    addressValue:[],
+    showGrid: true,
     subHeader: {
         title: 'My Address',
         views: [
             {
                 active: true,
+                className: 'icon-plus icon-big-2x align-middle',
                 value: "",
-                className: 'icon-plus icon-big-2x align-middle'
             },
             {
                 active: false,
+                className: 'icon-list align-middle mr-2',
                 value: 'List',
-                className: 'icon-list align-middle mr-2'
             },
             {
                 active: true,
+                className: 'icon-grid align-middle mr-2',
                 value: "Grid",
-                className: 'icon-grid align-middle mr-2'
             }
         ]
     },
-    showGrid: true,
-    addressValue:[]
-    
 })
 
 const AddressReducer = (state = INITIAL_STATE(), action: any) => {

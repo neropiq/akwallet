@@ -40,11 +40,11 @@ func TestMine(t *testing.T) {
 	s.RunFeeMiner = true
 	s.RunTicketMiner = false
 
-	pk, err := register(s, "test")
+	pk, err := Register(s, "test")
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -79,7 +79,7 @@ func TestMine(t *testing.T) {
 	s.RunFeeMiner = false
 	s.RunTicketMiner = true
 
-	tkt, err := tx.IssueTicket(s1.Config, a.Address(s.Config), genesis)
+	tkt, err := tx.IssueTicket(context.Background(), s1.Config, a.Address(s.Config), genesis)
 	if err != nil {
 		t.Error(err)
 	}
@@ -117,11 +117,11 @@ func TestSendMinable(t *testing.T) {
 	defer teardown(t)
 	defer cancel()
 
-	pk, err := register(s, "test")
+	pk, err := Register(s, "test")
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -129,11 +129,11 @@ func TestSendMinable(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = newAddress(s); err != nil {
+	if _, err = NewAddress(s); err != nil {
 		t.Error(err)
 	}
 
-	adr, err := getAddresses(s)
+	adr, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -176,7 +176,7 @@ func TestSendMinable(t *testing.T) {
 	if !c {
 		t.Error("invalid conf")
 	}
-	_, err = issueTicket(s)
+	_, err = issueTicket(context.Background(), s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -195,7 +195,7 @@ func TestSendMinable(t *testing.T) {
 		t.Error(err)
 	}
 
-	h, err := sendEvent(s, &tx.BuildParam{
+	h, err := SendEvent(s, &tx.BuildParam{
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
 				Address: a.Address58(s.Config),
@@ -216,7 +216,7 @@ func TestSendMinable(t *testing.T) {
 		t.Error("incorrect sent")
 	}
 
-	h, err = sendEvent(s, &tx.BuildParam{
+	h, err = SendEvent(s, &tx.BuildParam{
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
 				Address: a.Address58(s.Config),

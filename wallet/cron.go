@@ -48,32 +48,42 @@ func Start(ctx context.Context, s *setting.Setting) {
 			case <-ctx2.Done():
 				return
 			case <-time.After(3 * time.Second):
-				_, err := searchLastAddress(s, true)
-				if err != nil {
-					log.Println(err)
-				}
-				updatedAdr2, err := searchLastAddress(s, false)
-				if err != nil {
-					log.Println(err)
-				}
-				newtx, err := syncDB(s, true)
-				if err != nil {
-					log.Println(err)
-				}
-				//addresses for changes should not be used for receiving from others.
-				//so update db only if change addresses were updated by other wallets.
-				if updatedAdr2 > 0 {
-					if _, err = syncDB(s, false); err != nil {
+				func() {
+					mutex.Lock()
+					defer mutex.Unlock()
+					_, err := searchLastAddress(s, true)
+					if err != nil {
 						log.Println(err)
+						return
 					}
-				}
-				confirmed, err := checkConfirmed(s)
-				if err != nil {
-					log.Println(err)
-				}
-				if err := notify(s, newtx, confirmed); err != nil {
-					log.Println(err)
-				}
+					updatedAdr2, err := searchLastAddress(s, false)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					newtx, err := syncDB(s, true)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					//addresses for changes should not be used for receiving from others.
+					//so update db only if change addresses were updated by other wallets.
+					if updatedAdr2 > 0 {
+						if _, err = syncDB(s, false); err != nil {
+							log.Println(err)
+							return
+						}
+					}
+					confirmed, err := checkConfirmed(s)
+					if err != nil {
+						log.Println(err)
+						return
+					}
+					if err := notify(s, newtx, confirmed); err != nil {
+						log.Println(err)
+						return
+					}
+				}()
 			}
 		}
 	}()
@@ -81,8 +91,6 @@ func Start(ctx context.Context, s *setting.Setting) {
 
 //create addresses which were created by other wallets.
 func searchLastAddress(s *setting.Setting, isPublic bool) (int, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
 	adrmap := wallet.AddressChange
 	if isPublic {
 		adrmap = wallet.AddressPublic
@@ -150,8 +158,6 @@ func isUsed(s *setting.Setting, isPublic bool, index uint32) (bool, error) {
 }
 
 func checkConfirmed(s *setting.Setting) (bool, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
 	histdb, err := walletImpl.GetHistory(&s.DBConfig)
 	if err != nil {
 		return false, err
@@ -219,8 +225,6 @@ func toStatNo(st *crpc.TxStatus) imesh.StatNo {
 }
 
 func syncDB(s *setting.Setting, isPublic bool) (bool, error) {
-	mutex.Lock()
-	defer mutex.Unlock()
 	adrmap := wallet.AddressChange
 	if isPublic {
 		adrmap = wallet.AddressPublic

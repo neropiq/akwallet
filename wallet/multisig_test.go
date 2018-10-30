@@ -22,6 +22,7 @@ package wallet
 
 import (
 	"context"
+	"encoding/hex"
 	"testing"
 	"time"
 
@@ -38,11 +39,11 @@ func TestMultisig(t *testing.T) {
 	defer teardown(t)
 	defer cancel()
 
-	pk, err := register(s, "test")
+	pk, err := Register(s, "test")
 	if err != nil {
 		t.Error(err)
 	}
-	err = login(s, &loginParam{
+	err = Login(s, &LoginParam{
 		PrivKey:  pk,
 		Password: "test",
 	})
@@ -50,11 +51,11 @@ func TestMultisig(t *testing.T) {
 		t.Error(err)
 	}
 
-	if err = newAddress(s); err != nil {
+	if _, err = NewAddress(s); err != nil {
 		t.Error(err)
 	}
 
-	adr, err := getAddresses(s)
+	adr, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}
@@ -133,7 +134,7 @@ func TestMultisig(t *testing.T) {
 		t.Fatal("should be confirmed")
 	}
 
-	txresp, err := transaction(s, txAll)
+	txresp, err := Transaction(s, txAll)
 	if err != nil {
 		t.Error(err)
 	}
@@ -153,27 +154,27 @@ func TestMultisig(t *testing.T) {
 		t.Error("invalid #Multisig tx")
 	}
 	mul := txresp.Multisig[0]
-	if mul.Hash.String() != trs[0].Hash().String() {
+	if mul.Hash != trs[0].Hash().String() {
 		t.Error("invalid mul")
 	}
 	if mul.Amount != -int64(trs[0].Outputs[0].Value) {
 		t.Error("invalid mul value", mul.Amount)
 	}
-	if mul.IsRejected || mul.StatNo == imesh.StatusPending {
+	if mul.IsRejected || mul.StatNo == hex.EncodeToString(imesh.StatusPending[:]) {
 		t.Error("invalid status")
 	}
 	mul = txresp.Multisig[1]
-	if mul.Hash.String() != trs[1].Hash().String() {
+	if mul.Hash != trs[1].Hash().String() {
 		t.Error("invalid mul")
 	}
 	if mul.Amount != int64(trs[1].MultiSigOuts[0].Value) {
 		t.Error("invalid mul value")
 	}
-	if mul.IsRejected || mul.StatNo == imesh.StatusPending {
+	if mul.IsRejected || mul.StatNo == hex.EncodeToString(imesh.StatusPending[:]) {
 		t.Error("invalid status")
 	}
 
-	adrs, err := getAddresses(s)
+	adrs, err := GetAddresses(s)
 	if err != nil {
 		t.Error(err)
 	}

@@ -34,6 +34,7 @@ import (
 	"time"
 
 	"github.com/AidosKuneen/aklib/updater"
+	"github.com/AidosKuneen/akwallet/gui"
 	"github.com/AidosKuneen/akwallet/setting"
 	"github.com/AidosKuneen/akwallet/wallet"
 	"github.com/AidosKuneen/gogui"
@@ -103,22 +104,16 @@ func main() {
 	}
 
 	wallet.Start(ctx, setting)
-	gui := gogui.New()
-	setting.GUI = gui
-	wallet.SetupEvents(setting, gui)
-
-	if err := gui.Start("http://localhost:3000"); err != nil {
-		log.Fatal(err)
-	}
-	select {
-	case <-time.After(10 * time.Second):
-		log.Println("failed to initialize")
-	case <-gui.Connected:
-		if err := <-gui.Finished; err != nil {
-			log.Println(err)
-		}
-	}
+	guis := gogui.New()
+	setting.GUI = guis
+	wallet.SetupEvents(setting, guis)
+	ctx, cancel2 := context.WithCancel(context.Background())
+	setting.CancelMiner = cancel2
+	wallet.RunMiner(ctx, setting)
+	gui.Run(guis, "")
+	gui.Wait(guis)
 	time.Sleep(3 * time.Second)
+	cancel2()
 	cancel()
 	time.Sleep(3 * time.Second)
 	if err := setting.DB.Close(); err != nil {

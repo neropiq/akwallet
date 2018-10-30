@@ -1,94 +1,115 @@
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 import * as React from 'react';
 
-interface Props {
+interface IProps {
     tab: any;
     settingTab: any;
     onCardChange?: (value: any) => void;
     onFilterChange?: (value: any) => void;
 }
 
-interface State {
+interface IState {
     value: any;
 }
 
-interface DefaultProps {
+interface IDefaultProps {
     tab: any;
     settingTab: any;
 }
 
-class CardTab extends React.Component<Props, State> {
-    constructor(props: Props) {
+class CardTab extends React.Component<IProps, IState> {
+    public static defaultProps: IDefaultProps = {
+        settingTab: [],
+        tab: [],
+    }
+    constructor(props: IProps) {
         super(props);
-        this.state = {  
+        this.state = {
             value: (this.props.tab.length === 0) || this.props.tab[0]
         };
     }
-    
-    static defaultProps: DefaultProps = {
-        tab:[],
-        settingTab:[]
-    }
 
-    componentDidMount() {
-       
-        if(this.props.tab.length !== 0){
+    public componentDidMount() {
+        if (this.props.tab.length !== 0) {
             this.props.onCardChange(this.props.tab[0].value);
         }
-        if(this.props.settingTab.length !== 0){
+        if (this.props.settingTab.length !== 0) {
             this.props.onCardChange(this.props.settingTab[0].value);
         }
     }
 
-    optionChange = (e: any) => {
-        const value = e.target.value
-        this.setState(() => ({
-            value
-        }));
-        this.props.onFilterChange(value);    
-    }
-
-    render() {
-        
-        return(
-            <div className="card-header py-4 px-0">                    
-                {                        
+    public render() {
+        return (
+            <div className="card-header py-4 px-0">
+                {
                     (this.props.tab.length !== 0) &&
                     <ul className="nav nav-tabs custom-tabs px-4" id="myTab" role="tablist">
-                        {   
+                        {
                             this.props.tab.map((tab: any, index: number) => (
-                                
+
                                 <li className="nav-item" key={index}>
-                                    <a className={tab.active ? "nav-link active" : "nav-link "}  
-                                        id="tab1" data-toggle="tab" href="#" role="tab" 
-                                        aria-controls={tab.controle} aria-selected={tab.active ? "true" : "false" }
-                                        onClick={() =>this.props.onCardChange(tab.value)}>
+                                    <a className={tab.active ? "nav-link active" : "nav-link "}
+                                        id="tab1" data-toggle="tab" href="#" role="tab"
+                                        aria-controls={tab.controle} aria-selected={tab.active ? "true" : "false"}
+                                        onClick={this.onCardChangeFunc(tab.value)}>
                                         {tab.value}
                                     </a>
                                 </li>
                             ))
-                        }                          
-                    </ul>                           
+                        }
+                    </ul>
                 }
-                {                          
-                    (this.props.settingTab.length !== 0) &&                        
+                {
+                    (this.props.settingTab.length !== 0) &&
                     <ul className="nav nav-tabs custom-tabs px-4" id="myTab" role="tablist">
-                        {   
+                        {
                             this.props.settingTab.map((settingTab: any, index: number) => (
-                                
+
                                 <li className="nav-item" key={index}>
-                                    <a className={settingTab.active ? "nav-link active" : "nav-link "}  
-                                        id="tab1" data-toggle="tab" href="#" role="tab" 
-                                        aria-controls={settingTab.controle} aria-selected={settingTab.active ? "true" : "false" }
-                                        onClick={() =>this.props.onCardChange(settingTab.value)}>
+                                    <a className={settingTab.active ? "nav-link active" : "nav-link "}
+                                        id="tab1" data-toggle="tab" href="#" role="tab"
+                                        aria-controls={settingTab.controle} aria-selected={settingTab.active ? "true" : "false"}
+                                        onClick={this.onCardChangeFunc(settingTab.value)} >
                                         {settingTab.value}
                                     </a>
                                 </li>
                             ))
-                        }                          
-                    </ul>                           
+                        }
+                    </ul>
                 }
             </div>
         );
+    }
+
+    private onCardChangeFunc = (v:string)=>{
+        return ()=>this.props.onCardChange(v)
+    }
+
+    private optionChange = (e: any) => {
+        const value = e.target.value
+        this.setState(() => ({
+            value
+        }));
+        this.props.onFilterChange(value);
     }
 }
 

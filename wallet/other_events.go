@@ -21,6 +21,7 @@
 package wallet
 
 import (
+	"context"
 	"encoding/hex"
 	"errors"
 	"log"
@@ -28,123 +29,11 @@ import (
 	"strings"
 	"time"
 
-	crpc "github.com/AidosKuneen/aklib/rpc"
-	"github.com/AidosKuneen/aklib/tx"
-	"github.com/AidosKuneen/gadk"
-
 	"github.com/AidosKuneen/aklib/address"
+	crpc "github.com/AidosKuneen/aklib/rpc"
 	"github.com/AidosKuneen/akwallet/setting"
-	"github.com/AidosKuneen/gogui"
+	"github.com/AidosKuneen/gadk"
 )
-
-func errString(err error) string {
-	if err != nil {
-		return err.Error()
-	}
-	return ""
-}
-
-//SetupEvents setup events to GUI struct.
-func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
-	gui.On("register", func(pwd string) interface{} {
-		adr, err := register(cfg, pwd)
-		return struct {
-			Address string
-			Error   string
-		}{
-			Address: adr,
-			Error:   errString(err),
-		}
-	})
-	gui.On("login", func(p *loginParam) interface{} {
-		return errString(login(cfg, p))
-	})
-
-	gui.On("get_balance", func(span byte) interface{} {
-		bal, err := getBalance(cfg, span)
-		return struct {
-			*balance
-			Error string
-		}{
-			balance: bal,
-			Error:   errString(err),
-		}
-	})
-	gui.On("get_transactions", func(typ byte) interface{} {
-		tr, err := transaction(cfg, typ)
-		return struct {
-			*txResp
-			Error string
-		}{
-			txResp: tr,
-			Error:  errString(err),
-		}
-	})
-
-	gui.On("get_newaddress", func() interface{} {
-		return errString(newAddress(cfg))
-	})
-	gui.On("get_addresses", func() interface{} {
-		adrs, err := getAddresses(cfg)
-		return struct {
-			*getAddressResp
-			Error string
-		}{
-			getAddressResp: adrs,
-			Error:          errString(err),
-		}
-	})
-
-	gui.On("send", func(p *tx.BuildParam) interface{} {
-		_, err := sendEvent(cfg, p)
-		return errString(err)
-	})
-	gui.On("cancel_pow", func() interface{} {
-		return errString(cancelPoW(cfg))
-	})
-	gui.On("validate_address", func(adr string) interface{} {
-		return errString(validateAddress(cfg, adr))
-	})
-
-	gui.On("get_settings", func() interface{} {
-		return cfg
-	})
-	gui.On("get_nodeinfo", func() interface{} {
-		ni, err := getNodeinfo(cfg)
-		return struct {
-			*crpc.NodeInfo
-			Error string
-		}{
-			NodeInfo: ni,
-			Error:    errString(err),
-		}
-	})
-	gui.On("get_nodesstatus", func() interface{} {
-		return getNodesStatus(cfg)
-	})
-	gui.On("save_settings", func(ncfg *setting.Setting) interface{} {
-		cfg = ncfg
-		return errString(cfg.Save())
-	})
-	gui.On("get_oldbalance", func(seed gadk.Trytes) interface{} {
-		amount, err := getOldUTXOs(cfg, seed)
-		return struct {
-			Amount int64
-			Error  string
-		}{
-			Amount: amount,
-			Error:  errString(err),
-		}
-	})
-	gui.On("claim", func(p *claimParam) interface{} {
-		return errString(claim(cfg, p, false))
-	})
-	gui.On("logout", func() interface{} {
-		logout(cfg)
-		return ""
-	})
-
-}
 
 var oldServers = []string{
 	"http://wallet1.aidoskuneen.com:14266",
@@ -162,8 +51,8 @@ func getOldAPIs(w []string) []*gadk.API {
 	return apis
 }
 
-//getOldUTXOs gets UTXOs in old wallet.
-func getOldUTXOs(cfg *setting.Setting, seed gadk.Trytes) (int64, error) {
+//GetOldUTXOs gets UTXOs in old wallet.
+func GetOldUTXOs(cfg *setting.Setting, seed gadk.Trytes) (int64, error) {
 	apis := getOldAPIs(oldServers)
 	var err error
 	var adrs []gadk.Address
@@ -195,18 +84,21 @@ func getOldUTXOs(cfg *setting.Setting, seed gadk.Trytes) (int64, error) {
 	return bal, nil
 }
 
-//claimParam is a param of claim.
-type claimParam struct {
+//ClaimParam is a param of claim.
+type ClaimParam struct {
 	Amount int64
 	Seed   gadk.Trytes
 }
 
-//claim clams a migration adk from old wallet to new one.
-func claim(cfg *setting.Setting, param *claimParam, debug bool) error {
+//Claim clams a migration adk from old wallet to new one.
+func Claim(cfg *setting.Setting, param *ClaimParam, debug bool) error {
+	mutex.Lock()
 	dest, err := wallet.NewAddress(&cfg.DBConfig, pwd, true)
 	if err != nil {
+		mutex.Unlock()
 		return err
 	}
+	mutex.Unlock()
 	adrstr := strings.ToUpper(hex.EncodeToString(dest.Address(cfg.Config)))
 	enc := make([]rune, len(adrstr)+1)
 	for i, c := range adrstr {
@@ -235,10 +127,8 @@ func claim(cfg *setting.Setting, param *claimParam, debug bool) error {
 	return err
 }
 
-//getNodeinfo returns node info.
-func getNodeinfo(cfg *setting.Setting) (*crpc.NodeInfo, error) {
-	mutex.RLock()
-	defer mutex.RUnlock()
+//GetNodeinfo returns node info.
+func GetNodeinfo(cfg *setting.Setting) (*crpc.NodeInfo, error) {
 	var ni *crpc.NodeInfo
 	err := cfg.CallRPC(func(cl setting.RPCIF) error {
 		var err2 error
@@ -248,11 +138,11 @@ func getNodeinfo(cfg *setting.Setting) (*crpc.NodeInfo, error) {
 	return ni, err
 }
 
-func getNodesStatus(cfg *setting.Setting) []bool {
-	mutex.RLock()
-	defer mutex.RUnlock()
-	r := make([]bool, len(cfg.Client))
-	for i, cl := range cfg.Client {
+//GetNodesStatus get node status from RPC servers.
+func GetNodesStatus(cfg *setting.Setting) []bool {
+	clients := cfg.GetClients()
+	r := make([]bool, len(clients))
+	for i, cl := range clients {
 		_, err := cl.GetNodeinfo()
 		if err == nil {
 			r[i] = true
@@ -261,13 +151,14 @@ func getNodesStatus(cfg *setting.Setting) []bool {
 	return r
 }
 
-//register is for registering a new private key for the wallet.
-func register(cfg *setting.Setting, pwd string) (string, error) {
-	return address.HDSeed58(cfg.Config, address.GenerateSeed32(), []byte(pwd), false), nil
+//Register is for registering a new private key for the wallet.
+func Register(cfg *setting.Setting, pwd string) (string, error) {
+	pk := address.HDSeed58(cfg.Config, address.GenerateSeed32(), []byte(pwd), false)
+	return pk, new(cfg, []byte(pwd), pk)
 }
 
-//validateAddress checks if the adrstr is a valid address or not.
-func validateAddress(cfg *setting.Setting, adrstr string) error {
+//ValidateAddress checks if the adrstr is a valid address or not.
+func ValidateAddress(cfg *setting.Setting, adrstr string) error {
 	_, isNode, err := address.ParseAddress58(cfg.Config, adrstr)
 	if err != nil {
 		return err
@@ -276,6 +167,21 @@ func validateAddress(cfg *setting.Setting, adrstr string) error {
 		return errors.New("the address is not valid")
 	}
 	return nil
+}
+func updateSevers(cfg *setting.Setting, svr []string) error {
+	if err := cfg.SetClient(svr); err != nil {
+		return err
+	}
+	return cfg.Save()
+}
+
+func updateMinerSetting(cfg *setting.Setting, s *setting.Miner) error {
+	cfg.CancelMiner()
+	time.Sleep(3 * time.Second)
+	ctx, cancel := context.WithCancel(context.Background())
+	cfg.UpdateMiner(*s, cancel)
+	RunMiner(ctx, cfg)
+	return cfg.Save()
 }
 
 /*

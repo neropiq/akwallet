@@ -1,14 +1,38 @@
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
 import * as React from 'react';
 import Scrollbar from 'smooth-scrollbar';
 
-class FAQ extends React.Component {
-    componentDidMount(){
+interface IProps {
+    connected: boolean;
+}
+
+class FAQ extends React.Component<IProps> {
+    public componentDidMount() {
         Scrollbar.init(document.querySelector('#accordionExample'));
     }
-    render() {
-        return(
+    public render() {
+        return (
             <div className="" id="tab-5" role="tabpanel" aria-labelledby="tab5">
-                <div  className="accordion custom-accordion" id="accordionExample">
+                <div className="accordion custom-accordion" id="accordionExample">
                     <div className="faqs">
                         <div className="faqs-header" id="headingOne">
                             <h5 className="mb-0">
@@ -56,7 +80,7 @@ class FAQ extends React.Component {
                         <div id="collapseThree" className="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
                             <div className="faqs-body-para">
                                 <p>
-                                    TODO
+                                    Yes. Use as many times as you want.
                                 </p>
                             </div>
                         </div>
@@ -72,28 +96,7 @@ class FAQ extends React.Component {
                         <div id="collapseFour" className="collapse" aria-labelledby="headingFour" data-parent="#accordionExample">
                             <div className="faqs-body-para">
                                 <p>
-                                    You can change the server by selecting TODO on menu bar and changing the server to e.g. "localhost" .
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="faqs">
-                        <div className="faqs-header" id="headingFive">
-                            <h5 className="mb-0">
-                                <a href="javascript:void(0)" className="faq-title collapsed" data-toggle="collapse" data-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
-                                    How do I get a Lambo?
-                                </a>
-                            </h5>
-                        </div>
-                        <div id="collapseFive" className="collapse" aria-labelledby="headingFive" data-parent="#accordionExample">
-                            <div className="faqs-body-para">
-                                <p>
-                                    <em>Even the rich are hungy for love, for being cared for, for being wanted, for having someone to call their own.</em>
-                                    <strong>Mother Teresa</strong>
-                                </p>
-                                <p>
-                                    What is your happiness? What are you living for?
-                                    Are you really happy by fighting with or abusing other crypto guys ?
+                                    You can change the server by selecting setting on menu bar and changing the server to e.g. "http://localhost:14271" .
                                 </p>
                             </div>
                         </div>

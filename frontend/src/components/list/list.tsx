@@ -1,40 +1,60 @@
+// Copyright (c) 2018 Aidos Developer
+
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
+
+import QRCode from 'qrcode.react';
 import * as  React from 'react';
-import { State } from '../../reducers';
-import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-
+import { Dispatch } from 'redux';
 import * as actions from '../../actions/popupAction';
-var QRCode = require('qrcode.react');
+import { IStoreState } from '../../reducers';
 
-interface showPopupProps {
+interface IshowPopupProps {
     showPopup: boolean
 }
 
-interface popupValueProps {
+interface IpopupValueProps {
     popupvalue: string
 }
 
-interface props {    
-    tables: any;
-    titleList:any;    
-    popup:boolean;
-    showPopup : ({ showPopup }: showPopupProps) => void;
-    popupValue: ({popupvalue}:popupValueProps) => void;
+export interface Ivalues {
+    value1: string
+    value2: string
+    value3: string
 }
-interface state {
-    alert:false
-} 
+
+interface IProps {
+    tables: Ivalues[];
+    titleList: string[];
+    popup: boolean;
+    showPopup: ({ showPopup }: IshowPopupProps) => void;
+    popupValue: ({ popupvalue }: IpopupValueProps) => void;
+}
+interface Istate {
+    alert: false
+}
 
 
-class List extends React.Component<props> {
-    openPopupbox = (value :any) =>{
-        
-        this.props.popupValue({ popupvalue: value });
-        this.props.showPopup({ showPopup: !this.props.popup });
-        
-    }
-    render() {
-        return(
+class List extends React.Component<IProps> {
+
+    public render() {
+        return (
             <div className="card-body px-4 py-0">
                 <div className="table-responsive custom-table-theme list-address">
                     <table className="table table-hover">
@@ -48,9 +68,9 @@ class List extends React.Component<props> {
                         <tbody>
                             {
                                 this.props.tables.map((rows: any, index: number) => (
-                                    <tr key={index}>
-                                        <td key={index}><QRCode value="ajksdfhjhasdfjahdfjhasdfh" size={60} data-toggle="modal" data-target="#myModal123" onClick={ () =>this.openPopupbox(rows.value1)}  /></td>
-                                        
+                                    <tr key={index}  onClick={this.openPopupbox(rows.value1)} >
+                                        <td key={index}><QRCode value={rows.value1} size={60} data-toggle="modal" data-target="#myModal123"/></td>
+
                                         {/* <td key={index}><img src={rows.imgList} alt="qr-code" /></td> */}
                                         <td>{rows.value1}</td>
                                         <td>{rows.value2}</td>
@@ -72,17 +92,23 @@ class List extends React.Component<props> {
             </div>
         );
     }
-}
-
-const mapDispatchToProps = (dispatch:Dispatch) => {
-    return {
-        showPopup: ({ showPopup }: showPopupProps) => dispatch(actions.showPopup({showPopup})),
-        popupValue: ({ popupvalue }: popupValueProps) => dispatch(actions.popupValue({popupvalue})),
+    public openPopupbox = (value: string) => {
+        return () => {
+            this.props.popupValue({ popupvalue: value });
+            this.props.showPopup({ showPopup: !this.props.popup });
+        }
     }
-  }
-const  mapStateToProps = (state :State)  => {
-    const { popup } = state.popup;
-    return { popup }; 
 }
 
-export default  connect(mapStateToProps,mapDispatchToProps)(List);
+const mapDispatchToProps = (dispatch: Dispatch) => {
+    return {
+        popupValue: ({ popupvalue }: IpopupValueProps) => dispatch(actions.popupValue({ popupvalue })),
+        showPopup: ({ showPopup }: IshowPopupProps) => dispatch(actions.showPopup({ showPopup })),
+    }
+}
+const mapStateToProps = (state: IStoreState) => {
+    const { popup } = state.popup;
+    return { popup };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(List);

@@ -3,8 +3,13 @@
       "outDir": "./public/",
       "sourceMap": true,
       "noImplicitAny": true,
-      "module": "commonjs",
+      "module": "commonjs",   
+      "resolveJsonModule": true,
+      "esModuleInterop": true,
       "target": "es5",
+      "lib": [
+        "es6", "dom"
+      ],
       "jsx": "react",
       "allowJs": true
     },

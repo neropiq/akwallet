@@ -30,6 +30,7 @@ import (
 	"os/user"
 	"path/filepath"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/AidosKuneen/aklib"
@@ -40,8 +41,8 @@ import (
 	"github.com/dgraph-io/badger"
 )
 
-//Version is the version of aknode
-const Version = "1.0.0"
+//Version is the version of akwallet
+const Version = "unreleased"
 
 //Address represents an address.
 type Address struct {
@@ -67,27 +68,37 @@ type RPCIF interface {
 	GetMinableFeeTx(fee float64) (*tx.Transaction, error)
 }
 
-//Setting is  a aknode setting.
-type Setting struct {
-	Version string
-	RootDir string
-	Testnet int
-	UseTor  bool
-
-	Servers []string
-
-	Proxy string
-
+//Miner is the miner settings.
+type Miner struct {
 	MinimumFee      float64
 	RunFeeMiner     bool
 	RunTicketMiner  bool
 	RunTicketIssuer bool
+	CancelMiner     context.CancelFunc `msgpack:"-" json:"-"` //needed for changing miner conf
+}
 
-	Client []RPCIF `msgpack:"-"`
+//UpdateMiner updates miner settings.
+func (cfg *Setting) UpdateMiner(s Miner, cancel context.CancelFunc) {
+	cfg.Lock()
+	defer cfg.Unlock()
+	cfg.Miner = s
+	cfg.CancelMiner = cancel
+}
 
-	aklib.DBConfig `msgpack:"-"`
-	GUI            gui                `msgpack:"-"`
-	CancelPoW      context.CancelFunc `msgpack:"-"`
+//Setting is  a aknode setting.
+type Setting struct {
+	sync.RWMutex `msgpack:"-" json:"-"`
+	Version      string
+	RootDir      string
+	Testnet      int
+	UseTor       bool
+	Servers      []string
+	Proxy        string
+	Miner
+	Client         []RPCIF `msgpack:"-" json:"-"`
+	aklib.DBConfig `msgpack:"-" json:"-"`
+	GUI            gui                `msgpack:"-" json:"-"`
+	CancelPoW      context.CancelFunc `msgpack:"-" json:"-"`
 }
 
 //Load parse a json file fname , open DB and returns Settings struct .
@@ -140,12 +151,21 @@ func Load(rootdir string, net int) (*Setting, error) {
 			strconv.Itoa(int(se.Config.DefaultRPCPort))}
 	}
 
-	if err := se.SetClient(); err != nil {
+	if err := se.SetClient(se.Servers); err != nil {
 		//for now ignore err
 		log.Println(err)
 	}
 
 	return &se, nil
+}
+
+//GetClients returns clients in config.
+func (cfg *Setting) GetClients() []RPCIF {
+	cfg.RLock()
+	defer cfg.RUnlock()
+	c := make([]RPCIF, len(cfg.Client))
+	copy(c, cfg.Client)
+	return c
 }
 
 //Save saves the cfg
@@ -165,7 +185,11 @@ func baseDir(root string, cfg *aklib.Config) string {
 }
 
 //SetClient sets http.Client objs from cfg.Servers.
-func (cfg *Setting) SetClient() error {
+func (cfg *Setting) SetClient(servers []string) error {
+	cfg.Lock()
+	defer cfg.Unlock()
+
+	cfg.Servers = servers
 	cl := http.Client{
 		Timeout: 5 * time.Second,
 	}
@@ -176,8 +200,8 @@ func (cfg *Setting) SetClient() error {
 		}
 		cl.Transport = &http.Transport{Proxy: http.ProxyURL(p)}
 	}
-	cfg.Client = make([]RPCIF, 0, len(cfg.Servers))
-	for _, s := range cfg.Servers {
+	cfg.Client = make([]RPCIF, 0, len(servers))
+	for _, s := range servers {
 		cl := crpc.New(s, "", "", &cl)
 		ni, err := cl.GetNodeinfo()
 		if err != nil {
@@ -191,16 +215,19 @@ func (cfg *Setting) SetClient() error {
 		cfg.Client = append(cfg.Client, cl)
 	}
 	if len(cfg.Client) == 0 {
-		return errors.New("no servers")
+		return errors.New("no valid servers")
 	}
 	return nil
 }
 
 //CallRPC calls an RPC by servers in config.
 func (cfg *Setting) CallRPC(f func(RPCIF) error) error {
+	cfg.RLock()
+	defer cfg.RUnlock()
+
 	var err error
 	if len(cfg.Client) != len(cfg.Servers) {
-		if err = cfg.SetClient(); err != nil {
+		if err = cfg.SetClient(cfg.Servers); err != nil {
 			return err
 		}
 	}

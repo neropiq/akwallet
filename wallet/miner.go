@@ -34,6 +34,8 @@ import (
 )
 
 func getaddress(s *setting.Setting) ([]byte, error) {
+	mutex.Lock()
+	defer mutex.Unlock()
 	for adrstr := range wallet.AddressPublic {
 		madr, _, err := address.ParseAddress58(s.Config, adrstr)
 		return madr, err
@@ -96,7 +98,7 @@ func mine(s *setting.Setting) (tx.Hash, error) {
 	return tr.Hash(), nil
 }
 
-func issueTicket(s *setting.Setting) (tx.Hash, error) {
+func issueTicket(ctx context.Context, s *setting.Setting) (tx.Hash, error) {
 	madr, err := getaddress(s)
 	if err != nil {
 		return nil, err
@@ -105,7 +107,7 @@ func issueTicket(s *setting.Setting) (tx.Hash, error) {
 	if err != nil {
 		return nil, err
 	}
-	tr, err := tx.IssueTicket(s.Config, madr, ls...)
+	tr, err := tx.IssueTicket(ctx, s.Config, madr, ls...)
 	if err != nil {
 		log.Println(err)
 	}
@@ -119,11 +121,11 @@ func issueTicket(s *setting.Setting) (tx.Hash, error) {
 //RunMiner runs a miner
 func RunMiner(ctx context.Context, s *setting.Setting) {
 	if s.RunTicketIssuer {
+		ctx2, cancel2 := context.WithCancel(ctx)
+		defer cancel2()
 		go func() {
-			ctx2, cancel2 := context.WithCancel(ctx)
-			defer cancel2()
 			for {
-				if _, err := issueTicket(s); err != nil {
+				if _, err := issueTicket(ctx, s); err != nil {
 					log.Println(err)
 				}
 				select {
@@ -135,9 +137,9 @@ func RunMiner(ctx context.Context, s *setting.Setting) {
 		}()
 	}
 
+	ctx2, cancel2 := context.WithCancel(ctx)
+	defer cancel2()
 	go func() {
-		ctx2, cancel2 := context.WithCancel(ctx)
-		defer cancel2()
 		for {
 			if _, err := mine(s); err != nil {
 				log.Println(err)

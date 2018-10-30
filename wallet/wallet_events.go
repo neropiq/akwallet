@@ -22,6 +22,7 @@ package wallet
 
 import (
 	"bytes"
+	"encoding/hex"
 	"errors"
 	"sort"
 	"time"
@@ -38,14 +39,14 @@ import (
 //                               999999999999999999999999999999999999999999999999999999999999999999999999999999999
 const pobAddress gadk.Address = "PROOF9OF9BURN9FOR9MIGRATING9TO9NEW9AKWALLET9BY9SIIKUIN9AKA9ANONYMOUSCOWARD9HEHEHE"
 
-//loginParam is a param for login.
-type loginParam struct {
+//LoginParam is a param for login.
+type LoginParam struct {
 	PrivKey  string
 	Password string
 }
 
-//login is for logging event in the wallet.
-func login(cfg *setting.Setting, param *loginParam) error {
+//Login is for logging event in the wallet.
+func Login(cfg *setting.Setting, param *LoginParam) error {
 	mutex.Lock()
 	defer mutex.Unlock()
 	_, isNode, err := address.HDFrom58(cfg.Config, param.PrivKey, []byte(param.Password))
@@ -55,27 +56,27 @@ func login(cfg *setting.Setting, param *loginParam) error {
 	if isNode {
 		return errors.New("invalidd private key")
 	}
-	err = Load(cfg, []byte(param.Password), param.PrivKey)
+	err = load(cfg, []byte(param.Password), param.PrivKey)
 	if err != badger.ErrKeyNotFound {
 		return err
 	}
-	return New(cfg, []byte(param.Password), param.PrivKey)
+	return new(cfg, []byte(param.Password), param.PrivKey)
 }
 
-//balance represents available coins, received coins and sent coins.
-type balance struct {
+//Balance represents available coins, received coins and sent coins.
+type Balance struct {
 	Avail  int64
 	Recv   int64
 	Sent   int64
 	Ticket int64
 }
 
-//getBalance returns a total balance  received/sent amount in the span in the wallet.
+//GetBalance returns a total balance  received/sent amount in the span in the wallet.
 //span:
 //All=0
 //monthly = 1
 //Weekly = 2
-func getBalance(cfg *setting.Setting, span byte) (*balance, error) {
+func GetBalance(cfg *setting.Setting, span byte) (*Balance, error) {
 	mutex.RLock()
 	defer mutex.RUnlock()
 
@@ -94,7 +95,7 @@ func getBalance(cfg *setting.Setting, span byte) (*balance, error) {
 	sort.Slice(hs, func(i, j int) bool {
 		return bytes.Compare(hs[i].Hash, hs[j].Hash) < 0
 	})
-	var b balance
+	var b Balance
 	var prev tx.Hash
 	for _, h := range hs {
 		if h.Received.Before(from) {
@@ -134,17 +135,18 @@ func getBalance(cfg *setting.Setting, span byte) (*balance, error) {
 	return &b, nil
 }
 
-//logout is for logging out.
-func logout(s *setting.Setting) {
+//Logout is for logging out.
+func Logout(s *setting.Setting) {
+	mutex.Lock()
+	defer mutex.Unlock()
 	wallet = nil
 }
 
-//newAddress generates a new address.
-func newAddress(s *setting.Setting) error {
+//NewAddress generates a new address.
+func NewAddress(s *setting.Setting) (*address.Address, error) {
 	mutex.Lock()
 	defer mutex.Unlock()
-	_, err := wallet.NewAddress(&s.DBConfig, pwd, true)
-	return err
+	return wallet.NewAddress(&s.DBConfig, pwd, true)
 }
 
 //addressRecv is a pair of address string and its adk.
@@ -156,14 +158,14 @@ type addressRecv struct {
 	Sent   uint64
 }
 
-//getAddressResp is a response of GetAddress.
-type getAddressResp struct {
+//GetAddressResp is a response of GetAddress.
+type GetAddressResp struct {
 	Normal   []*addressRecv
 	Multisig []*addressRecv
 }
 
-//getAddresses returns addresses with some info.
-func getAddresses(cfg *setting.Setting) (*getAddressResp, error) {
+//GetAddresses returns addresses with some info.
+func GetAddresses(cfg *setting.Setting) (*GetAddressResp, error) {
 	mutex.RLock()
 	defer mutex.RUnlock()
 	nadrs := make(map[string]*addressRecv)
@@ -243,7 +245,7 @@ func getAddresses(cfg *setting.Setting) (*getAddressResp, error) {
 		}
 	}
 
-	ret := &getAddressResp{
+	ret := &GetAddressResp{
 		Normal:   make([]*addressRecv, 0, len(nadrs)),
 		Multisig: make([]*addressRecv, 0, len(madrs)),
 	}
@@ -256,8 +258,8 @@ func getAddresses(cfg *setting.Setting) (*getAddressResp, error) {
 	return ret, nil
 }
 
-//cancelPoW cancles PoW.
-func cancelPoW(cfg *setting.Setting) error {
+//CancelPoW cancles PoW.
+func CancelPoW(cfg *setting.Setting) error {
 	if cfg.CancelPoW != nil {
 		cfg.CancelPoW()
 		return nil
@@ -265,8 +267,8 @@ func cancelPoW(cfg *setting.Setting) error {
 	return errors.New("PoW is not running")
 }
 
-//sendEvent sends  ADK.
-func sendEvent(cfg *setting.Setting, param *tx.BuildParam) (tx.Hash, error) {
+//SendEvent sends  ADK.
+func SendEvent(cfg *setting.Setting, param *tx.BuildParam) (tx.Hash, error) {
 	return Send(cfg, param)
 }
 
@@ -278,37 +280,37 @@ const (
 
 //normalTxResp is information about a normal tx.
 type normalTxResp struct {
-	Recv        time.Time
-	Hash        tx.Hash
+	Recv        int64
+	Hash        string
 	Amount      int64
 	IsRejected  bool
 	IsConfirmed bool
-	StatNo      imesh.StatNo
+	StatNo      string
 }
 
 //ticketResp is information about a ticket.
 type ticketResp struct {
-	Recv        time.Time
-	Hash        tx.Hash
+	Recv        int64
+	Hash        string
 	Reason      byte
 	IsRejected  bool
 	IsConfirmed bool
-	StatNo      imesh.StatNo
+	StatNo      string
 }
 
 //multisigResp is information about a multisig tx.
 type multisigResp struct {
-	Recv        time.Time
-	Hash        tx.Hash
+	Recv        int64
+	Hash        string
 	Amount      int64
 	IsRejected  bool
 	IsConfirmed bool
-	StatNo      imesh.StatNo
+	StatNo      string
 	Address     string
 }
 
-//txResp is a response to transactrion..
-type txResp struct {
+//TxResp is a response to transactrion..
+type TxResp struct {
 	NormalTx []*normalTxResp
 	Ticket   []*ticketResp
 	Multisig []*multisigResp
@@ -321,13 +323,13 @@ const (
 	txRejected
 )
 
-//transaction returns txs in the wallet.
+//Transaction returns txs in the wallet.
 //total balance for normal addresses per a tx(send or recv for each txs)
 //send or recv for each multisig address
-func transaction(cfg *setting.Setting, typ byte) (*txResp, error) {
+func Transaction(cfg *setting.Setting, typ byte) (*TxResp, error) {
 	mutex.RLock()
 	defer mutex.RUnlock()
-	var resp txResp
+	var resp TxResp
 	histories, err := walletImpl.GetHistory(&cfg.DBConfig)
 	if err != nil {
 		return nil, err
@@ -358,21 +360,21 @@ func transaction(cfg *setting.Setting, typ byte) (*txResp, error) {
 				reason = reasonMined
 			}
 			resp.Ticket = append(resp.Ticket, &ticketResp{
-				Recv:        ti.Received,
-				Hash:        h.Hash,
+				Recv:        ti.Received.Unix(),
+				Hash:        h.Hash.String(),
 				Reason:      reason,
 				IsConfirmed: ti.StatNo != imesh.StatusPending,
 				IsRejected:  ti.IsRejected,
-				StatNo:      ti.StatNo,
+				StatNo:      hex.EncodeToString(ti.StatNo[:]),
 			})
 		case tx.TypeTicketin:
 			resp.Ticket = append(resp.Ticket, &ticketResp{
-				Recv:        ti.Received,
-				Hash:        h.Hash,
+				Recv:        ti.Received.Unix(),
+				Hash:        h.Hash.String(),
 				Reason:      reasonSpent,
 				IsConfirmed: ti.StatNo != imesh.StatusPending,
 				IsRejected:  ti.IsRejected,
-				StatNo:      ti.StatNo,
+				StatNo:      hex.EncodeToString(ti.StatNo[:]),
 			})
 		}
 
@@ -385,12 +387,12 @@ func transaction(cfg *setting.Setting, typ byte) (*txResp, error) {
 		}
 		if v != 0 {
 			resp.NormalTx = append(resp.NormalTx, &normalTxResp{
-				Recv:        ti.Received,
-				Hash:        h.Hash,
+				Recv:        ti.Received.Unix(),
+				Hash:        h.Hash.String(),
 				Amount:      v,
 				IsRejected:  ti.IsRejected,
 				IsConfirmed: ti.StatNo != imesh.StatusPending,
-				StatNo:      ti.StatNo,
+				StatNo:      hex.EncodeToString(ti.StatNo[:]),
 			})
 		}
 
@@ -421,25 +423,25 @@ func transaction(cfg *setting.Setting, typ byte) (*txResp, error) {
 		}
 		for adr, amt := range values {
 			resp.Multisig = append(resp.Multisig, &multisigResp{
-				Recv:        ti.Received,
-				Hash:        h.Hash,
+				Recv:        ti.Received.Unix(),
+				Hash:        h.Hash.String(),
 				Amount:      amt,
 				IsRejected:  ti.IsRejected,
 				IsConfirmed: ti.StatNo != imesh.StatusPending,
-				StatNo:      ti.StatNo,
+				StatNo:      hex.EncodeToString(ti.StatNo[:]),
 				Address:     adr,
 			})
 		}
 		prev = h.Hash
 	}
 	sort.Slice(resp.NormalTx, func(i, j int) bool {
-		return !resp.NormalTx[i].Recv.Before(resp.NormalTx[j].Recv)
+		return !(resp.NormalTx[i].Recv < resp.NormalTx[j].Recv)
 	})
 	sort.Slice(resp.Multisig, func(i, j int) bool {
-		return !resp.Multisig[i].Recv.Before(resp.Multisig[j].Recv)
+		return !(resp.Multisig[i].Recv < resp.Multisig[j].Recv)
 	})
 	sort.Slice(resp.Ticket, func(i, j int) bool {
-		return !resp.Ticket[i].Recv.Before(resp.Ticket[j].Recv)
+		return !(resp.Ticket[i].Recv < resp.Ticket[j].Recv)
 	})
 	return &resp, nil
 }
