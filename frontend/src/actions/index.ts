@@ -5,3 +5,4 @@ export * from './transactionAction';
 export * from './settingsAction';
 export * from './sendAdkAction';
 export * from './popupAction';
+export * from './notificationAction';

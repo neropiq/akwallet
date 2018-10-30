@@ -49,11 +49,11 @@ class List extends React.Component<props> {
                             {
                                 this.props.tables.map((rows: any, index: number) => (
                                     <tr key={index}>
-                                        <td key={index}><QRCode value="ajksdfhjhasdfjahdfjhasdfh" size={60} data-toggle="modal" data-target="#myModal123" onClick={ () =>this.openPopupbox(rows.value1)}  /></td>
+                                        <td key={index} ><QRCode value="ajksdfhjhasdfjahdfjhasdfh" size={60} data-toggle="modal" data-target="#myModal123" onClick={ () =>this.openPopupbox(rows.value1)}  /></td>
                                         
                                         {/* <td key={index}><img src={rows.imgList} alt="qr-code" /></td> */}
-                                        <td>{rows.value1}</td>
-                                        <td>{rows.value2}</td>
+                                        <td className="list-set" title={rows.value1}><span>{rows.value1}</span></td>
+                                        <td >{rows.value2}</td>
                                         <td>{rows.value3}</td>
                                         {/* {
                                             rows.map((row: any, index: number) => {

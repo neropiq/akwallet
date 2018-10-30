@@ -1,5 +1,5 @@
 import { AddressEntity } from '../model';
-import { CHANGE_VIEW ,CHANGE_GRID_FLAG ,ADDRESS_VALUE,PUSH_ADDRESS_DATA} from '../actions/types';
+import { CHANGE_VIEW ,CHANGE_GRID_FLAG ,ADDRESS_VALUE,PUSH_ADDRESS_DATA,CHANGE_ADDRESS_TAB} from '../actions/types';
 
 const INITIAL_STATE = (): AddressEntity => ({
     subHeader: {
@@ -19,6 +19,25 @@ const INITIAL_STATE = (): AddressEntity => ({
                 active: true,
                 value: "Grid",
                 className: 'icon-grid align-middle mr-2'
+            }
+        ]
+    },
+    cardHeaderTab:{
+        tab: [
+            {
+                active: true,
+                value: 'Normal',
+                controle:"tab-1"
+            },           
+            {
+                active: false,
+                value: "Multisigs",
+                controle:"tab-3"
+            },
+            {
+                active: false,
+                value: "Anon",
+                controle:"tab-4"
             }
         ]
     },
@@ -42,9 +61,16 @@ const AddressReducer = (state = INITIAL_STATE(), action: any) => {
         case ADDRESS_VALUE:
             return { ...state, addressValue: action.payload.addressValue }
         case PUSH_ADDRESS_DATA:
-            console.log('reducer');
-            console.log(action.payload.addressData)
+            
             return { ...state, addressValue: state.addressValue.concat(action.payload.addressData ) }
+        case CHANGE_ADDRESS_TAB:
+            return {
+                ...state,
+                cardHeaderTab: {
+                    ...state.cardHeaderTab,
+                    tab: action.payload.newFilters
+                }    
+            }
         default:
             return state;
     }

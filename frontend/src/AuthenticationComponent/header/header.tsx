@@ -32,7 +32,10 @@ class AuthHeader extends React.Component<props> {
                             <img  src ={require('../../assets/images/logo-icon.png')} className="img-fluid" alt="logo" />
                             <span className="brand-name">AIDOS WALLET</span>
                         </a>
+                       
+                        
                         <div>
+                           
                             <button 
                                 className="btn btn-lg btn-outline-light btn-white-outline" 
                                 onClick={this.onClickButton}

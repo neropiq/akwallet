@@ -7,7 +7,7 @@ interface Props {
 }
 
 export const showPopup = ({ showPopup }: Props) => {
-    console.log('pop up action');
+   
     return {
         type:SHOW_POPUP,
         payload:{ showPopup }
@@ -15,7 +15,7 @@ export const showPopup = ({ showPopup }: Props) => {
 }
 
 export const popupValue = ({ popupvalue }: Props) => {
-    console.log('pop up value');
+   
     return {
         type:POPUP_VALUE,
         payload:{ popupvalue }

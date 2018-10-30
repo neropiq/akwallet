@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { PopupEntity,LoginEntity, DashboardEntity, AddressEntity, TransactionEntity, SettingsEntity, SendAdkEntity } from '../model';
+import { NotificationEntity,PopupEntity,LoginEntity, DashboardEntity, AddressEntity, TransactionEntity, SettingsEntity, SendAdkEntity } from '../model';
 import { reducer as formReducer } from 'redux-form'
 import DashboardReducer from './dashboardReducer';
 import LoginReducer from './loginReducer';
@@ -8,6 +8,7 @@ import TransactionReducer from './transactionReducer';
 import SettingReducer from './settingsReducer';
 import SendAdkReducer from './sendAdkReducer';
 import PopUpReducer from './popup';
+import NotificationReducer from './notificationReducer';
 
 export interface State {
   login: LoginEntity;
@@ -18,6 +19,7 @@ export interface State {
   setting: SettingsEntity;
   sendAdk: SendAdkEntity;
   popup:PopupEntity;
+  notification:NotificationEntity;
 };
 
 export const state = combineReducers<State>({
@@ -28,5 +30,6 @@ export const state = combineReducers<State>({
   transaction: TransactionReducer,
   setting: SettingReducer,
   sendAdk: SendAdkReducer,
-  popup: PopUpReducer
+  popup: PopUpReducer,
+  notification:NotificationReducer
 });

@@ -12,7 +12,7 @@ var cards = require('./cards.json');
 var tables = require('./tables.json');
 var QRCode = require('qrcode.react');
 import Scrollbar from 'smooth-scrollbar';
-// import { changeFilter, changeSelect } from '../../actions';
+import { ToastContainer, toast } from 'react-toastify';
 
 interface changeFilterProps {
     newFilter: any;
@@ -26,14 +26,23 @@ interface changeSelectProps {
 interface Props {
     title: string;
     filters: any;
+    notification_count:number;
     changeFilter: ({ newFilter, oldFilter }: changeFilterProps) => void;
     changeSelect: ({ value }: changeSelectProps) => void;
+    updateNotificationCount: ( notification_count:number ) => void;
 }
 
 class Dashboard extends React.Component<Props> {
     componentDidMount() {
         document.title = "Dashboard || Aidos Wallet";
         Scrollbar.init(document.querySelector('#scrolle'));
+        toast.success("Success Notification !", {
+			position: toast.POSITION.TOP_RIGHT
+		});
+		if(this.props.notification_count >= 0){
+			var count = this.props.notification_count+1;
+			this.props.updateNotificationCount(count);
+		}
     }
 
     onFilterChange = (newFilter: any) => {
@@ -76,13 +85,15 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
     changeFilter: ({ newFilter, oldFilter }: changeFilterProps) => dispatch(actions.changeFilter({ newFilter, oldFilter })),
     changeSelect: ({ value }: changeSelectProps) => dispatch(actions.changeSelect({ value })),
+    updateNotificationCount: ( notification_count:any) => dispatch(actions.updateNotificationCount( notification_count )),
   }
 }
 
 
 export const mapStateToProps = (state: State) => {
     const { title, filters } = state.dashboard.subHeader;
-    return { title, filters };
+    const { notification_count } = state.notification;
+    return { title, filters ,notification_count};
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

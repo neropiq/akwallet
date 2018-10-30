@@ -3,6 +3,9 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../../reducers';
 import * as actions from '../../actions/loginAction';
+import { state } from '../../reducers/index';
+// import Scrollbar from 'smooth-scrollbar';
+var autoComplete = require('./autosuggest.json');
 
 interface loginTermsCheck{
     chackedLoginTerms:boolean
@@ -15,15 +18,54 @@ interface Props {
     setCheckLoginTerms:({chackedLoginTerms}:loginTermsCheck) => void
 }
 
+interface state {
+    showSuggest:boolean;
+    suggestValue:string;    
+}
 
-
-class Login extends React.Component<Props> {
-    handleFormSubmit(e :any){
+class Login extends React.Component<Props,state> {
+    constructor(props:Props){
+        super(props);
+        this.state ={
+            showSuggest:false,
+            suggestValue:''
+        }
+       
+    }
+    componentWillMount(){
+        
+    }
+    handleFormSubmit = (e :any) =>{
         e.preventDefault();
         this.props.onLogin();
     }
+    clickSuggection(value:any){
+        
+        this.setState(()=>({
+            showSuggest: false,
+           suggestValue:value
+        }))
+    }
     termsChecked = () => {
         this.props.setCheckLoginTerms({ chackedLoginTerms: !this.props.isLoginTerms });
+    }
+    inputPrivateKeyChange = (e:any) =>{
+       
+        var value = e.target.value;
+        
+        if(e.target.value.length > 0){
+            this.setState(() => ({
+                showSuggest: true,
+                suggestValue:value
+            }));
+        }else{
+            this.setState(() => ({
+                showSuggest: false,
+                suggestValue:value
+            }));
+        }
+       
+        
     }
   public render() { 
 
@@ -34,8 +76,21 @@ class Login extends React.Component<Props> {
                 <h1>AIDOS KUNEEN!</h1>
             </div>
             <form className="aidos-kuneen-form">
-                <div className="form-group">
-                    <input type="text" className="form-control custom-control w-80" name="Private Key" placeholder="Private Key" />
+                <div className="form-group position-relative">
+                    <input type="text" className="form-control custom-control w-80" name="Private Key" placeholder="Private Key" value={this.state.suggestValue}    onChange={this.inputPrivateKeyChange}/>
+                    {this.state.showSuggest ? 
+                        <ul   className="suggestionCustom">
+                            {
+                                autoComplete.data.map((rows: any, index: number)=> (
+                                    <li key={index} onClick={()=>{this.clickSuggection(rows.value)}}>
+                                        <span>{rows.value}</span>
+                                    </li>
+                                ))
+                            }
+                            
+                        </ul>:
+                        ''
+                    }
                 </div>
                 <div className="form-group">
                     <input type="password" className="form-control custom-control w-80" name="Password" placeholder="Password" />

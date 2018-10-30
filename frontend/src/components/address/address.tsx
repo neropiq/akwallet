@@ -8,10 +8,9 @@ import Grid from '../grid/grid';
 import List from '../list/list';
 // import { AddressModel } from './addressmodel';
 var address = require('./address.json');
-
-
 import Scrollbar from 'smooth-scrollbar';
-// import Popup from '../popup/popup';
+import CardTab from '../cardTab/cardTab';
+
 
 var QRCode = require('qrcode.react');
 
@@ -27,8 +26,14 @@ interface changeAddressProps {
     addressValue: [];
 }
 
+interface changeProps  {
+    newFilter: any;
+    oldFilter: any;
+}
+
 interface Props {
     title: string;
+    tab: any;
     tables:any[];
     titleList:any;
     views: any;
@@ -40,6 +45,7 @@ interface Props {
     changeGridFlag: ({ value }: changeGridFlagProps) => void;
     changeAddressValue: ( address:any ) => void;
     pushAddressValue:(address:any) => void;
+    changeCardTabAddress: ({ newFilter, oldFilter }: changeProps) => void;
 }
 
 interface state {
@@ -53,7 +59,7 @@ class Address extends React.Component<Props , state> {
     constructor(props: Props){
         super(props);
         this.AddressModel = address.data;       
-        this.props.changeAddressValue(address.data);       
+        this.props.changeAddressValue(address.data);              
     }
     componentWillMount(){
        	
@@ -63,8 +69,12 @@ class Address extends React.Component<Props , state> {
         Scrollbar.init(document.querySelector('#scrolle'));
     }
 
-    onViewChange = (newView: any) => {
+    onCardChange = (newFilter: any) => {
+        this.props.changeCardTabAddress({ newFilter, oldFilter: this.props.tab });
        
+    }
+    onViewChange = (newView: any) => {
+        console.log(newView);
         if(newView == 'Grid' || newView == 'List' ){
             this.props.changeView({ newView, oldView: this.props.views });
             const value = newView === 'Grid' ? true : false;
@@ -77,7 +87,7 @@ class Address extends React.Component<Props , state> {
             //     "img": "../../assets/images/qr-code-big.png"
             // },
             var data = {
-                "value1": "dami-"+ this.count+" AKADRST81...",
+                "value1": "dami#"+ this.count+"#AKADRST53rF6mZAS81AKADRST53rF6mZAS81AKADRST53rF6mZAS81AKADRST53rF6mZAS81",
                 "value2": "dami#Avail : 100/1024",
                 "value3": "Recv: 1.12345678 ADK",
                 "img": "../../assets/images/qr-code-big.png",
@@ -98,8 +108,8 @@ class Address extends React.Component<Props , state> {
                 <div className="modal fade c-t-modal qr-code-modal"  id="myModal123">
                     <div className="modal-dialog">
                         <div className="modal-content">                    
-                            <div className="modal-header">
-                                <span className="modal-title">Demo</span>
+                            <div className="modal-header ">
+                                <span className="modal-title model-set" title={this.props.popup_Value}><span>{this.props.popup_Value}</span></span>
                                 <button type="button" className="close" data-dismiss="modal" >×</button>
                             </div>                        
                             <div className="modal-body text-center">
@@ -119,6 +129,7 @@ class Address extends React.Component<Props , state> {
                             <div className="col">
                                 <div id="scrolle" className="card-height card bg-dark-green black-shadow mCustomScrollbar" data-mcs-theme="dark">
                                     <div className="card-content">
+                                        <CardTab addressTab={this.props.tab} onCardChange={this.onCardChange}/>
                                         {
                                             this.props.showGrid ? 
                                             <div className="card-body p-4">
@@ -135,7 +146,7 @@ class Address extends React.Component<Props , state> {
                     </div>
                 </div>
                 <div className="d-md-none d-block clearfix add-plus-btn">
-                    <div className="float-right">
+                    <div className="float-right" onClick={()=>{this.onViewChange('')}}>
                         <a href="#"><i className="icon-plus"></i></a>
                     </div>
                 </div>
@@ -151,14 +162,16 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
         changeGridFlag: ({ value }: changeGridFlagProps) => dispatch(actions.changeGridFlag({ value })),
         changeAddressValue: ( addressValue:any) => dispatch(actions.changeAddressValue( addressValue )),
         pushAddressValue: ( addressData:any) => dispatch(actions.pushAddressValue( addressData )),
+        changeCardTabAddress: ({ newFilter, oldFilter }: changeProps) => dispatch(actions.changeCardTabAddress({ newFilter, oldFilter })),
     }
   }
   
 export const mapStateToProps = (state: State) => {
     const { title, views } = state.address.subHeader;
     const { showGrid,addressValue } = state.address;
+    const { tab } = state.address.cardHeaderTab;
     const { popup,popup_Value } = state.popup;
-    return { title, views, showGrid ,popup,popup_Value,addressValue};
+    return { title, views, showGrid ,popup,popup_Value,addressValue , tab};
 }
 
 

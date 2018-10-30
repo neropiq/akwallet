@@ -3,6 +3,7 @@ import * as React from 'react';
 interface Props {
     tab: any;
     settingTab: any;
+    addressTab: any;
     onCardChange?: (value: any) => void;
     onFilterChange?: (value: any) => void;
 }
@@ -14,6 +15,7 @@ interface State {
 interface DefaultProps {
     tab: any;
     settingTab: any;
+    addressTab: any;
 }
 
 class CardTab extends React.Component<Props, State> {
@@ -26,7 +28,8 @@ class CardTab extends React.Component<Props, State> {
     
     static defaultProps: DefaultProps = {
         tab:[],
-        settingTab:[]
+        settingTab:[],
+        addressTab:[]
     }
 
     componentDidMount() {
@@ -36,6 +39,9 @@ class CardTab extends React.Component<Props, State> {
         }
         if(this.props.settingTab.length !== 0){
             this.props.onCardChange(this.props.settingTab[0].value);
+        }
+        if(this.props.addressTab.length !== 0){
+            this.props.onCardChange(this.props.addressTab[0].value);
         }
     }
 
@@ -56,6 +62,24 @@ class CardTab extends React.Component<Props, State> {
                     <ul className="nav nav-tabs custom-tabs px-4" id="myTab" role="tablist">
                         {   
                             this.props.tab.map((tab: any, index: number) => (
+                                
+                                <li className="nav-item" key={index}>
+                                    <a className={tab.active ? "nav-link active" : "nav-link "}  
+                                        id="tab1" data-toggle="tab" href="#" role="tab" 
+                                        aria-controls={tab.controle} aria-selected={tab.active ? "true" : "false" }
+                                        onClick={() =>this.props.onCardChange(tab.value)}>
+                                        {tab.value}
+                                    </a>
+                                </li>
+                            ))
+                        }                          
+                    </ul>                           
+                }
+                {                        
+                    (this.props.addressTab.length !== 0) &&
+                    <ul className="nav nav-tabs custom-tabs px-4" id="myTab" role="tablist">
+                        {   
+                            this.props.addressTab.map((tab: any, index: number) => (
                                 
                                 <li className="nav-item" key={index}>
                                     <a className={tab.active ? "nav-link active" : "nav-link "}  

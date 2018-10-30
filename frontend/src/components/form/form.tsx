@@ -71,12 +71,22 @@ const renderMembers = ({ fields, meta: { error, submitFailed } }: fieldProps) =>
 
 interface CustomProps {
 	loading: boolean;
-  }
-
-class SimpleForm extends React.Component<CustomProps & InjectedFormProps<{}, CustomProps>> {
 	
+  }
+// interface IState {
+// 	feeField:boolean;
+// }
+class SimpleForm extends React.Component< CustomProps & InjectedFormProps<{}, CustomProps> > {
+	readonly state = {feeField:false};
+	radioClick(value:any){		
+		if(value === 'payFee'){
+			this.setState({feeField:true});
+		}else{
+			this.setState({feeField:false});
+		}		
+	}
 	render() {
-		const { handleSubmit, pristine, reset, submitting } = this.props
+		const { handleSubmit, pristine, reset, submitting  } = this.props
 		return (
 			<form className="send-adk-form" onSubmit={handleSubmit}>
 				<div className="form-group">
@@ -99,6 +109,7 @@ class SimpleForm extends React.Component<CustomProps & InjectedFormProps<{}, Cus
 								component="input"
 								type="radio"
 								value="doPow"
+								onClick={() => {this.radioClick('doPow')}}
 							/>{' '}
 							<span></span>
 							Do PoW
@@ -109,6 +120,7 @@ class SimpleForm extends React.Component<CustomProps & InjectedFormProps<{}, Cus
 								component="input"
 								type="radio"
 								value="useTicket"
+								onClick={() => {this.radioClick('useTicket')}}
 							/>{' '}
 							<span></span>
 							Use Ticket
@@ -119,15 +131,28 @@ class SimpleForm extends React.Component<CustomProps & InjectedFormProps<{}, Cus
 								component="input"
 								type="radio"
 								value="payFee"
-							/>{' '}
+								onClick={() => {this.radioClick('payFee')}}
+							/>{''}
 							<span></span>
 							Pay Fee
 						</label>
 					</div>
 				</div>
+				{
+					this.state.feeField ? 
+					<div className="form-group">
+						<Field
+							name="Fee"
+							type="text"
+							component={renderField}
+							label="Fee"
+						/>
+					</div> : ''
+				}
+				
 				<div className="form-group">
 					<button type="submit" disabled={submitting} className="btn btn-send btn-primary">
-						Send
+					    { this.props.loading ? 'Cancel' : 'Send'}
 						{this.props.loading && <div className="loader"><i className="icofont-spinner"></i></div>}
 					</button>
 				</div>

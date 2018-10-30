@@ -1,5 +1,6 @@
 import * as React from 'react';
 
+
 interface Props {
     title?: string;
     filters?: any;
@@ -29,6 +30,10 @@ class SubHeader extends React.Component<Props, State> {
             value: (this.props.filters.length === 0) || this.props.filters[0] ,
             trancactionValue: (this.props.filters.length === 0) || this.props.filters[0] 
         };
+      
+        // window.onclick = function(event) {
+           
+        // }
     }
 
     static defaultProps: DefaultProps = {
@@ -36,7 +41,7 @@ class SubHeader extends React.Component<Props, State> {
         views: [],
         transaction:[]
     }
-
+    
     componentDidMount() {
         if(this.props.filters.length !== 0) {
             this.props.onFilterChange(this.props.filters[0].value);
