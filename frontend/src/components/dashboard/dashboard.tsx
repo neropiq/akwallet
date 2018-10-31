@@ -70,7 +70,7 @@ class Dashboard extends React.Component<Props> {
                             <div id="scrolle" className="card bg-dark-green black-shadow db-table-card-height mCustomScrollbar" >
                                 <div className="cad-table-content">
                                     <TableHeader header={tables.header} menus={tables.menus} onSelectChange={this.onSelectChange} />
-                                    <Table tables={tables} />
+                                    <Table componentsName={'dashboard'} tables={tables} />
                                 </div>
                             </div>            
                         </div>

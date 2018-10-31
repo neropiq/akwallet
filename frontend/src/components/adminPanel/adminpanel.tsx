@@ -58,8 +58,7 @@ class AdminPanel extends  React.Component<Props, state> {
 		super(props);
 		this.state = {			
 			popup:true,
-			value:'You Received Payment from Jack',
-			
+			value:'You Received Payment from Jack',			
 		}
 	}
 	

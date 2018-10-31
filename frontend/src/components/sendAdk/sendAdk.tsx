@@ -57,7 +57,7 @@ class SendAdk extends React.Component<Props> {
                             <div id="scrolleTable" className="card-height card bg-dark-green black-shadow  send-adk-table-card" data-mcs-theme="dark">
                                 <div className="cad-table-content">                                   
                                     <TableHeader header={tables.header} />
-                                    <Table tables={tables} />                                   
+                                    <Table componentsName={'sendAdk'} tables={tables} />                                   
                                 </div> 
                             </div>
                         </div>

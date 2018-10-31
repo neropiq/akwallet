@@ -2,7 +2,7 @@ import * as  React from 'react';
 import { State } from '../../reducers';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
-
+import { ToastContainer, toast } from 'react-toastify';
 import * as actions from '../../actions/popupAction';
 var QRCode = require('qrcode.react');
 
@@ -33,6 +33,17 @@ class List extends React.Component<props> {
         this.props.showPopup({ showPopup: !this.props.popup });
         
     }
+    copyText(value:any){
+        var input = document.createElement('input');
+        input.setAttribute('value', value);
+        document.body.appendChild(input);
+        input.select();
+        var result = document.execCommand('copy');
+        document.body.removeChild(input);
+        toast.success("Address copy!", {
+            position: toast.POSITION.TOP_RIGHT
+        });  
+    }
     render() {
         return(
             <div className="card-body px-4 py-0">
@@ -52,7 +63,7 @@ class List extends React.Component<props> {
                                         <td key={index} ><QRCode value="ajksdfhjhasdfjahdfjhasdfh" size={60} data-toggle="modal" data-target="#myModal123" onClick={ () =>this.openPopupbox(rows.value1)}  /></td>
                                         
                                         {/* <td key={index}><img src={rows.imgList} alt="qr-code" /></td> */}
-                                        <td className="list-set" title={rows.value1}><span>{rows.value1}</span></td>
+                                        <td className="list-set" title={rows.value1} onClick={() => this.copyText(rows.value1)}><span>{rows.value1}</span></td>
                                         <td >{rows.value2}</td>
                                         <td>{rows.value3}</td>
                                         {/* {

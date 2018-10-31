@@ -73,10 +73,10 @@ class Header extends React.Component<Props,state> {
                     <nav className="nav fixed-header navbar fixed-top">
                         <div className="page-header-inner d-flex flex-row">
                             <div className="navbar-brand mr-0 py-0 page-logo">
-                                <a href='/' className="navbar-brand dashboard-logo">
+                                <NavLink to='dashboard' className="navbar-brand dashboard-logo">
                                     <img src={require("../../assets/images/logo-small.png")} className="img-fluid" alt="logo" />
                                     <span className="brand-name">DEBUGNET</span>
-                                </a>
+                                </NavLink>
                             </div>
                             <div className="search-action">
                                 <div className="input-group header-search-box">
@@ -146,9 +146,9 @@ class Header extends React.Component<Props,state> {
                                 </a>
                             </li>
                             <li className="nav-item">
-                                <a className="navbar-brand mob-nav-brand mr-0" href="index.html">
+                                <NavLink className="navbar-brand mob-nav-brand mr-0" to='dashboard'>
                                     <img className="brand-logo" alt="logo" src={require("../../assets/images/logo-small.png")} />
-                                </a>
+                                </NavLink>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link open-navbar-container collapsed" data-toggle="collapse" data-target="#navbar-mobile" aria-expanded="false">

@@ -8,7 +8,7 @@ import AdminPanel from './components/adminPanel/adminpanel';
 
 ReactDOM.render(
   <Provider store={store}>
-    <BrowserRouter >
+    <BrowserRouter basename="aidoswallet">
         {/* basename="aidoswallet" */}
         <div>
             <Switch>
