@@ -20,13 +20,12 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/loginAction';
 import TermText from '../../constants';
 import { IStoreState } from '../../reducers';
 import { allPrivkeys, Iprivatekeys, login } from '../../utils/remote';
-// import Scrollbar from 'smooth-scrollbar';
-
 
 interface IProps {
     islogin: boolean;
@@ -52,10 +51,12 @@ class Login extends React.Component<IProps, IStates> {
     }
 
     public componentDidMount() {
-        console.log(this.props.connected)
         allPrivkeys(this.props.connected, (p: Iprivatekeys) => {
             if (p.Error) {
-                alert(p.Error)
+                toast.error(p.Error, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             this.props.updatePrivkeys(p.PKs)
@@ -64,7 +65,6 @@ class Login extends React.Component<IProps, IStates> {
     }
 
     public render() {
-        console.log(this.props.privkeys)
         return (
             <div className="col-lg-6 col-md-6 col-sm-12 order-set-form wow fadeInLeft">
                 <div className="welcome-title">
@@ -120,12 +120,15 @@ class Login extends React.Component<IProps, IStates> {
         );
     }
 
-    private handleFormSubmit=(e: any) =>{
+    private handleFormSubmit = (e: any) => {
         e.preventDefault();
         login(this.props.connected, { PrivKey: this.state.privatekey, Password: this.state.password }, (err: string) => {
-            console.log(err)
             if (err) {
-                alert(err)
+                toast.error("Failed to login: " + err, {
+                    autoClose: 1500,
+                    hideProgressBar: true,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             this.props.onLogin();
@@ -154,7 +157,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
     }
 }
 const mapStateToProps = (state: IStoreState) => {
-    const { login:islogin, privkeys } = state.login;
+    const { login: islogin, privkeys } = state.login;
     return { islogin, connected: state.connected, privkeys };
 }
 

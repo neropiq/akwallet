@@ -97,16 +97,10 @@ func (w *trWallet) NewChangeAddress() (*address.Address, error) {
 var powmutex sync.Mutex
 
 //Send sends token.
-func Send(conf *setting.Setting, p *tx.BuildParam) (tx.Hash, error) {
+func Send(conf *setting.Setting, p *tx.BuildParam) error {
 	if conf.CancelPoW != nil {
-		return nil, errors.New("PoW is alaredy running")
+		return errors.New("PoW is alaredy running")
 	}
-	var ctx context.Context
-	ctx, conf.CancelPoW = context.WithCancel(context.Background())
-	defer func() {
-		conf.CancelPoW()
-		conf.CancelPoW = nil
-	}()
 	mutex.Lock()
 	w := &trWallet{
 		conf: conf,
@@ -114,33 +108,53 @@ func Send(conf *setting.Setting, p *tx.BuildParam) (tx.Hash, error) {
 	tr, err := tx.Build2(conf.Config, w, p)
 	mutex.Unlock()
 	if err != nil {
-		return nil, err
+		return err
 	}
 	if p.PoWType == tx.TypeNormal {
-		log.Println("starting PoW...")
-		powmutex.Lock()
-		err = tr.PoWContext(ctx)
-		powmutex.Unlock()
-		err2 := conf.GUI.Emit("finished_pow", err, nil)
-		if err != nil {
-			return nil, err
-		}
-		if err2 != nil {
-			return nil, err2
-		}
-		log.Println("finished PoW. hash=", tr.Hash())
+		go func() {
+			pow(conf, tr, p)
+			if err != nil {
+				log.Println(err)
+				return
+			}
+			log.Println("finished PoW. hash=", tr.Hash())
+		}()
+		return nil
 	}
 	if err = tr.Check(conf.Config, p.PoWType); err != nil {
 		log.Println(err)
-		return nil, err
+		return err
 	}
-	err = conf.CallRPC(func(cl setting.RPCIF) error {
+	return conf.CallRPC(func(cl setting.RPCIF) error {
 		_, err2 := cl.SendRawTX(tr, p.PoWType)
 		return err2
 	})
-	if err != nil {
-		return nil, err
-	}
 	//Don't save tr to db , which should be stored by cron.
-	return tr.Hash(), nil
+}
+
+func pow(conf *setting.Setting, tr *tx.Transaction, p *tx.BuildParam) error {
+	log.Println("starting PoW...")
+	var ctx context.Context
+	ctx, conf.CancelPoW = context.WithCancel(context.Background())
+	powmutex.Lock()
+	err := tr.PoWContext(ctx)
+	defer func() {
+		conf.CancelPoW()
+		conf.CancelPoW = nil
+	}()
+	powmutex.Unlock()
+	err2 := conf.GUI.Emit("finished_pow", errString(err), nil)
+	if err != nil {
+		return err
+	}
+	if err2 != nil {
+		return err2
+	}
+	if err = tr.Check(conf.Config, p.PoWType); err != nil {
+		return err
+	}
+	return conf.CallRPC(func(cl setting.RPCIF) error {
+		_, err2 := cl.SendRawTX(tr, p.PoWType)
+		return err2
+	})
 }

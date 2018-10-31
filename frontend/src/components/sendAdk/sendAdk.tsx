@@ -20,11 +20,14 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
+import { stopSubmit, SubmissionError, touch } from 'redux-form';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';
-import { IRawOutput, send, validateAddresses } from '../../utils/remote';
+import { cancelPow, IRawOutput, send, validateAddresses } from '../../utils/remote';
+import { socket } from '../adminPanel/adminpanel';
 import Form from '../form/form';
 import SubHeader from '../subheader/subheader';
 import TableHeader from '../tableheader/tableheader';
@@ -82,34 +85,75 @@ class SendAdk extends React.Component<IProps> {
         );
     }
 
-    private submit = (values: any) => {
+    private submit = (values: any,dispatch:any) => {
         // print the form values to the console
-        console.log(values);
+        console.log(values, this.props.loading);
+        if (this.props.loading) {
+            cancelPow(this.props.connected, (e: string) => {
+                if (e) {
+                    toast.error(e, {
+                        autoClose: 3000,
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    return
+                }
+                this.props.changeLoading({ value: !this.props.loading });
+            })
+            return
+        }
         const adrs: string[] = []
-        let isErr = false
+        if (values.comment && values.comment.length > 255) {
+            throw new SubmissionError({ comment: "comment is too long" })
+        }
         values.members.map((adrval: any, i: number) => {
             if (!adrval) {
                 return
             }
             const amount = parseInt(adrval.amount, 10)
-            if (!amount || !adrval.address) {
-                alert("invalid amount or address at " + i)
-                isErr = true
-                return
+            if (!amount) {
+                const a: any = { members: [] }
+                a.members[i] = { amount: "Invalid amount" }
+                throw new SubmissionError(a)
+            }
+            if (!adrval.address) {
+                const a: any = { members: [] }
+                a.members[i] = { address: "Invalid address" }
+                throw new SubmissionError(a)
             }
             adrs.push(adrval.address)
         })
-        if (isErr) {
-            return
-        }
         console.log(adrs)
         if (!adrs || adrs.length === 0) {
-            alert("There is no send address.")
+            toast.error("There is no send address.", {
+                autoClose: 3000,
+                position: toast.POSITION.TOP_CENTER
+            });
             return
         }
-        validateAddresses(this.props.connected, adrs, (errs: string) => {
-            if (errs != null && errs.length > 0) {
-                alert(errs)
+        console.log(values.powType, values.Fee, parseInt(values.Fee, 10))
+        if (values.powType === "2") {
+            console.log(values.powType, values.Fee, parseInt(values.Fee, 10))
+            if (!values.Fee || !parseInt(values.Fee, 10)) {
+                toast.error("invalid fee", {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
+                return
+            }
+        }
+        validateAddresses(this.props.connected, adrs, (errs: string[]) => {
+            let ok = true
+            errs.map((e: string, i: number) => {
+                if (e) {
+                    alert(e + i)
+                    const a: any = { members: [] }
+                    a.members[i] = { address: "Invalid address" }
+                    touch('fieldArrays',...["members["+i+"].address"])
+                    dispatch(stopSubmit('fieldArrays', a))
+                    ok = false
+                }
+            })
+            if (!ok) {
                 return
             }
             const dest: IRawOutput[] = [];
@@ -126,18 +170,31 @@ class SendAdk extends React.Component<IProps> {
                 }
             })
             this.props.changeLoading({ value: !this.props.loading });
+            socket.on("finished_pow", (err: string) => {
+                if (err) {
+                    toast.error(err, {
+                        position: toast.POSITION.TOP_RIGHT
+                    });
+                    return
+                }
+                toast.success("finished PoW", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+                this.props.changeLoading({ value: !this.props.loading });
+            })
             send(this.props.connected, {
                 Comment: values.comment,
                 Dest: dest,
-                Fee: 0, // TODO
+                Fee: parseInt(values.Fee, 10), // TODO
                 PoWType: parseInt(values.powType, 10),
             }, (err: string) => {
                 if (err) {
-                    alert(err)
-                } else {
-                    // TODO
+                    toast.error(err, {
+                        autoClose: 3000,
+                        position: toast.POSITION.TOP_CENTER
+                    });
+                    this.props.changeLoading({ value: !this.props.loading });
                 }
-                this.props.changeLoading({ value: !this.props.loading });
             })
         })
     }

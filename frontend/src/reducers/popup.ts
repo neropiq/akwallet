@@ -20,7 +20,6 @@
 
 import { POPUP_VALUE, SHOW_POPUP} from '../actions/types';
 import { IPopupEntity } from '../model';
-import { state } from './index';
 
 const INITIAL_STATE = (): IPopupEntity => ({    
     popup: false,

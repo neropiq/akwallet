@@ -35,11 +35,6 @@ const INITIAL_STATE = (): IAddressEntity => ({
                 controle:"tab-3",
                 value: "Multisigs",
             },
-            {
-                active: false,
-                controle:"tab-4",
-                value: "Anon",
-            }
         ]
     },
     showGrid: true,
@@ -81,7 +76,6 @@ const AddressReducer = (state = INITIAL_STATE(), action: any) => {
         case ADDRESS_VALUE:
             return { ...state, addressValue: action.payload.addressValue }
         case PUSH_ADDRESS_DATA:
-            
             return { ...state, addressValue: state.addressValue.concat(action.payload.addressData ) }
         case CHANGE_ADDRESS_TAB:
             return {

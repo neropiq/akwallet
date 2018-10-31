@@ -1,6 +1,3 @@
-import { socket } from "../components/adminPanel/adminpanel";
-import { IConfigEntity } from "../model";
-
 // Copyright (c) 2018 Aidos Developer
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,9 +18,11 @@ import { IConfigEntity } from "../model";
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+import { socket } from "../components/adminPanel/adminpanel";
+import { IConfigEntity } from "../model";
 
 // normalTxResp is information about a normal tx.
-export interface IormalTxResp {
+export interface INormalTxResp {
     Recv: number
     Hash: string
     Amount: number
@@ -55,7 +54,7 @@ export interface ImultisigResp {
 
 // TxResp is a response to transactrion..
 export interface ItxResp {
-    NormalTx: IormalTxResp[]
+    NormalTx: INormalTxResp[]
     Ticket: IticketResp[]
     Multisig: ImultisigResp[]
     Error: string
@@ -225,13 +224,13 @@ export const cancelPow = (con: boolean, f: (t: string) => void) => {
     }
     socket.emit("cancel_pow", null, f)
 }
-export const validateAddresses = (con: boolean, adr: string[], f: (t: string) => void) => {
+export const validateAddresses = (con: boolean, adr: string[], f: (t: string[]) => void) => {
     if (!con) {
         return
     }
     socket.emit("validate_addresses", adr, f)
 }
-export const getAettings = (con: boolean, f: (t: IConfigEntity) => void) => {
+export const getSettings = (con: boolean, f: (t: IConfigEntity) => void) => {
     if (!con) {
         return
     }
@@ -254,11 +253,11 @@ export interface INodeInfo {
     Error: string
 }
 
-export const getNodeinfo = (con: boolean, f: (t: INodeInfo) => void) => {
+export const getNodeinfo = (con: boolean, n:number, f: (t: INodeInfo) => void) => {
     if (!con) {
         return
     }
-    socket.emit("get_nodeinfo", null, f)
+    socket.emit("get_nodeinfo", n, f)
 }
 
 
@@ -333,3 +332,15 @@ export const allPrivkeys = (con: boolean, f: (t: Iprivatekeys) => void) => {
 export const nets = [
     "MainNet", "TestNet", "DebugNet"
 ]
+
+export const isUpdated=(s1:string[],s2:string[])=>{
+    if (s1.length!==s2.length){
+        return true
+    }
+    s1.map((a: string, i: number) => {
+        if (a !== s2[i]) {
+            return true
+        }
+    })
+    return false
+}

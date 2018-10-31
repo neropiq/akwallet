@@ -46,13 +46,14 @@ class NodeStatus extends React.Component<IProps, IStates> {
     }
 
     public componentDidMount() {
-        console.log(this.props.connected)
+        console.log("nodestaus didmount")
         getNodesstatus(this.props.connected, (stats: boolean[]) => {
             this.setState({
                 stats
             })
+            this.updateState(this.state.selected)
+            console.log("end of didmount")
         })
-        this.updateState(this.state.selected)
     }
 
     public render() {
@@ -114,7 +115,7 @@ class NodeStatus extends React.Component<IProps, IStates> {
                                     </tr>
                                     <tr>
                                         <th>Time in the Node</th>
-                                        <td>{this.state.info ? formatDate(this.state.info.time): "-"}</td>
+                                        <td>{this.state.info ? formatDate(this.state.info.time) : "-"}</td>
                                     </tr>
                                     <tr>
                                         <th>Transaction numbers</th>
@@ -123,7 +124,7 @@ class NodeStatus extends React.Component<IProps, IStates> {
                                     <tr>
                                         <th>Last Ledger No</th>
                                         <td>{this.state.info ? this.state.info.latest_ledger_no : "-"}</td>
-                                        </tr>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -133,16 +134,21 @@ class NodeStatus extends React.Component<IProps, IStates> {
         );
     }
     private updateState = (n: number) => {
-        getNodeinfo(this.props.connected, (info: INodeInfo) => {
+        getNodeinfo(this.props.connected, n, (info: INodeInfo) => {
             if (info.Error) {
-                alert(info.Error)
+                console.log(n + " is dead")
+                this.setState({
+                    info:null,
+                })            
                 return
             }
-            console.log("state",info)
+            console.log("state", info)
             this.setState({
                 info,
-                selected: n,
             })
+        })
+        this.setState({
+            selected: n,
         })
     }
     private onSelectServer = (e: React.ChangeEvent<HTMLSelectElement>) => {

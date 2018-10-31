@@ -124,7 +124,7 @@ func TestSync(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 	adr2, err := GetAddresses(s)

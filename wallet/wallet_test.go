@@ -93,7 +93,7 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if newtx {
+	if len(newtx) != 0 {
 		t.Error("invalid sync")
 	}
 
@@ -122,7 +122,7 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 
@@ -151,7 +151,7 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 
@@ -164,7 +164,7 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 	tsent1, err := imesh.GetTx(s1.DB, h)
@@ -202,7 +202,7 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 
@@ -220,11 +220,11 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !confirmed {
+	if len(confirmed) == 0 {
 		t.Error("should be confirmed")
 	}
 
-	h, err = SendEvent(s, &tx.BuildParam{
+	err = Send(s, &tx.BuildParam{
 		Comment: "moemoe",
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
@@ -248,7 +248,7 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid syncdb")
 	}
 
@@ -285,7 +285,7 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !confirmed {
+	if len(confirmed) == 0 {
 		t.Fatal("should be confirmed")
 	}
 
@@ -373,7 +373,7 @@ func TestWallet(t *testing.T) {
 
 	stopped := false
 	go func() {
-		SendEvent(s, &tx.BuildParam{
+		Send(s, &tx.BuildParam{
 			Dest: []*tx.RawOutput{
 				&tx.RawOutput{
 					Address: a.Address58(s.Config),

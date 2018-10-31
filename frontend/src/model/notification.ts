@@ -19,5 +19,6 @@
 // THE SOFTWARE.
 
 export interface INotificationEntity {
-   notification_count:number;
+   notificationCount:number;
+   notification:string[];
 }

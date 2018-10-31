@@ -157,17 +157,17 @@ func isUsed(s *setting.Setting, isPublic bool, index uint32) (bool, error) {
 	return len(hist) > 0, err
 }
 
-func checkConfirmed(s *setting.Setting) (bool, error) {
+func checkConfirmed(s *setting.Setting) ([]tx.Hash, error) {
 	histdb, err := walletImpl.GetHistory(&s.DBConfig)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	var unc []string
 	for _, h := range histdb {
 		ti, err2 := imesh.GetTxInfo(s.DB, h.Hash)
 		log.Println(ti.Hash, ti.StatNo)
 		if err2 != nil {
-			return false, err2
+			return nil, err2
 		}
 		if ti.StatNo == imesh.StatusPending {
 			unc = append(unc, hex.EncodeToString(ti.Hash))
@@ -175,7 +175,7 @@ func checkConfirmed(s *setting.Setting) (bool, error) {
 	}
 	if len(unc) == 0 {
 		log.Println("no pending txs")
-		return false, nil
+		return nil, nil
 	}
 	var stats []*crpc.TxStatus
 	err = s.CallRPC(func(cl setting.RPCIF) error {
@@ -184,30 +184,30 @@ func checkConfirmed(s *setting.Setting) (bool, error) {
 		return err2
 	})
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	var news []tx.Hash
 	for i, stat := range stats {
 		if stat.IsConfirmed {
 			txid, err := hex.DecodeString(unc[i])
 			if err != nil {
-				return false, err
+				return nil, err
 			}
 			ti, err := imesh.GetTxInfo(s.DB, txid)
 			if err != nil {
-				return false, err
+				return nil, err
 			}
 			ti.StatNo = toStatNo(stat)
 			ti.IsRejected = stat.IsRejected
 			if err := ti.Put(s.DB); err != nil {
-				return false, err
+				return nil, err
 			}
 			if stat.IsAccepted() {
 				news = append(news, txid)
 			}
 		}
 	}
-	return len(news) > 0, nil
+	return news, nil
 }
 
 func toStatNo(st *crpc.TxStatus) imesh.StatNo {
@@ -224,14 +224,14 @@ func toStatNo(st *crpc.TxStatus) imesh.StatNo {
 	return imesh.StatusPending
 }
 
-func syncDB(s *setting.Setting, isPublic bool) (bool, error) {
+func syncDB(s *setting.Setting, isPublic bool) ([]*walletImpl.History, error) {
 	adrmap := wallet.AddressChange
 	if isPublic {
 		adrmap = wallet.AddressPublic
 	}
 	histdb, err := walletImpl.GetHistory(&s.DBConfig)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
 	log.Println("histdb", histdb)
 	var news []*walletImpl.History
@@ -243,7 +243,7 @@ func syncDB(s *setting.Setting, isPublic bool) (bool, error) {
 			return err2
 		})
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		log.Println("getlasthistory", hist)
 	loop:
@@ -261,10 +261,10 @@ func syncDB(s *setting.Setting, isPublic bool) (bool, error) {
 				return err2
 			})
 			if err3 != nil {
-				return false, err3
+				return nil, err3
 			}
 			if err := putTx(s, tr); err != nil {
-				return false, err
+				return nil, err
 			}
 			log.Println("put", tr.Hash())
 			news = append(news, &walletImpl.History{
@@ -282,17 +282,17 @@ func syncDB(s *setting.Setting, isPublic bool) (bool, error) {
 		return news[i].Received.Before(news[j].Received)
 	})
 	histdb = append(histdb, news...)
-	return len(news) > 0, walletImpl.PutHistory(&s.DBConfig, histdb)
+	return news, walletImpl.PutHistory(&s.DBConfig, histdb)
 }
 
-func notify(s *setting.Setting, newtx, confirmed bool) error {
-	if newtx {
-		if err := s.GUI.Emit("new_tx", nil, nil); err != nil {
+func notify(s *setting.Setting, newtx []*walletImpl.History, confirmed []tx.Hash) error {
+	for _, tr := range newtx {
+		if err := s.GUI.Emit("notify", "a tx '"+tr.Hash.String()[:4]+"...' arrived", nil); err != nil {
 			return nil
 		}
 	}
-	if confirmed {
-		if err := s.GUI.Emit("confirmed", nil, nil); err != nil {
+	for _, tr := range confirmed {
+		if err := s.GUI.Emit("notify", "a tx '"+tr.String()[:4]+"...' was confirmed", nil); err != nil {
 			return nil
 		}
 	}

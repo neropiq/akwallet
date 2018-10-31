@@ -1,29 +1,7 @@
 {
     "fields": ["QR Code", "Address", "Received"],
     "data":  [
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 12345678.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"],
-        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 1.12345678 ADK"]
+        ["../../assets/images/qr-code-list-icon.png", "AKADRST53rF6mZAS81...", "Recv: 12345678.12345678 ADK"]
     ]
 }
   

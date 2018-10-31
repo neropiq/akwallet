@@ -18,7 +18,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import loadjs = require('loadjs');
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Redirect, Route, Switch } from "react-router-dom";
@@ -30,9 +29,8 @@ import GUI from '../../GUI'
 import { IConfigEntity } from '../../model';
 import { IStoreState } from '../../reducers';
 import dashboardRoutes from "../../routes/route";
-import { allPrivkeys, getAettings, Iprivatekeys } from '../../utils/remote';
+import { allPrivkeys, getSettings, Ibalance, Iprivatekeys, ItxResp } from '../../utils/remote';
 import Header from "../header/header";
-import Popup from '../popup/popup';
 import Sidebar from '../sidebar/sidebar';
 import './../../assets/css/animate.css';
 import './../../assets/css/bootstrap.min.css';
@@ -63,7 +61,6 @@ interface IchangeCardTabSettingProps {
 interface IProps {
 	connected: boolean;
 	isAuthenticated: boolean;
-	notification_count:number;
 	history: any;
 	location: any;
 	settingTab: any;
@@ -71,12 +68,13 @@ interface IProps {
 	updateConfig: (cfg: IConfigEntity) => void;
 	updateConnected: (con: boolean) => void;
 	updatePrivkeys: (privkeys: string[]) => void,
-	updateNotificationCount: ( notificationCount:number ) => void;
+	addNotification: (n: string) => void;
+	updateNotificationCount: (notificationCount: number) => void;
 }
 
 interface IState {
-	popup:boolean;
-	value:string;
+	popup: boolean;
+	value: string;
 	// previousLocation:any;
 }
 
@@ -85,10 +83,10 @@ export let socket: GUI
 class AdminPanel extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
-		this.state = {			
-			popup:true,
-			value:'You Received Payment from Jack',
-			
+		this.state = {
+			popup: true,
+			value: 'You Received Payment from Jack',
+
 		}
 	}
 	public componentDidMount() {
@@ -104,37 +102,48 @@ class AdminPanel extends React.Component<IProps, IState> {
 			return
 		}
 		const to = setTimeout(() => {
-			alert("Cannot connect to backend.")
+			toast.error("Cannot connect to backend.", {
+				autoClose: false,
+				position: toast.POSITION.TOP_CENTER
+			});
 		}, 3000)
 		socket.onConnect(() => {
 			clearTimeout(to)
 			this.props.updateConnected(true)
-			getAettings(true, (cfg: IConfigEntity) => {
+			getSettings(true, (cfg: IConfigEntity) => {
 				this.props.updateConfig(cfg)
 			})
 			allPrivkeys(true, (p: Iprivatekeys) => {
 				if (p.Error) {
-					alert(p.Error)
+					toast.error(p.Error, {
+						autoClose: false,
+						position: toast.POSITION.TOP_CENTER
+					});
 					return
 				}
 				this.props.updatePrivkeys(p.PKs)
 			})
 			console.log("connected", socket)
 		});
-		socket.on("new_tx",()=>{
+		socket.on("notify", (msg: string) => {
 			// TODO
-			alert("new tx")
-		})
-		socket.on("confirmed",()=>{
-			// TODO
-			alert("confirmed")
+			toast.success(msg, {
+				position: toast.POSITION.TOP_RIGHT
+			});
+			this.props.addNotification(msg)
 		})
 		socket.onDisconnect(() => {
-			alert("Disconnected from backend. Please restart.")
+			toast.error("Disconnected from backend. Please restart.", {
+				autoClose: false,
+				position: toast.POSITION.TOP_CENTER
+			});
 			this.props.updateConnected(false)
 		});
 		socket.onError((str: string) => {
-			alert(str)
+			toast.error(str, {
+				autoClose: false,
+				position: toast.POSITION.TOP_CENTER
+			});
 		})
 		socket.connect()
 	}
@@ -148,10 +157,10 @@ class AdminPanel extends React.Component<IProps, IState> {
 			(this.props.location.pathname === '/login' || this.props.location.pathname === '/signup') ?
 				<div>{switchRoutes}</div> :
 				<div>
-									<ToastContainer  />
-				{/* {this.state.popup ? <Popup textvalue={this.state.value} onclosepopup={this.closepopup}/>: ''} */}
-				{/* {this.state.popup ? <ToastContainer  />: ''} */}
-					<Header icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} notiCount={this.props.notification_count} onNotificationClick={this.onNotificationClick}  />
+					<ToastContainer />
+					{/* {this.state.popup ? <Popup textvalue={this.state.value} onclosepopup={this.closepopup}/>: ''} */}
+					{/* {this.state.popup ? <ToastContainer  />: ''} */}
+					<Header icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} />
 					<div className="clearfix" />
 					<div className="page-container">
 						<Sidebar icons={sidebar.data} location={this.props.location.pathname} />
@@ -162,52 +171,33 @@ class AdminPanel extends React.Component<IProps, IState> {
 		);
 	}
 
-	private toasterCalled(){
-		console.log('totacer functin called');
-		toast.success("Success Notification !", {
-			position: toast.POSITION.TOP_RIGHT
-		});
-		if(this.props.notification_count >= 0){
-			const count = this.props.notification_count+1;
-			this.props.updateNotificationCount(count);
-		}
-	}
-
-	private closepopup = () =>{
-		this.setState(() => ({
-			popup: false
-		}));
-	}
-
 	private changeHeader = () => {
 		const newFilter: any = 'Migration';
 		setTimeout(() => {
 			this.props.changeCardTabSetting({ newFilter, oldFilter: this.props.settingTab });
 		});
 	}
-
-
-	private onNotificationClick =() =>{
-		console.log('notification click');
-		this.props.updateNotificationCount(0);
+	private handleViewed = () => {
+		console.log("!!")
+		this.props.updateNotificationCount(0)
 	}
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch) => {
 	return {
+		addNotification: (n: string) => dispatch(actions.addNotification(n)),
 		changeCardTabSetting: ({ newFilter, oldFilter }: IchangeCardTabSettingProps) => dispatch(actions.changeCardTabSetting({ newFilter, oldFilter })),
 		updateConfig: (cfg: IConfigEntity) => dispatch(actions.updateConfig(cfg)),
 		updateConnected: (con: boolean) => dispatch(actions.updateConnnected(con)),
-		updateNotificationCount: ( notificationCount:any) => dispatch(actions.updateNotificationCount( notificationCount )),
+		updateNotificationCount: (notificationCount: any) => dispatch(actions.updateNotificationCount(notificationCount)),
 		updatePrivkeys: (pks: string[]) => dispatch(actions.updatePrivkeys(pks)),
 	}
 }
 
 export function mapStateToProps(state: IStoreState) {
 	const { isAuthenticated } = state.login;
-	const { notification_count } = state.notification;
 	const { settingTab } = state.setting.cardSettingTab;
-	return { isAuthenticated, settingTab, notification_count,connected: state.connected };
+	return { isAuthenticated, settingTab, connected: state.connected };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdminPanel);

@@ -27,7 +27,6 @@ import CardTab from '../cardTab/cardTab';
 import SubHeader from '../subheader/subheader';
 import FAQ from './faq';
 import Migration from './migration';
-// import './../../assets/css/jquery.mCustomScrollbar.css';
 import Mining from './mining';
 import NodeStatus from './nodestatus';
 import Server from './server';

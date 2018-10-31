@@ -1,4 +1,3 @@
-import React = require("react");
 
 // Copyright (c) 2018 Aidos Developer
 
@@ -19,6 +18,8 @@ import React = require("react");
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
+import React = require("react");
 
 export const INCREMENT_ENTHUSIASM = 'INCREMENT_ENTHUSIASM';
 export type INCREMENT_ENTHUSIASM = typeof INCREMENT_ENTHUSIASM;

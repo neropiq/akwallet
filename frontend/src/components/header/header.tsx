@@ -23,6 +23,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { NavLink } from 'react-router-dom';
 import { Dispatch } from 'redux';
+import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';
 import { nets } from '../../utils/remote';
 
@@ -30,19 +31,20 @@ interface IProps {
     icons: any;
     location: any;
     testnet: number;
-    notiCount: number;
+    noti: string[];
+    notificationCount: number;
     changeHeader: () => void;
-    onNotificationClick: () => void;
+    updateNotificationCount: (notificationCount: number) => void;
 }
 interface IState {
-    showNotification: boolean
+    showNotification: boolean,
 }
 
 class Header extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            showNotification: false
+            showNotification: false,
         }
     }
     public componentDidMount() {
@@ -87,38 +89,26 @@ class Header extends React.Component<IProps, IState> {
                                 <a href='/' className="navbar-brand dashboard-logo">
                                     <img src={require("../../assets/images/logo-small.png")} className="img-fluid" alt="logo" />
                                     <span className="brand-name">{this.props.testnet === 0 ? "" : nets[this.props.testnet]}</span>
+
                                 </a>
                             </div>
                         </div>
                         <div className="header-tool-action d-inline-flex">
                             <div className="top-menu">
                                 <ul className="notification-group d-inline-block profile-list ">
-                                    <li className="dropdown">
-                                        <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
-                                            <i className="icon-bell" />
-                                            <span className="badge badge-danger">{this.props.notiCount > 0 ? this.props.notiCount : ''}</span>
+                                    <li className="dropdown" >
+                                        <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown"
+                                            aria-haspopup="true" aria-expanded="false" onMouseDown={this.handleViewed} > {/* don't work if onClick (due to dropdown?)*/}
+                                            <i className="icon-bell"  />
+                                            <span className="badge badge-danger" >{this.props.notificationCount > 0 ? this.props.notificationCount : ''}</span>
                                         </a>
-                                        <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
-
-                                            <a href='#' className="dropdown-item"> <i className="icon-user" />You Received Payment from Jack</a>
-                                            <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
-                                            <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
-                                            <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
-                                        </div>
-                                    </li>
-
-                                    <li className="dropdown">
-                                        <a href='#' className="dropdown-toggle" id="dropdownMsg" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i className="icon-envelope-letter" />
-                                        </a>
-
-                                    </li>
-
-                                    <li className="dropdown">
-                                        <a href='#' className="dropdown-toggle" id="dropdownCalender" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            <i className="icon-calendar"/>
-                                        </a>
-
+                                            <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
+                                                {
+                                                    this.props.noti.map((n: string, i: number) => (
+                                                        <a href='#' key={i} className="dropdown-item"> <i className="icon-user" />{n}</a>
+                                                    ))
+                                                }
+                                            </div>
                                     </li>
                                 </ul>
 
@@ -163,19 +153,20 @@ class Header extends React.Component<IProps, IState> {
                                 <div className="top-menu">
                                     <ul className="notification-group d-inline-block">
                                         <li className="dropdown">
-                                            <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  >
+                                            <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown" 
+                                            aria-haspopup="true" aria-expanded="false"   onMouseDown={this.handleViewed}  >
                                                 {/* data-balloon="Whats up!" data-balloon-pos="down" */}
                                                 {/* data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" */}
                                                 <i className="icon-bell" />
-                                                <span className="badge badge-danger">{this.props.notiCount > 0 ? this.props.notiCount : ''}</span>
+                                                <span className="badge badge-danger">{this.props.notificationCount > 0 ? this.props.notificationCount : ''}</span>
                                             </a>
-                                            <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
-
-                                                <a href='#' className="dropdown-item"> <i className="icon-user" /> You Received Payment from Jack</a>
-                                                <a href='#' className="dropdown-item"><i className="icon-user" />You Received Payment from Jack</a>
-                                                <a href='#' className="dropdown-item"><i className="icon-user" /> You Received Payment from Jack</a>
-                                                <a href='#' className="dropdown-item"><i className="icon-user" /> You Received Payment from Jack</a>
-                                            </div>
+                                                <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
+                                                    {
+                                                        this.props.noti.map((n: string, i: number) => (
+                                                            <a href='#' key={i} className="dropdown-item"> <i className="icon-user" />{n}</a>
+                                                        ))
+                                                    }
+                                                </div>
                                         </li>
                                     </ul>
 
@@ -212,15 +203,21 @@ class Header extends React.Component<IProps, IState> {
             </div>
         );
     }
+
+    private handleViewed = () => {
+        console.log("!!")
+        this.props.updateNotificationCount(0)
+    }
 }
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
+        updateNotificationCount: (notificationCount: any) => dispatch(actions.updateNotificationCount(notificationCount)),
     }
 }
 const mapStateToProps = (state: IStoreState) => {
     const { Testnet: testnet } = state.config;
-    return { testnet };
+    return { testnet, noti: state.notification.notification ,notificationCount:state.notification.notificationCount}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

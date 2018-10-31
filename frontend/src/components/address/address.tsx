@@ -21,11 +21,13 @@
 import QRCode from 'qrcode.react';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
+import { Itab } from '../../model';
 import { IStoreState } from '../../reducers';
-import { getAddresses, getNewaddress, IAddress, IaddressRecv, INewAddress, toADK } from '../../utils/remote';
+import { getAddresses, getNewaddress, IAddress, IaddressRecv, ImultisigResp, INewAddress, isUpdated, toADK } from '../../utils/remote';
 // import { AddressModel } from './addressmodel';
 import CardTab from '../cardTab/cardTab';
 import Grid from '../grid/grid';
@@ -50,10 +52,10 @@ interface IchangeProps {
 interface IProps {
     connected: boolean;
     title: string;
-    tab: any;
+    tab: Itab[];
     tables: any[];
-    titleList: any;
     views: string;
+    noti: string[]; // for updating by notification
     addressValue: [];
     showGrid: boolean;
     popup: boolean;
@@ -75,19 +77,18 @@ class Address extends React.Component<IProps> {
     public componentDidMount() {
         document.title = "Address || Aidos Wallet";
         Scrollbar.init(document.querySelector('#scrolle'));
-        getAddresses(this.props.connected, (adr: IAddress) => {
-            address.data = []
-            adr.Normal.map((adrrecv: IaddressRecv, index: number) => {
-                const val = {
-                    value1: adrrecv.String,
-                    value2: "Recv: " + toADK(adrrecv.Recv) + " ADK",
-                }
-                address.data.push(val)
-            })
-            this.props.changeAddressValue(address.data);
-        })
+        this.updateData("Normal")
     }
-
+    public componentWillReceiveProps(nextProps: IProps) {
+        if (isUpdated(nextProps.noti, this.props.noti)) {
+            this.props.tab.map((t: Itab, ii: number) => {
+                if (t.active) {
+                    this.updateData(t.value)
+                }
+            })
+            return
+        }
+    }
 
     public render() {
         return (
@@ -100,8 +101,11 @@ class Address extends React.Component<IProps> {
                                 <span className="modal-title model-set" title={this.props.popup_Value}><span>{this.props.popup_Value}</span></span>
                                 <button type="button" className="close" data-dismiss="modal" >×</button>
                             </div>
-                            <div className="modal-body text-center">
-                                <QRCode value={this.props.popup_Value} size={170} level="M" />
+                            <div className="bmodal-body  mx-auto text-center">
+                                <div className="bg-white   mx-auto  align-middle " style={{ width: 180, height: 180 }} >
+                                    <div className="bg-white   mx-auto  align-middle " style={{ width: 5, height: 5 }} />
+                                    <QRCode value={this.props.popup_Value} size={170} level="H" />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -132,18 +136,51 @@ class Address extends React.Component<IProps> {
                         </div>
                     </div>
                 </div>
-                <div className="d-md-none d-block clearfix add-plus-btn">
-                    <div className="float-right" onClick={this.onViewChange}>
-                        <a href="#"><i className="icon-plus"/></a>
+                {this.props.tab[0].active && (
+                    <div className="d-md-none d-block clearfix add-plus-btn">
+                        <div className="float-right" onClick={this.onViewChange}>
+                            <a href="#"><i className="icon-plus" /></a>
+                        </div>
                     </div>
-                </div>
-
+                )
+                }
             </div>
         );
     }
 
+    private updateData = (kind: string) => {
+        getAddresses(this.props.connected, (adr: IAddress) => {
+            address.data = []
+            switch (kind) {
+                case "Normal":
+                    adr.Normal.map((adrrecv: IaddressRecv, index: number) => {
+                        const val = {
+                            value1: adrrecv.String,
+                            value2: "Recv: " + toADK(adrrecv.Recv) + " ADK",
+                        }
+                        address.data.push(val)
+                    })
+                    break
+                case "Multisigs":
+                    adr.Multisig.map((adrrecv: IaddressRecv, index: number) => {
+                        const val = {
+                            value1: adrrecv.String,
+                            value2: "Recv: " + toADK(adrrecv.Recv) + " ADK",
+                        }
+                        address.data.push(val)
+                    })
+                    break
+                default:
+                    console.log("invalid address kind", kind)
+                    return
+            }
+            this.props.changeAddressValue(address.data);
+        })
+    }
+
     private onCardChange = (newFilter: any) => {
         this.props.changeCardTabAddress({ newFilter, oldFilter: this.props.tab });
+        this.updateData(newFilter)
     }
 
     private onViewChange = (newView: any) => {
@@ -154,14 +191,23 @@ class Address extends React.Component<IProps> {
         } else {
             getNewaddress(this.props.connected, (adr: INewAddress) => {
                 if (adr.Error) {
-                    alert(adr.Error)
+                    toast.error(adr.Error, {
+                        autoClose: false,
+                        position: toast.POSITION.TOP_CENTER
+                    });
                     return
                 }
                 const data = {
                     "value1": adr.Address,
                     "value2": "Recv: 0 ADK",
+                    "value3": "New!"
                 }
                 this.props.pushAddressValue(data);
+                this.onCardChange("Normal");
+                toast.success("address "+adr.Address+" was added", {
+                    autoClose: 5000,
+                    position: toast.POSITION.TOP_RIGHT
+                });
             })
         }
     }
@@ -182,7 +228,9 @@ export const mapStateToProps = (state: IStoreState) => {
     const { showGrid, addressValue } = state.address;
     const { popup, popup_Value } = state.popup;
     const { tab } = state.address.cardHeaderTab;
-    return { title, views, showGrid, popup, popup_Value, addressValue, connected: state.connected, tab };
+    console.log(tab)
+    // must make a new array.
+    return { title, views, showGrid, popup, popup_Value, addressValue, connected: state.connected, tab, noti: [...state.notification.notification] };
 }
 
 

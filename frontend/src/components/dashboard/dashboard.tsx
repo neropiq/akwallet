@@ -20,13 +20,13 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
 import { Ifilter } from '../../model';
 import { IStoreState } from '../../reducers';
-import { getBalance, getTransactions, Ibalance, IormalTxResp, ItxResp, toADK, toTimestamp, txStat } from '../../utils/remote';
+import { getBalance, getTransactions, Ibalance, INormalTxResp, isUpdated, ItxResp, toADK, toTimestamp, txStat } from '../../utils/remote';
 import Card, { ICardProps } from '../card/card';
 import SubHeader from '../subheader/subheader';
 import Table from '../table/table';
@@ -47,7 +47,7 @@ interface IProps {
     connected: boolean;
     title: string;
     filters: Ifilter[];
-    notification_count: number;
+    noti: string[]; // for updating by notification
     changeFilter: ({ newFilter, oldFilter }: IchangeFilterProps) => void;
     changeSelect: ({ value }: IchangeSelectProps) => void;
     updateNotificationCount: (notificationCount: number) => void;
@@ -68,23 +68,24 @@ class Dashboard extends React.Component<IProps, IStates> {
     public componentDidMount() {
         document.title = "Dashboard || Aidos Wallet";
         Scrollbar.init(document.querySelector('#scrolle'));
-        toast.success("Success Notification !", {
-            position: toast.POSITION.TOP_RIGHT
-        });
-        if (this.props.notification_count >= 0) {
-            const count = this.props.notification_count + 1;
-            this.props.updateNotificationCount(count);
-        }
         this.updateBalance(this.props.filters[0].value)
         this.updateTx(this.props.filters[0].value)
     }
-
+    public componentWillReceiveProps(nextProps: IProps) {
+        if (isUpdated(this.props.noti, nextProps.noti)) {
+            this.props.filters.map((f: Ifilter, i: number) => {
+                if (f.active) {
+                    this.updateBalance(f.value)
+                    this.updateTx(f.value)
+                }
+            })
+        }
+    }
     public render() {
         return (
             <div className="page-content-wrapper" >
                 <div className="page-content">
                     {/*Main Page Content*/}
-
                     <SubHeader title={this.props.title} filters={this.props.filters} onFilterChange={this.onFilterChange} />
                     <Card cards={this.state.carddata} />
                     <div className="row">
@@ -113,7 +114,10 @@ class Dashboard extends React.Component<IProps, IStates> {
         }
         getBalance(this.props.connected, no, (bal: Ibalance) => {
             if (bal.Error) {
-                alert(bal.Error)
+                toast.error(bal.Error, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             console.log(bal)
@@ -134,12 +138,15 @@ class Dashboard extends React.Component<IProps, IStates> {
         }
         getTransactions(this.props.connected, no, (tr: ItxResp) => {
             if (tr.Error) {
-                alert(tr.Error)
+                toast.error(tr.Error, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             const data: string[][] = []
             if (tr.NormalTx != null) {
-                tr.NormalTx.map((trr: IormalTxResp, i: number) => {
+                tr.NormalTx.map((trr: INormalTxResp, i: number) => {
                     if (i > 5) {
                         return
                     }
@@ -178,8 +185,9 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
 
 
 export const mapStateToProps = (state: IStoreState) => {
+    console.log(state.notification)
     const { title, filters } = state.dashboard.subHeader;
-    return { title, filters, connected: state.connected, notification_count: state.notification.notification_count };
+    return { title, filters, connected: state.connected, noti: [...state.notification.notification] }; // must make a new array.
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);

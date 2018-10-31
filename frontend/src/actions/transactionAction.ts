@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { CHANGE_CARD_TAB, CHANGE_TRANSACTION } from './types';
+import { CHANGE_CARD_TAB, CHANGE_TRANSACTION} from './types';
 
 interface IProps {
     value?: boolean;

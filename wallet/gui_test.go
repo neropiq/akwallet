@@ -125,24 +125,23 @@ func TestGUI(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
-	notify(s, true, false)
-	time.Sleep(10 * time.Second)
-	notify(s, false, true)
 	t.Log("sent 10ADK to normal, 5ADK to multisig synced")
+	notify(s, newtx, nil)
 
-	time.Sleep(60 * time.Second)
+	time.Sleep(10 * time.Second)
 	confirmAll(t, true)
 	confirmed, err := checkConfirmed(s)
 	if err != nil {
 		t.Error(err)
 	}
-	if !confirmed {
+	if len(confirmed) == 0 {
 		t.Error("should be confirmed")
 	}
 	t.Log("confirmed")
+	notify(s, nil, confirmed)
 	wgui.Wait(guis)
 
 }

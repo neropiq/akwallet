@@ -18,7 +18,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { compose, createStore, Store } from 'redux';
+import { createStore, Store } from 'redux';
 import { IStoreState, state } from '../reducers';
 
 export const store: Store<IStoreState> = createStore(state, 

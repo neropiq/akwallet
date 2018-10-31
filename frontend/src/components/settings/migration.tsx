@@ -22,6 +22,7 @@ import "bootstrap"
 import $ from 'jquery';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast } from "react-toastify";
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/settingsAction';
 import { IStoreState } from '../../reducers';
@@ -99,43 +100,60 @@ class Migration extends React.Component<IProps, IStates> {
         })
     }
     private handleClaim = (e: React.MouseEvent<HTMLButtonElement>) => {
-        console.log("handlelaim")
         claim(this.props.connected, {
             Amount: this.state.amount,
             Seed: this.state.seed,
         }, (err: string) => {
             if (err) {
-                alert(err)
+                toast.error(err, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
+                return
             }
-            // TODO
-            alert("Success")
+            toast.success("Claimed successfully", {
+                autoClose: 1500,
+                position: toast.POSITION.TOP_RIGHT
+            });
         })
     }
 
     private handlePrepare = (e: React.MouseEvent<HTMLAnchorElement>) => {
         if (this.state.seed.length !== 81) {
-            alert("invalid seed length")
+            toast.error("invalid seed length", {
+                autoClose: 3000,
+                position: toast.POSITION.TOP_CENTER
+            });
             return
         }
         for (const c of this.state.seed) {
             if (!(c === '9' || ('A' <= c && c <= 'Z'))) {
-                alert("invalid character in seed " + c)
+                toast.error("invalid character in seed " + c, {
+                    autoClose: 3000,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
         }
-        $("#migraction").modal()
         getOldbalance(this.props.connected, this.state.seed, (amt: IOldAmount) => {
             if (amt.Error) {
-                alert(amt.Error)
+                toast.error(amt.Error, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             if (amt.Amount === 0) {
-                alert("Amount is 0")
+                toast.error("Amount of this seed is 0", {
+                    autoClose: 3000,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             this.setState({
                 amount: amt.Amount,
             })
+            $("#migraction").modal()
         })
     }
 }

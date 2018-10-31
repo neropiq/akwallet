@@ -85,6 +85,12 @@ func (cfg *Setting) UpdateMiner(s Miner, cancel context.CancelFunc) {
 	cfg.CancelMiner = cancel
 }
 
+//Client represents the rpcIF with an alive flag.
+type Client struct {
+	RPCIF
+	Alive bool
+}
+
 //Setting is  a aknode setting.
 type Setting struct {
 	sync.RWMutex `msgpack:"-" json:"-"`
@@ -95,7 +101,7 @@ type Setting struct {
 	Servers      []string
 	Proxy        string
 	Miner
-	Client         []RPCIF `msgpack:"-" json:"-"`
+	Client         []Client `msgpack:"-" json:"-"`
 	aklib.DBConfig `msgpack:"-" json:"-"`
 	GUI            gui                `msgpack:"-" json:"-"`
 	CancelPoW      context.CancelFunc `msgpack:"-" json:"-"`
@@ -160,10 +166,10 @@ func Load(rootdir string, net int) (*Setting, error) {
 }
 
 //GetClients returns clients in config.
-func (cfg *Setting) GetClients() []RPCIF {
+func (cfg *Setting) GetClients() []Client {
 	cfg.RLock()
 	defer cfg.RUnlock()
-	c := make([]RPCIF, len(cfg.Client))
+	c := make([]Client, len(cfg.Client))
 	copy(c, cfg.Client)
 	return c
 }
@@ -200,10 +206,13 @@ func (cfg *Setting) SetClient(servers []string) error {
 		}
 		cl.Transport = &http.Transport{Proxy: http.ProxyURL(p)}
 	}
-	cfg.Client = make([]RPCIF, 0, len(servers))
-	for _, s := range servers {
-		cl := crpc.New(s, "", "", &cl)
-		ni, err := cl.GetNodeinfo()
+	cfg.Client = make([]Client, len(servers))
+	ok := false
+	for i, s := range servers {
+		cfg.Client[i] = Client{
+			RPCIF: crpc.New(s, "", "", &cl),
+		}
+		ni, err := cfg.Client[i].GetNodeinfo()
 		if err != nil {
 			log.Println(s, err)
 			continue
@@ -212,9 +221,10 @@ func (cfg *Setting) SetClient(servers []string) error {
 			log.Println(s, "wrong net")
 			continue
 		}
-		cfg.Client = append(cfg.Client, cl)
+		ok = true
+		cfg.Client[i].Alive = true
 	}
-	if len(cfg.Client) == 0 {
+	if !ok {
 		return errors.New("no valid servers")
 	}
 	return nil
@@ -225,17 +235,24 @@ func (cfg *Setting) CallRPC(f func(RPCIF) error) error {
 	cfg.RLock()
 	defer cfg.RUnlock()
 
-	var err error
-	if len(cfg.Client) != len(cfg.Servers) {
-		if err = cfg.SetClient(cfg.Servers); err != nil {
-			return err
+	ok := false
+	for _, cl := range cfg.Client {
+		if cl.Alive {
+			ok = true
+			break
 		}
 	}
+	var err error
 	for _, cl := range cfg.Client {
+		if ok && !cl.Alive {
+			continue
+		}
 		if err = f(cl); err != nil {
 			log.Println(err)
+			cl.Alive = false
 		} else {
-			break
+			cl.Alive = true
+			return nil
 		}
 	}
 	return err

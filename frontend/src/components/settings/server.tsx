@@ -20,11 +20,12 @@
 
 import * as React from 'react';
 import * as reactRedux from 'react-redux';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions';
 import { IConfigEntity } from '../../model';
 import { IStoreState } from '../../reducers';
-import { getAettings, updateServer } from '../../utils/remote';
+import { getSettings, updateServer } from '../../utils/remote';
 
 interface IProps {
     connected: boolean;
@@ -53,8 +54,11 @@ class Server extends React.Component<IProps, IStates> {
                     <div className="col-lg-6 col-md-6 col-sm-12 col-12">
                         <div className="send-adk-form">
                             {this.state.newServers && this.state.newServers.map((svr: string, i: number) => (
-                                <div className="form-group" key={i}>
-                                    <input type="text" autoComplete="off" className="form-control" name="comment" value={svr} onChange={this.handleChange(i)} />
+                                <div className="form-inline" key={i}>
+                                    <input type="text" autoComplete="off" id={"server" + i} className="form-control" name="comment" value={svr} onChange={this.handleChange(i)} />
+                                    <span className="invalid-feedback text-warning">
+                                        Invalid server name
+                                    </span>
                                 </div>
                             ))
                             }
@@ -83,7 +87,7 @@ class Server extends React.Component<IProps, IStates> {
                 }
                 newservers.push(s)
             } catch (e) {
-                alert("invalid server name at " + i)
+                $("#server" + i).addClass("is-invalid")
                 err = true
             }
         })
@@ -92,13 +96,18 @@ class Server extends React.Component<IProps, IStates> {
         }
         updateServer(this.props.connected, newservers, (errr: string) => {
             if (errr) {
-                alert(errr)
+                toast.error(errr, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
+            toast.success("Saved successfully", {
+                autoClose: 1500,
+                position: toast.POSITION.TOP_RIGHT
+            });
         })
-        // TODO
-        alert("success")
-        getAettings(this.props.connected, (cfg: IConfigEntity) => {
+        getSettings(this.props.connected, (cfg: IConfigEntity) => {
             this.props.updateConfig(cfg)
         })
     }

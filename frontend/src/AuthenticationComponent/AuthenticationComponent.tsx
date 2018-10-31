@@ -25,40 +25,42 @@ import { IStoreState } from '../reducers';
 import AuthHeader from './header/header';
 import Login from './login/login';
 import Signup from './signup/signup';
+import { ToastContainer } from 'react-toastify';
 
 interface IProps {
-  login:boolean,
-  history:any,
-  setAuths:any,
-  isLoginTerms:boolean
+  login: boolean,
+  history: any,
+  setAuths: any,
+  isLoginTerms: boolean
 }
 
-class Authentication extends React.Component< IProps , {}> {
-  public componentDidMount(){
+class Authentication extends React.Component<IProps, {}> {
+  public componentDidMount() {
     document.getElementById('body').className = 'login-body';
   }
-  
-  public componentWillUnmount(){
-    document.getElementById('body').className=''
+
+  public componentWillUnmount() {
+    document.getElementById('body').className = ''
   }
 
-  public render() {    
+  public render() {
     return (
       // className = 'login-body'
       <div >
+        <ToastContainer />
         <header className="login-header">
           <AuthHeader />
         </header>
         <div className="main-section-content">
-            <div className="container">
-                <div className="row login-content">
-                
-                { this.props.login  ? <Login onLogin={this.login} /> : <Signup />}  
-                    <div className="col-lg-6 col-md-6 col-sm-12 order-set-image wow fadeInRight">
-                        <img src={require("../assets/images/aidos-wallet-login.png")} width="400" className="img-fluid d-block m-auto wallet-img" alt="wallet-icon" />
-                    </div>
-                </div>
+          <div className="container">
+            <div className="row login-content">
+
+              {this.props.login ? <Login onLogin={this.login} /> : <Signup />}
+              <div className="col-lg-6 col-md-6 col-sm-12 order-set-image wow fadeInRight">
+                <img src={require("../assets/images/aidos-wallet-login.png")} width="400" className="img-fluid d-block m-auto wallet-img" alt="wallet-icon" />
+              </div>
             </div>
+          </div>
         </div>
       </div>
     );
@@ -67,19 +69,19 @@ class Authentication extends React.Component< IProps , {}> {
   private login = () => {
     // this.props.setAuths({ value: true });
     // if(this.props.isLoginTerms == true){
-        this.props.history.push('/dashboard');
+    this.props.history.push('/dashboard');
     // }
   }
 }
 
-const mapDispatchToProps = (dispatch:Dispatch) => {
+const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
 
   }
 }
-const  mapStateToProps = (state :IStoreState)  => {
-  const { login, isAuthenticated  } = state.login;
-  return { login, isAuthenticated} 
+const mapStateToProps = (state: IStoreState) => {
+  const { login, isAuthenticated } = state.login;
+  return { login, isAuthenticated }
 }
 
 

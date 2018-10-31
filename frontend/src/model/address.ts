@@ -22,5 +22,15 @@ export interface IAddressEntity {
     subHeader: any,
     showGrid: boolean ,
     addressValue: any   
-    cardHeaderTab:any
+    cardHeaderTab:ICardHeaderTab
+}
+
+export interface Itab {
+    active: boolean,
+    controle:string,
+    value: string,
+}
+
+export interface ICardHeaderTab {
+    tab: Itab[]
 }

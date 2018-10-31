@@ -89,7 +89,7 @@ func TestMultisig(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 
@@ -121,7 +121,7 @@ func TestMultisig(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 
@@ -130,7 +130,7 @@ func TestMultisig(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !confirmed {
+	if len(confirmed) == 0 {
 		t.Fatal("should be confirmed")
 	}
 

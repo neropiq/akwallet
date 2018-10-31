@@ -20,11 +20,12 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions';
 import { IConfigEntity } from '../../model';
 import { IStoreState } from '../../reducers';
-import { getAettings, IMinerSetting, updateMinerSetting } from '../../utils/remote';
+import { getSettings, IMinerSetting, updateMinerSetting } from '../../utils/remote';
 
 interface IProps {
     connected: boolean;
@@ -55,7 +56,7 @@ class Mining extends React.Component<IProps, IStates> {
                     </div>
                     <div className="col-2">
                         <label className="c-switch">
-                            <input type="checkbox" onChange={this.handleCheckFee}  checked={this.state.newSetting.RunFeeMiner}/>
+                            <input type="checkbox" onChange={this.handleCheckFee} checked={this.state.newSetting.RunFeeMiner} />
                             <span className="slider round" />
                         </label>
                     </div>
@@ -66,7 +67,7 @@ class Mining extends React.Component<IProps, IStates> {
                     </div>
                     <div className="col-2">
                         <label className="c-switch">
-                            <input type="checkbox" onChange={this.handleCheckTicket}  checked={this.state.newSetting.RunTicketMiner}/>
+                            <input type="checkbox" onChange={this.handleCheckTicket} checked={this.state.newSetting.RunTicketMiner} />
                             <span className="slider round" />
                         </label>
                     </div>
@@ -77,7 +78,7 @@ class Mining extends React.Component<IProps, IStates> {
                     </div>
                     <div className="col-2">
                         <label className="c-switch">
-                            <input type="checkbox" onChange={this.handleCheckIssue} checked={this.state.newSetting.RunTicketIssuer}/>
+                            <input type="checkbox" onChange={this.handleCheckIssue} checked={this.state.newSetting.RunTicketIssuer} />
                             <span className="slider round" />
                         </label>
                     </div>
@@ -90,37 +91,44 @@ class Mining extends React.Component<IProps, IStates> {
         );
     }
     private handleSave = () => {
-        if (this.state.newSetting.RunFeeMiner && !this.state.newSetting.MinimumFee){
-            alert("invalid minimum fee, must be greater than 0")
+        if (this.state.newSetting.RunFeeMiner && !this.state.newSetting.MinimumFee) {
+            toast.error("invalid minimum fee, must be greater than 0", {
+                autoClose: 3000,
+                position: toast.POSITION.TOP_CENTER
+            });
             return
         }
         updateMinerSetting(this.props.connected, this.state.newSetting, (errr: string) => {
             if (errr) {
-                alert(errr)
+                toast.error(errr, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
-        })
-        // TODO
-        alert("success")
-        getAettings(this.props.connected, (cfg: IConfigEntity) => {
-            this.props.updateConfig(cfg)
+            toast.success("Saved successfully", {
+                position: toast.POSITION.TOP_RIGHT
+            });
+            getSettings(this.props.connected, (cfg: IConfigEntity) => {
+                this.props.updateConfig(cfg)
+            })
         })
     }
 
     private handleCheckFee = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const stat = {...this.state.newSetting, RunFeeMiner:e.currentTarget.checked}
+        const stat = { ...this.state.newSetting, RunFeeMiner: e.currentTarget.checked }
         this.setState({
             newSetting: stat
         })
     }
     private handleCheckIssue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const stat = {...this.state.newSetting, RunTicketIssuer:e.currentTarget.checked}
+        const stat = { ...this.state.newSetting, RunTicketIssuer: e.currentTarget.checked }
         this.setState({
             newSetting: stat
         })
     }
     private handleCheckTicket = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const stat = {...this.state.newSetting, RunTicketMiner:e.currentTarget.checked}
+        const stat = { ...this.state.newSetting, RunTicketMiner: e.currentTarget.checked }
         this.setState({
             newSetting: stat
         })

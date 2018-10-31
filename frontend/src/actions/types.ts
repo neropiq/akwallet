@@ -91,3 +91,4 @@ export const UPDATE_CONNECTED = 'UPDATE_CONNECTED';
  * @Notification 
  */
 export const NOTIFICATION_COUNT = 'NOTIFICATION_COUNT';
+export const ADD_NOTIFICATION = 'ADD_NOTIFICATION';

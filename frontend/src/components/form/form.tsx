@@ -19,9 +19,7 @@
 // THE SOFTWARE.
 
 import * as React from 'react';
-import { Field, FieldArray, FormProps, InjectedFormProps, reduxForm } from 'redux-form';
-// import { any } from 'prop-types';
-// import { Props } from '../sendAdk/sendAdk';
+import { Field, FieldArray,  InjectedFormProps, reduxForm } from 'redux-form';
 
 interface IfieldProps {
 	name?: string;
@@ -32,12 +30,18 @@ interface IfieldProps {
 	meta?: any;
 }
 
-const renderField = ({ name, input, label, type }: IfieldProps) => (
+const renderField = ({ name, input, label, type, meta: { touched, error } }: IfieldProps) => (
+	<div>
 	<input {...input} type={type} className="form-control" name={name} placeholder={label} />
+	{touched && error && <span className="text-warning">{error}</span>}
+	</div>
 );
 
-const renderFieldWithIcon = ({ name, input, label, type }: IfieldProps) => (
+const renderFieldWithIcon = ({ name, input, label, type ,meta: { touched, error } }: IfieldProps) => (
+	<div>
 	<input {...input} type={type} className="form-control" name={name} placeholder={label} />
+	{touched && error && <span className="text-warning">{error}</span>}
+	</div>
 );
 
 const renderMembers = ({ fields, meta: { error, submitFailed } }: IfieldProps) => (
@@ -59,13 +63,14 @@ const renderMembers = ({ fields, meta: { error, submitFailed } }: IfieldProps) =
 							/>
 						</a>
 					</div>
-					<div className="form-group">
+					<div className="form-inline">
 						<Field
 							name={`${member}.amount`}
 							type="text"
 							component={renderField}
 							label="Amount To Send"
 						/>
+						<span className="radio-label">ADK</span>
 					</div>
 				</div>
 			))}
@@ -90,7 +95,6 @@ const renderMembers = ({ fields, meta: { error, submitFailed } }: IfieldProps) =
 
 interface ICustomProps {
 	loading: boolean;
-
 }
 
 interface IState {
@@ -109,13 +113,14 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 	public render() {
 		const { handleSubmit, pristine, reset, submitting } = this.props
 		return (
-			<div className="send-adk-form" onSubmit={handleSubmit}>
+			<form className="send-adk-form" >
 				<div className="form-group">
 					<Field
 						name="comment"
 						type="text"
 						component={renderField}
 						label="Comment"
+						id="comment"
 					/>
 				</div>
 				<FieldArray name="members" component={renderMembers} />
@@ -130,7 +135,7 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 								component="input"
 								type="radio"
 								value="0"
-								onClick={this.radioClick('doPow') }
+								onClick={this.radioClick('doPow')}
 							/>{' '}
 							<span />
 							Do PoW
@@ -141,7 +146,7 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 								component="input"
 								type="radio"
 								value="1"
-								onClick={this.radioClick('useTicket') }
+								onClick={this.radioClick('useTicket')}
 							/>{' '}
 							<span />
 							Use Ticket
@@ -152,8 +157,8 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 								component="input"
 								type="radio"
 								value="2"
-								onClick={this.radioClick('payFee') }
-								/>{' '}
+								onClick={this.radioClick('payFee')}
+							/>{' '}
 							<span />
 							Pay Fee
 						</label>
@@ -161,23 +166,25 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 				</div>
 				{
 					this.state.feeField ?
-						<div className="form-group">
+						<div className="form-inline">
 							<Field
 								name="Fee"
 								type="text"
 								component={renderField}
 								label="Fee"
+								id="fee"
 							/>
+							<span className="radio-label">ADK</span>
 						</div> : ''
 				}
 
 				<div className="form-group">
-					<button type="submit" disabled={submitting} className="btn btn-send btn-primary">
+					<button type="submit" onClick={handleSubmit} disabled={submitting} className="btn btn-send btn-primary">
 						{this.props.loading ? 'Cancel' : 'Send'}
 						{this.props.loading && <div className="loader"><i className="icofont-spinner" /></div>}
 					</button>
 				</div>
-			</div>
+			</form>
 		)
 	}
 	private radioClick = (value: any) => {

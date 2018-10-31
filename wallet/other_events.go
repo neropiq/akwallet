@@ -133,6 +133,7 @@ func GetNodeinfo(cfg *setting.Setting) (*crpc.NodeInfo, error) {
 	err := cfg.CallRPC(func(cl setting.RPCIF) error {
 		var err2 error
 		ni, err2 = cl.GetNodeinfo()
+		log.Println(cl, err2)
 		return err2
 	})
 	return ni, err
@@ -143,11 +144,9 @@ func GetNodesStatus(cfg *setting.Setting) []bool {
 	clients := cfg.GetClients()
 	r := make([]bool, len(clients))
 	for i, cl := range clients {
-		_, err := cl.GetNodeinfo()
-		if err == nil {
-			r[i] = true
-		}
+		r[i] = cl.Alive
 	}
+	log.Println("status", r)
 	return r
 }
 

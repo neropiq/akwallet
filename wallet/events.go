@@ -112,18 +112,21 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 	})
 
 	gui.On("send", func(p *tx.BuildParam) interface{} {
-		_, err := SendEvent(cfg, p)
+		err := Send(cfg, p)
 		log.Println(p, err)
 		return errString(err)
 	})
 	gui.On("cancel_pow", func(interface{}) interface{} {
-		return errString(CancelPoW(cfg))
+		log.Println("cancel pow")
+		err := errString(CancelPoW(cfg))
+		log.Println("end of cancel pow")
+		return err
 	})
 	gui.On("validate_addresses", func(adrs []string) interface{} {
-		var errs string
-		for _, adr := range adrs {
+		errs := make([]string, len(adrs))
+		for i, adr := range adrs {
 			if err := ValidateAddress(cfg, adr); err != nil {
-				errs += adr + " is an invalid address\n"
+				errs[i] = adr + " is an invalid address"
 			}
 		}
 		return errs
@@ -132,10 +135,13 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 	gui.On("get_settings", func(interface{}) interface{} {
 		return cfg
 	})
-	gui.On("get_nodeinfo", func(interface{}) interface{} {
-		log.Println("getnodeinfo")
-		ni, err := GetNodeinfo(cfg)
-		log.Println("getnodeinfo", ni)
+	gui.On("get_nodeinfo", func(n int) interface{} {
+		log.Println("getnodeinfo start")
+		if len(cfg.Client) <= n {
+			return "Invalid N"
+		}
+		ni, err := cfg.Client[n].GetNodeinfo()
+		log.Println("getnodeinfo end", ni)
 		return struct {
 			*crpc.NodeInfo
 			Error string
@@ -145,7 +151,8 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 		}
 	})
 	gui.On("get_nodesstatus", func(interface{}) interface{} {
-		log.Println("getnodestatus")
+		log.Println("getnodestatus start")
+		defer log.Println("end of getnodestatus")
 		return GetNodesStatus(cfg)
 	})
 	gui.On("update_server", func(servers []string) interface{} {

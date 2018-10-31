@@ -20,6 +20,7 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/signupAction';
 import TermText from '../../constants';
@@ -72,8 +73,8 @@ class Signup extends React.Component<IProps, IStates> {
                     <div className="form-group">
                         <label className="check-md text-white" data-toggle="modal" data-target="#myModal1">
                             I accept the <a href='#' className="tNc">terms &amp; conditions</a> of use of this application.
-                        <input type="checkbox" checked={this.props.isSignupTerms} onChange={this.onCheckTerm}/>
-                            <span className="checkmark-md"/>
+                        <input type="checkbox" checked={this.props.isSignupTerms} onChange={this.onCheckTerm} />
+                            <span className="checkmark-md" />
                         </label>
                     </div>
                 </div>
@@ -129,21 +130,20 @@ class Signup extends React.Component<IProps, IStates> {
     }
 
     // dummy but needed
-    private onCheckTerm =()=> {
+    private onCheckTerm = () => {
         return
     }
 
     private signupTerms = () => {
         this.props.setCheckSignupTerms({ chackedSignupTerms: true });
     }
-    private  clickSignup = () => {
-        // if (this.props.isSignupTerms) {
-        //     this.props.showLogin({ showLogin: !this.props.login })
-        // }
+    private clickSignup = () => {
         register(this.props.connected, this.state.password, (adr: Iaddress) => {
             if (adr.Error) {
-                alert(adr.Error)
-                // TODO
+                toast.error(adr.Error, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             this.setState({
@@ -154,7 +154,7 @@ class Signup extends React.Component<IProps, IStates> {
     private clickModal = () => {
         this.props.showLogin({ showLogin: true })
     }
-    private  handleChange = (e: React.FormEvent<HTMLInputElement>) => {
+    private handleChange = (e: React.FormEvent<HTMLInputElement>) => {
         this.setState({
             password: e.currentTarget.value
         })

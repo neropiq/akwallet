@@ -18,30 +18,30 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import {  CHANGE_CARD_TAB , CHANGE_TRANSACTION } from "../actions/types";
+import { CHANGE_CARD_TAB, CHANGE_TRANSACTION } from "../actions/types";
 import { ITransactionEntity } from '../model';
 
 const INITIAL_STATE = (): ITransactionEntity => ({
-    cardHeaderTab:{
+    cardHeaderTab: {
         tab: [
             {
                 active: true,
-                controle:"tab-1",
+                controle: "tab-1",
                 value: 'Normal',
             },
             {
                 active: false,
-                controle:"tab-2",
+                controle: "tab-2",
                 value: "Tickets",
             },
             {
                 active: false,
-                controle:"tab-3",
+                controle: "tab-3",
                 value: "Multisigs",
             },
             {
                 active: false,
-                controle:"tab-4",
+                controle: "tab-4",
                 value: "Anon",
             }
         ]
@@ -86,7 +86,7 @@ const TransactionReducer = (state = INITIAL_STATE(), action: any) => {
                 cardHeaderTab: {
                     ...state.cardHeaderTab,
                     tab: action.payload.newFilters
-                }    
+                }
             }
         default:
             return state;

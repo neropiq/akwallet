@@ -68,8 +68,15 @@ class List extends React.Component<IProps> {
                         <tbody>
                             {
                                 this.props.tables.map((rows: any, index: number) => (
-                                    <tr key={index}  onClick={this.openPopupbox(rows.value1)} >
-                                        <td key={index}><QRCode value={rows.value1} size={60} data-toggle="modal" data-target="#myModal123"/></td>
+                                    <tr key={index} onClick={this.openPopupbox(rows.value1)} >
+                                        <td key={index}>
+                                            <div className="mx-auto text-center">
+                                                <div className="bg-white   mx-auto  align-middle " style={{ width: 64, height: 64 }} >
+                                                    <div className="bg-white   mx-auto  align-middle " style={{ width: 2, height: 2 }} />
+                                                    <QRCode value={rows.value1} size={60} level="H" data-toggle="modal" data-target="#myModal123" />
+                                                </div>
+                                            </div>
+                                        </td>
 
                                         {/* <td key={index}><img src={rows.imgList} alt="qr-code" /></td> */}
                                         <td className="list-set" title={rows.value1}><span>{rows.value1}</span></td>

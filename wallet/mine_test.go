@@ -21,7 +21,6 @@
 package wallet
 
 import (
-	"bytes"
 	"context"
 	"testing"
 	"time"
@@ -164,7 +163,7 @@ func TestSendMinable(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 	confirmAll(t, true)
@@ -173,7 +172,7 @@ func TestSendMinable(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !c {
+	if len(c) == 0 {
 		t.Error("invalid conf")
 	}
 	_, err = issueTicket(context.Background(), s)
@@ -185,7 +184,7 @@ func TestSendMinable(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if !newtx {
+	if len(newtx) == 0 {
 		t.Error("invalid sync")
 	}
 	confirmAll(t, true)
@@ -195,7 +194,7 @@ func TestSendMinable(t *testing.T) {
 		t.Error(err)
 	}
 
-	h, err := SendEvent(s, &tx.BuildParam{
+	err = Send(s, &tx.BuildParam{
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
 				Address: a.Address58(s.Config),
@@ -208,15 +207,12 @@ func TestSendMinable(t *testing.T) {
 		t.Error(err)
 	}
 	time.Sleep(10 * time.Second)
-	h2, err := s.Client[0].GetMinableTicketTx()
+	_, err = s.Client[0].GetMinableTicketTx()
 	if err != nil {
 		t.Error(err)
 	}
-	if !bytes.Equal(h, h2.Hash()) {
-		t.Error("incorrect sent")
-	}
 
-	h, err = SendEvent(s, &tx.BuildParam{
+	err = Send(s, &tx.BuildParam{
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
 				Address: a.Address58(s.Config),
@@ -230,11 +226,8 @@ func TestSendMinable(t *testing.T) {
 		t.Error(err)
 	}
 	time.Sleep(6 * time.Second)
-	h2, err = s.Client[0].GetMinableFeeTx(0.05)
+	_, err = s.Client[0].GetMinableFeeTx(0.05)
 	if err != nil {
 		t.Error(err)
-	}
-	if !bytes.Equal(h, h2.Hash()) {
-		t.Error("incorrect sent")
 	}
 }

@@ -95,6 +95,7 @@ func mine(s *setting.Setting) (tx.Hash, error) {
 		return nil, err
 	}
 	log.Println("succeeded to mine, txid=", tr.Hash())
+	s.GUI.Emit("notify", "Succeeded to mine a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})
 	return tr.Hash(), nil
 }
 
@@ -115,12 +116,14 @@ func issueTicket(ctx context.Context, s *setting.Setting) (tx.Hash, error) {
 		return nil, err
 	}
 	log.Println("ticket issued,", tr.Hash())
+	s.GUI.Emit("notify", "Succeeded to issue a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})
 	return tr.Hash(), nil
 }
 
 //RunMiner runs a miner
 func RunMiner(ctx context.Context, s *setting.Setting) {
 	if s.RunTicketIssuer {
+		log.Println("starting ticket issuer")
 		ctx2, cancel2 := context.WithCancel(ctx)
 		defer cancel2()
 		go func() {
@@ -137,19 +140,22 @@ func RunMiner(ctx context.Context, s *setting.Setting) {
 		}()
 	}
 
-	ctx2, cancel2 := context.WithCancel(ctx)
-	defer cancel2()
-	go func() {
-		for {
-			if _, err := mine(s); err != nil {
-				log.Println(err)
+	if s.RunTicketMiner || s.RunFeeMiner {
+		log.Println("starting miner")
+		ctx2, cancel2 := context.WithCancel(ctx)
+		defer cancel2()
+		go func() {
+			for {
+				if _, err := mine(s); err != nil {
+					log.Println(err)
+				}
+				select {
+				case <-ctx2.Done():
+					return
+				case <-time.After(10 * time.Second):
+				}
 			}
-			select {
-			case <-ctx2.Done():
-				return
-			case <-time.After(10 * time.Second):
-			}
-		}
-	}()
+		}()
+	}
 
 }

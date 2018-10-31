@@ -267,11 +267,6 @@ func CancelPoW(cfg *setting.Setting) error {
 	return errors.New("PoW is not running")
 }
 
-//SendEvent sends  ADK.
-func SendEvent(cfg *setting.Setting, param *tx.BuildParam) (tx.Hash, error) {
-	return Send(cfg, param)
-}
-
 const (
 	reasonSpent = iota
 	reasonIssued

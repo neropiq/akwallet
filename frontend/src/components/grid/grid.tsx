@@ -22,7 +22,6 @@ import QRCode from 'qrcode.react';
 import * as  React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions/popupAction';
 import { IStoreState } from '../../reducers';
 
@@ -45,12 +44,12 @@ interface IState {
 }
 class Gride extends React.Component<IProps, IState> {
 
-    public componentDidMount(){
+    public componentDidMount() {
         // Scrollbar.init(document.querySelector('#scrolleGride'));
     }
 
     public render() {
-        return( 
+        return (
             // <Popup />
             <div className="row" >
                 {
@@ -59,7 +58,14 @@ class Gride extends React.Component<IProps, IState> {
                             <div className="row">
                                 <div className="col-lg-4 col-md-4 col-sm-3 col-4" onClick={this.openPopupbox(rows.value1)}>
                                     {/* <img src={require('../../assets/images/qr-code-big.png')} alt="qr-code" /> */}
-                                    <QRCode value={rows.value1} size={80} level="M" data-toggle="modal" data-target="#myModal123" />
+                                    <div className="mx-auto text-center">
+                                        <div className="bg-white   mx-auto  align-middle " style={{ width: 82, height: 82 }} >
+                                            <div className="bg-white   mx-auto  align-middle " style={{ width: 1, height: 1 }} />
+                                            <QRCode value={rows.value1} size={80} level="H" data-toggle="modal" data-target="#myModal123" />
+                                        </div>
+                                    </div>
+
+
                                 </div>
                                 <div className="col-lg-8 col-md-8 col-sm-9 col-8 address-qr-details align-self-center align-content-center">
                                     <p className="grid-dot" title={rows.value1}>{rows.value1}</p>

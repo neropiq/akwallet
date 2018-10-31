@@ -18,17 +18,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-import { NOTIFICATION_COUNT} from '../actions/types';
+import { ADD_NOTIFICATION, NOTIFICATION_COUNT } from '../actions/types';
 import { INotificationEntity } from '../model';
 
 const INITIAL_STATE = (): INotificationEntity => ({
-    notification_count:3
+    notification: [],
+    notificationCount: 0,
 });
 
 const NotificationReducer = (state = INITIAL_STATE(), action: any) => {
     switch (action.type) {
-        case NOTIFICATION_COUNT:         
-            return { ...state, notification_count: action.payload.notification_count }       
+        case NOTIFICATION_COUNT:
+        console.log(action.payload.notificationCount)
+        return { ...state, notificationCount: action.payload.notificationCount }
+        case ADD_NOTIFICATION:
+            const noti = state.notification;
+            noti.unshift(action.payload)
+            if (noti.length > 5) {
+                noti.pop()
+            }
+            console.log(state.notificationCount)
+            const cnt = state.notificationCount + 1;
+            return { ...state, notification: noti, notificationCount:cnt }
         default:
             return state;
     }

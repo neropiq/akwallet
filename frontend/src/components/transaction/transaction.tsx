@@ -20,11 +20,12 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';
-import { formatDate, getTransactions, ImultisigResp, IormalTxResp, IticketResp, ItxResp, toADK, toTimestamp, txStat } from '../../utils/remote';
+import { formatDate, getTransactions, ImultisigResp, INormalTxResp, IticketResp, ItxResp, toADK, txStat, isUpdated } from '../../utils/remote';
 import CardTab from '../cardTab/cardTab';
 import SubHeader from '../subheader/subheader';
 import Table from '../table/table';
@@ -42,6 +43,7 @@ interface IProps {
     title: string;
     filters: any;
     tab: any;
+    noti: string[]; // for updating by notification
     changeFilterTransaction: ({ newFilter, oldFilter }: IchangeProps) => void;
     changeCardTabTransaction: ({ newFilter, oldFilter }: IchangeProps) => void;
 }
@@ -64,11 +66,17 @@ class Transactions extends React.Component<IProps, IStates> {
         }
     }
 
-   public componentDidMount() {
+    public componentDidMount() {
         document.title = "Transaction || Aidos Wallet";
         Scrollbar.init(document.querySelector('#scrolle'));
         console.log(this.props)
         this.updateTx(this.props.filters, this.props.tab)
+    }
+
+    public componentWillReceiveProps(nextProps: IProps) {
+        if (isUpdated(this.props.noti, nextProps.noti)) {
+            this.updateTx(this.props.filters, this.props.tab)
+        }
     }
 
     public render() {
@@ -94,18 +102,19 @@ class Transactions extends React.Component<IProps, IStates> {
             </div>
         );
     }
-   private updateTx = (filters: any, tab: any) => {
+    private updateTx = (filters: any, tab: any) => {
         let no = 0;
         filters.map((f: any, i: number) => {
             if (f.active) {
                 no = i
             }
         })
-        console.log(no)
-
         getTransactions(this.props.connected, no, (tr: ItxResp) => {
             if (tr.Error) {
-                alert(tr.Error)
+                toast.error(tr.Error, {
+                    autoClose: false,
+                    position: toast.POSITION.TOP_CENTER
+                });
                 return
             }
             let trr: any;
@@ -113,7 +122,7 @@ class Transactions extends React.Component<IProps, IStates> {
             if (tab[0].active) {
                 trr = tr.NormalTx
                 if (trr != null) {
-                    trr.map((resp: IormalTxResp, i: number) => {
+                    trr.map((resp: INormalTxResp, i: number) => {
                         const val = [
                             resp.Hash, resp.Amount > 0 ? "Receive" : "Send",
                             toADK(resp.Amount) + " ADK", formatDate(resp.Recv), txStat(resp)
@@ -164,7 +173,7 @@ class Transactions extends React.Component<IProps, IStates> {
                     data,
                     fields: tables_multisig.fields,
                 })
-        }
+            }
             if (tab[3].active) {
                 // TODO
                 this.setState({
@@ -176,7 +185,7 @@ class Transactions extends React.Component<IProps, IStates> {
         })
     }
 
-   private onFilterChange = (newFilter: any) => {
+    private onFilterChange = (newFilter: any) => {
         console.log(newFilter)
         this.props.changeFilterTransaction({ newFilter, oldFilter: this.props.filters });
         const { payload } = actions.changeFilterTransaction({ newFilter, oldFilter: this.props.filters })
@@ -201,7 +210,8 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
 export const mapStateToProps = (state: IStoreState) => {
     const { title, filters } = state.transaction.subHeader;
     const { tab } = state.transaction.cardHeaderTab;
-    return { title, filters, connected: state.connected, tab };
+    // must make a new array.
+    return { title, filters, connected: state.connected, tab, noti: [...state.notification.notification] };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Transactions);
