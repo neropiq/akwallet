@@ -10,6 +10,7 @@ Aidos Wallet (AKWallet)
 
 This is the wallet for Aidos Kuneen step2.
 
+UNDER CONSTRUCTION. DON'T TOUCH ME.
 
 ## Requirements
 
@@ -22,7 +23,7 @@ are required to compile.
 
 ## Install
     $ git clone github.com/AidosKuneen/akwallet
-    $ cd gui
+    $ cd frontend
     $ yarn install
     $ yarn build
     $ cd ..
