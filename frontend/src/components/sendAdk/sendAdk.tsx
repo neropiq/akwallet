@@ -22,7 +22,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
-import { stopSubmit, SubmissionError, touch, reset } from 'redux-form';
+import { reset, stopSubmit, SubmissionError, touch } from 'redux-form';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';

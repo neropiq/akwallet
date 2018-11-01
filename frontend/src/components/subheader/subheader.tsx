@@ -54,12 +54,12 @@ class SubHeader extends React.Component<IProps, IState> {
             trancactionValue: (this.props.filters.length === 0) || this.props.filters[0],
             value: (this.props.filters.length === 0) || this.props.filters[0],
         };
-      
+
         // window.onclick = function(event) {
-           
+
         // }
     }
-    
+
     public componentDidMount() {
         this.props.filters.map((v: any, i: number) => {
             if (v.active) {
@@ -115,6 +115,7 @@ class SubHeader extends React.Component<IProps, IState> {
                                                 className={filter.active ? "active" : ""}
                                                 key={index}
                                                 onClick={this.onTrancationFilterChangeFunc(filter.value)}
+                                            // onClick={()=>this.props.onTrancationFilterChange(filter.value)}
                                             >
                                                 <a href="#">{filter.value}</a>
                                             </li>
@@ -165,27 +166,25 @@ class SubHeader extends React.Component<IProps, IState> {
     }
 
     private onTrancationChange = (e: any) => {
-        return () => {
-            const value = e.target.value
-            this.setState({
-                trancactionValue: value
-            });
-            this.props.onTrancationFilterChange(value);
-        }
+        const value = e.target.value
+        this.setState({
+            trancactionValue: value
+        });
+        this.props.onTrancationFilterChange(value);
     }
 
-    private onFilterChangeFunc=(v:string)=>{
-        return ()=>{
+    private onFilterChangeFunc = (v: string) => {
+        return () => {
             this.props.onFilterChange(v)
         }
     }
-    private onTrancationFilterChangeFunc=(v:string)=>{
-        return ()=>{
+    private onTrancationFilterChangeFunc = (v: string) => {
+        return () => {
             this.props.onTrancationFilterChange(v)
         }
     }
-    private onViewChangeFunc=(v:string)=>{
-        return ()=>{
+    private onViewChangeFunc = (v: string) => {
+        return () => {
             this.props.onViewChange(v)
         }
     }
