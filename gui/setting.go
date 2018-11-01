@@ -27,12 +27,14 @@ import (
 	"time"
 
 	"github.com/AidosKuneen/gogui"
+	"github.com/gobuffalo/packr"
 	qrcode "github.com/skip2/go-qrcode"
 )
 
 //Run starts GUI backend.
 func Run(gui *gogui.GUI, dest string) error {
-	http.HandleFunc("/qrcode", handleQRcode)
+	box := packr.NewBox("./asset")
+	http.Handle("/", http.FileServer(box))
 	if err := gui.Start(dest); err != nil {
 		return err
 	}

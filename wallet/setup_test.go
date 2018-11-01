@@ -55,11 +55,15 @@ import (
 )
 
 type gui struct {
+	emit chan struct{}
 }
 
 func (g *gui) On(n string, f interface{}) {
 }
 func (g *gui) Emit(name string, dat interface{}, f interface{}) error {
+	if g.emit != nil {
+		g.emit <- struct{}{}
+	}
 	return nil
 }
 
@@ -67,6 +71,7 @@ var s = &setting.Setting{}
 var s1 = &isetting.Setting{}
 var a, b *address.Address
 var genesis tx.Hash
+var guiobj *gui
 
 func confirmAll(t *testing.T, confirm bool) {
 	var txs []tx.Hash
@@ -190,12 +195,12 @@ func setup(t *testing.T) {
 		t.Error(err2)
 	}
 
-	g := gui{}
+	guiobj = &gui{}
 	s.Servers = []string{"http://localhost:" + strconv.Itoa(int(s1.RPCPort))}
 	if err := s.SetClient(s.Servers); err != nil {
 		t.Error(err)
 	}
-	s.GUI = &g
+	s.GUI = guiobj
 }
 
 func teardown(t *testing.T) {

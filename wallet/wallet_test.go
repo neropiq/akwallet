@@ -224,6 +224,7 @@ func TestWallet(t *testing.T) {
 		t.Error("should be confirmed")
 	}
 
+	guiobj.emit = make(chan struct{})
 	err = Send(s, &tx.BuildParam{
 		Comment: "moemoe",
 		Dest: []*tx.RawOutput{
@@ -241,8 +242,12 @@ func TestWallet(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log("sent", h)
-
+	select {
+	case <-guiobj.emit:
+	case <-time.After(3 * time.Minute):
+		t.Error("failed to pow")
+	}
+	guiobj.emit = nil
 	time.Sleep(6 * time.Second)
 	newtx, err = syncDB(s, true)
 	if err != nil {
@@ -251,6 +256,8 @@ func TestWallet(t *testing.T) {
 	if len(newtx) == 0 {
 		t.Error("invalid syncdb")
 	}
+	h = newtx[0].Hash
+	t.Log("sent", h)
 
 	st, err := imesh.GetTx(s1.DB, h)
 	if err != nil {
@@ -261,7 +268,7 @@ func TestWallet(t *testing.T) {
 		t.Error(err)
 	}
 	if len(st.Outputs) != 3 {
-		t.Error("invalid out")
+		t.Error("invalid out", len(st.Outputs))
 	}
 	loc := len(st.Outputs) - 1
 	if !bytes.Equal(st.Outputs[loc-1].Address, a.Address(s.Config)) {
@@ -372,18 +379,16 @@ func TestWallet(t *testing.T) {
 	}
 
 	stopped := false
-	go func() {
-		Send(s, &tx.BuildParam{
-			Dest: []*tx.RawOutput{
-				&tx.RawOutput{
-					Address: a.Address58(s.Config),
-					Value:   1 * aklib.ADK,
-				},
+	Send(s, &tx.BuildParam{
+		Dest: []*tx.RawOutput{
+			&tx.RawOutput{
+				Address: a.Address58(s.Config),
+				Value:   1 * aklib.ADK,
 			},
-			PoWType: tx.TypeNormal,
-		})
-		stopped = true
-	}()
+		},
+		PoWType: tx.TypeNormal,
+	})
+	stopped = true
 	time.Sleep(time.Second)
 	if err = CancelPoW(s); err != nil {
 		t.Error(err)

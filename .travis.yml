@@ -32,7 +32,7 @@ script:
 - cd frontend
 - yarn install
 - yarn build
-- cp -r public ../cmd/akwallet/asset
+- mv public ../cmd/akwallet/asset
 - cd ..
 - travis_wait 30 go test ./... -v -covermode=count -coverprofile=coverage.out -timeout 100m -p 1
 
@@ -42,6 +42,9 @@ after_success:
 - cd cmd/akwallet
 - go get -u github.com/gobuffalo/packr/...
 - packr
+- go get github.com/akavel/rsrc
+- go build github.com/akavel/rsrc
+- rsrc -ico ../../frontend/src/assets/images/aidos-wallet-login.png -o akwallet.syso
 - echo "Bootstrapping linux/amd64..."
 - env GOOS=linux GOARCH=amd64 go build -o ${REPO_NAME}_${TRAVIS_TAG}_linux_amd64 -ldflags "-X ${REPO_DIR}/setting.Version=\"${TRAVIS_TAG}\""
 - echo "Bootstrapping linux/386..."
@@ -49,7 +52,7 @@ after_success:
 - echo "Bootstrapping linux/arm..."
 - env GOOS=linux GOARCH=arm GOARM=6 go build -o ${REPO_NAME}_${TRAVIS_TAG}_linux_arm  -ldflags "-X ${REPO_DIR}/setting.Version=\"${TRAVIS_TAG}\""
 - echo "Bootstrapping linux/arm64..."
-- env GOOS=linux GOARCH=arm GOARM=6 go build -o ${REPO_NAME}_${TRAVIS_TAG}_linux_arm64  -ldflags "-X ${REPO_DIR}/setting.Version=\"${TRAVIS_TAG}\""
+- env GOOS=linux GOARCH=arm64 go build -o ${REPO_NAME}_${TRAVIS_TAG}_linux_arm64  -ldflags "-X ${REPO_DIR}/setting.Version=\"${TRAVIS_TAG}\""
 - echo "Bootstrapping windows/amd64..."
 - env GOOS=windows GOARCH=amd64 go build -o ${REPO_NAME}_${TRAVIS_TAG}_win_amd64.exe  -ldflags "-X ${REPO_DIR}/setting.Version=\"${TRAVIS_TAG}\""
 - echo "Bootstrapping windows/386..."
