@@ -9,7 +9,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "devDependencies": {
     "@types/jquery": "^3.3.19",
     "awesome-typescript-loader": "^5.2.1",
