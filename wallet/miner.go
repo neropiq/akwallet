@@ -139,7 +139,6 @@ func RunMiner(ctx context.Context, s *setting.Setting) {
 			}
 		}()
 	}
-
 	if s.RunTicketMiner || s.RunFeeMiner {
 		log.Println("starting miner")
 		ctx2, cancel2 := context.WithCancel(ctx)

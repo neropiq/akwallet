@@ -142,6 +142,7 @@ func TestGUI(t *testing.T) {
 	}
 	t.Log("confirmed")
 	notify(s, nil, confirmed)
+	time.Sleep(1000 * time.Hour)
 	wgui.Wait(guis)
 
 }

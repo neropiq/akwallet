@@ -19,16 +19,19 @@
 // THE SOFTWARE.
 
 import * as React from 'react';
+import { toast } from 'react-toastify';
 
 interface IProps {
     fields: string[],
     data: string[][],
+    componentsName: any;
+    transactionClick?: (index: number) => void;
 }
 
 class Table extends React.Component<IProps> {
     public componentDidMount() {
         // window.initCustomScrollbar();
-        // $('.card-body').mCustomScrollbar;
+
     }
 
     public render() {
@@ -36,7 +39,6 @@ class Table extends React.Component<IProps> {
             <div className="card-body px-4 py-0">
                 <div className="table-responsive custom-table-theme scroll-table ">
                     <table className="table table-hover text-center">
-                    
                         <thead>
                             <tr>
                                 {
@@ -48,9 +50,9 @@ class Table extends React.Component<IProps> {
                             {
                                 this.props.data &&
                                 this.props.data.map((rows: any, index: number) => (
-                                    <tr key={index}>
+                                    <tr key={index} onClick={this.transactionClick(index)}>
                                         {
-                                            rows.map((row: string, i: number) => <td className="td-set" key={i} title={row}><span>{row}</span></td>)
+                                            rows.map((row: string, i: number) => <td className="td-set" key={i} onClick={this.copyText(row, this.props.fields[index])} title={row}><span>{row}</span></td>)
                                         }
                                     </tr>
                                 ))
@@ -60,6 +62,31 @@ class Table extends React.Component<IProps> {
                 </div>
             </div>
         );
+    }
+    private transactionClick = (index: number) => {
+        return () => {
+            if (this.props.componentsName === 'transaction') {
+                this.props.transactionClick(index);
+            }
+        }
+    }
+
+    private copyText = (value: any, text: any) => {
+        return () => {
+            if (text === 'From Address' || text === 'To Address') {
+                console.log('address copy');
+                const input = document.createElement('input');
+                input.setAttribute('value', value);
+                document.body.appendChild(input);
+                input.select();
+                const result = document.execCommand('copy');
+                document.body.removeChild(input);
+
+                toast.success(text + "was copied!", {
+                    position: toast.POSITION.TOP_RIGHT
+                });
+            }
+        }
     }
 }
 

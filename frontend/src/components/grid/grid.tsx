@@ -21,6 +21,7 @@
 import QRCode from 'qrcode.react';
 import * as  React from 'react';
 import { connect } from 'react-redux';
+import {  toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/popupAction';
 import { IStoreState } from '../../reducers';
@@ -49,6 +50,7 @@ class Gride extends React.Component<IProps, IState> {
     }
 
     public render() {
+
         return (
             // <Popup />
             <div className="row" >
@@ -68,7 +70,7 @@ class Gride extends React.Component<IProps, IState> {
 
                                 </div>
                                 <div className="col-lg-8 col-md-8 col-sm-9 col-8 address-qr-details align-self-center align-content-center">
-                                    <p className="grid-dot" title={rows.value1}>{rows.value1}</p>
+                                    <p className="grid-dot" title={rows.value1} onClick={this.copyText(rows.value1)}>{rows.value1}</p>
                                     <p className="grid-dot" title={rows.value2}>{rows.value2}</p>
                                     <p className="grid-dot" title={rows.value3}>{rows.value3}</p>
                                 </div>
@@ -80,6 +82,20 @@ class Gride extends React.Component<IProps, IState> {
             </div>
         );
     }
+    private copyText = (value: any) => {
+        return () => {
+            const input = document.createElement('input');
+            input.setAttribute('value', value);
+            document.body.appendChild(input);
+            input.select();
+            const result = document.execCommand('copy');
+            document.body.removeChild(input);
+            toast.success("Address was copied!", {
+                position: toast.POSITION.TOP_RIGHT
+            });
+        }
+    }
+
     private openPopupbox = (value: any) => {
         return () => {
             this.props.popupValue({ popupvalue: value });

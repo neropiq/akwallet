@@ -21,6 +21,7 @@
 import QRCode from 'qrcode.react';
 import * as  React from 'react';
 import { connect } from 'react-redux';
+import { toast, ToastContainer } from 'react-toastify';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions/popupAction';
 import { IStoreState } from '../../reducers';
@@ -52,7 +53,6 @@ interface Istate {
 
 
 class List extends React.Component<IProps> {
-
     public render() {
         return (
             <div className="card-body px-4 py-0">
@@ -79,7 +79,7 @@ class List extends React.Component<IProps> {
                                         </td>
 
                                         {/* <td key={index}><img src={rows.imgList} alt="qr-code" /></td> */}
-                                        <td className="list-set" title={rows.value1}><span>{rows.value1}</span></td>
+                                        <td className="list-set" title={rows.value1} onClick={this.copyText(rows.value1)}><span>{rows.value1}</span></td>
                                         <td >{rows.value2}</td>
                                         <td>{rows.value3}</td>
                                         {/* {
@@ -99,10 +99,23 @@ class List extends React.Component<IProps> {
             </div>
         );
     }
-    public openPopupbox = (value: string) => {
+    private openPopupbox = (value: any) => {
         return () => {
             this.props.popupValue({ popupvalue: value });
             this.props.showPopup({ showPopup: !this.props.popup });
+        }
+    }
+    private copyText = (value: any) => {
+        return () => {
+            const input = document.createElement('input');
+            input.setAttribute('value', value);
+            document.body.appendChild(input);
+            input.select();
+            const result = document.execCommand('copy');
+            document.body.removeChild(input);
+            toast.success("Address was copied !", {
+                position: toast.POSITION.TOP_RIGHT
+            });
         }
     }
 }

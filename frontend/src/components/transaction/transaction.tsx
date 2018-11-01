@@ -24,9 +24,11 @@ import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
+import { popupValue } from '../../actions';
 import { IStoreState } from '../../reducers';
-import { formatDate, getTransactions, ImultisigResp, INormalTxResp, IticketResp, ItxResp, toADK, txStat, isUpdated } from '../../utils/remote';
+import { formatDate, getTransactions, ImultisigResp, INormalTxResp, isUpdated, IticketResp, ITxCommon, ItxResp, toADK, txStat } from '../../utils/remote';
 import CardTab from '../cardTab/cardTab';
+import PopupTx from '../popup/popup';
 import SubHeader from '../subheader/subheader';
 import Table from '../table/table';
 import tables_multisig = require('./table_multisig.json');
@@ -49,20 +51,22 @@ interface IProps {
 }
 
 interface IStates {
-    fields: string[]
-    data: string[][]
+    fields: string[];
+    data: string[][];
+    popup: boolean;
+    popupValue: ITxCommon;
+    txs:ITxCommon[];
 }
 
 class Transactions extends React.Component<IProps, IStates> {
-    // constructor(props) {
-    //     super(props);
-    //     this.state = {tables: tables};
-    // }
     constructor(props: IProps) {
         super(props);
         this.state = {
             data: tables_normal.data,
             fields: tables_normal.fields,
+            popup: false,
+            popupValue: null,
+            txs:null,
         }
     }
 
@@ -82,6 +86,9 @@ class Transactions extends React.Component<IProps, IStates> {
     public render() {
         return (
             <div>
+                {
+                    this.state.popup ? <PopupTx PopUpvalue={this.state.popupValue} onclosepopup={this.popupclose} /> : ''
+                }
                 <div className="page-content-wrapper my-address-page">
                     <div className="page-content">
                         {/*Main Page Content*/}
@@ -91,7 +98,7 @@ class Transactions extends React.Component<IProps, IStates> {
                                 <div id="scrolle" className="card-height card bg-dark-green black-shadow mCustomScrollbar" data-mcs-theme="dark">
                                     <div className="cad-table-content">
                                         <CardTab tab={this.props.tab} onCardChange={this.onCardChange} />
-                                        <Table data={this.state.data} fields={this.state.fields} />
+                                        <Table data={this.state.data} fields={this.state.fields} componentsName={'transaction'} transactionClick={this.clickTransactin} />
                                     </div>
                                 </div>
                             </div>
@@ -101,6 +108,17 @@ class Transactions extends React.Component<IProps, IStates> {
                 </div>
             </div>
         );
+    }
+    private popupclose = () => {
+        this.setState({
+            popup: false
+        })
+    }
+    private clickTransactin = (index: number) => {
+        this.setState({
+            popup: true,
+            popupValue: this.state.txs[index],
+        })
     }
     private updateTx = (filters: any, tab: any) => {
         let no = 0;
@@ -133,6 +151,7 @@ class Transactions extends React.Component<IProps, IStates> {
                 this.setState({
                     data,
                     fields: tables_normal.fields,
+                    txs:trr,
                 })
             }
             if (tab[1].active) {
@@ -156,6 +175,7 @@ class Transactions extends React.Component<IProps, IStates> {
                 this.setState({
                     data,
                     fields: tables_ticket.fields,
+                    txs:trr,
                 })
             }
             if (tab[2].active) {
@@ -172,6 +192,7 @@ class Transactions extends React.Component<IProps, IStates> {
                 this.setState({
                     data,
                     fields: tables_multisig.fields,
+                    txs:trr,
                 })
             }
             if (tab[3].active) {
@@ -179,6 +200,7 @@ class Transactions extends React.Component<IProps, IStates> {
                 this.setState({
                     data,
                     fields: tables_normal.fields,
+                    txs:trr,
                 })
             }
 
@@ -210,8 +232,9 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
 export const mapStateToProps = (state: IStoreState) => {
     const { title, filters } = state.transaction.subHeader;
     const { tab } = state.transaction.cardHeaderTab;
+    const { popup } = state.popup;
     // must make a new array.
-    return { title, filters, connected: state.connected, tab, noti: [...state.notification.notification] };
+    return { title, filters, connected: state.connected, tab, noti: [...state.notification.notification], popup };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Transactions);

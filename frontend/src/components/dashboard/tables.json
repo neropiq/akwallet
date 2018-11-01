@@ -1,9 +1,7 @@
 {
     "header": "Recent Transactions",
     "fields": ["ID", "Recv/Send", "Amount", "Timestamp", "Status"],
-    "data": [
-        ["9SMECLJUBAR", "Receive", "1809.357467 ADK", "18 Minutes", "Pending"]
-    ],
+    "data": [],
     "menus": ["All", "Confirmed", "Pending", "Rejected"]
 }
   

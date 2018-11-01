@@ -86,11 +86,10 @@ class Header extends React.Component<IProps, IState> {
                     <nav className="nav fixed-header navbar fixed-top">
                         <div className="page-header-inner d-flex flex-row">
                             <div className="navbar-brand mr-0 py-0 page-logo">
-                                <a href='/' className="navbar-brand dashboard-logo">
+                                <NavLink to='dashboard' className="navbar-brand dashboard-logo">
                                     <img src={require("../../assets/images/logo-small.png")} className="img-fluid" alt="logo" />
                                     <span className="brand-name">{this.props.testnet === 0 ? "" : nets[this.props.testnet]}</span>
-
-                                </a>
+                                </NavLink>
                             </div>
                         </div>
                         <div className="header-tool-action d-inline-flex">
@@ -135,12 +134,12 @@ class Header extends React.Component<IProps, IState> {
                                 </a>
                             </li>
                             <li className="nav-item">
-                                <a className="navbar-brand mob-nav-brand mr-0" href="/dashboard">
+                                <NavLink className="navbar-brand mob-nav-brand mr-0" to="/dashboard">
                                     <img className="brand-logo" alt="logo" src={require("../../assets/images/logo-small.png")} />
                                     <span className="brand-name">
                                         {this.props.testnet === 0 ? "" : nets[this.props.testnet]}
                                     </span>
-                                </a>
+                                </NavLink>
                             </li>
                             <li className="nav-item">
                                 <a className="nav-link open-navbar-container collapsed" data-toggle="collapse" data-target="#navbar-mobile" aria-expanded="false">

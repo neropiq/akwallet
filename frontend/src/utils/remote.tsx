@@ -21,34 +21,50 @@
 import { socket } from "../components/adminPanel/adminpanel";
 import { IConfigEntity } from "../model";
 
-// normalTxResp is information about a normal tx.
-export interface INormalTxResp {
+
+export interface InOut {
+    Address: string
+    Value: number
+}
+
+
+//MultiSigOut is an multisig output in transactions.
+export interface IMultiSigInOut {
+    M: number
+    Addresses: string[]
+    Value: number
+    Address: string
+}
+
+export interface ITxCommon {
+    Inputs: InOut[]
+    Minputs: IMultiSigInOut[]
+    Outputs: InOut[]
+    MOutputs: IMultiSigInOut[]
+    TicketInput: string
+    TicketOutput: string
+    Message: string
     Recv: number
     Hash: string
-    Amount: number
     IsRejected: boolean
     IsConfirmed: boolean
     StatNo: string
+}
+
+
+// normalTxResp is information about a normal tx.
+export interface INormalTxResp extends ITxCommon{
+    Amount: number
 }
 
 // ticketResp is information about a ticket.
-export interface IticketResp {
-    Recv: number
-    Hash: string
+export interface IticketResp extends ITxCommon{
     Reason: number
-    IsRejected: boolean
-    IsConfirmed: boolean
-    StatNo: string
 }
 
 // multisigResp is information about a multisig tx.
-export interface ImultisigResp {
-    Recv: number
-    Hash: string
+export interface ImultisigResp extends ITxCommon{
     Amount: number
-    IsRejected: boolean
-    IsConfirmed: boolean
-    StatNo: string
     Address: string
 }
 
@@ -253,7 +269,7 @@ export interface INodeInfo {
     Error: string
 }
 
-export const getNodeinfo = (con: boolean, n:number, f: (t: INodeInfo) => void) => {
+export const getNodeinfo = (con: boolean, n: number, f: (t: INodeInfo) => void) => {
     if (!con) {
         return
     }
@@ -310,6 +326,10 @@ export const claim = (con: boolean, no: IClaimParam, f: (t: string) => void) => 
     }
     socket.emit("claim", no, f)
 }
+
+
+
+
 export const logout = (con: boolean, ) => {
     if (!con) {
         return
@@ -333,8 +353,8 @@ export const nets = [
     "MainNet", "TestNet", "DebugNet"
 ]
 
-export const isUpdated=(s1:string[],s2:string[])=>{
-    if (s1.length!==s2.length){
+export const isUpdated = (s1: string[], s2: string[]) => {
+    if (s1.length !== s2.length) {
         return true
     }
     s1.map((a: string, i: number) => {

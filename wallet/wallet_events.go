@@ -273,35 +273,54 @@ const (
 	reasonMined
 )
 
+//Output is an output in transactions.
+type Output struct {
+	Address string
+	Value   uint64
+}
+
+//MultiSigOut is an multisig output in transactions.
+type MultiSigOut struct {
+	M         byte
+	Addresses []string
+	Value     uint64
+	Address   string
+}
+
+//TxCommon is the common info for all txResps
+type TxCommon struct {
+	Inputs       []*Output
+	MInputs      []*MultiSigOut
+	Signs        map[string]bool
+	Outputs      []*Output
+	MOutputs     []*MultiSigOut
+	TicketInput  string
+	TicketOutput string
+	Message      string
+	Recv         int64
+	Hash         string
+	IsRejected   bool
+	IsConfirmed  bool
+	StatNo       string
+}
+
 //normalTxResp is information about a normal tx.
 type normalTxResp struct {
-	Recv        int64
-	Hash        string
-	Amount      int64
-	IsRejected  bool
-	IsConfirmed bool
-	StatNo      string
+	*TxCommon
+	Amount int64
 }
 
 //ticketResp is information about a ticket.
 type ticketResp struct {
-	Recv        int64
-	Hash        string
-	Reason      byte
-	IsRejected  bool
-	IsConfirmed bool
-	StatNo      string
+	*TxCommon
+	Reason byte
 }
 
 //multisigResp is information about a multisig tx.
 type multisigResp struct {
-	Recv        int64
-	Hash        string
-	Amount      int64
-	IsRejected  bool
-	IsConfirmed bool
-	StatNo      string
-	Address     string
+	*TxCommon
+	Amount  int64
+	Address string
 }
 
 //TxResp is a response to transactrion..
@@ -317,6 +336,81 @@ const (
 	txPending
 	txRejected
 )
+
+func makeTxCommon(cfg *setting.Setting, ti *imesh.TxInfo) (*TxCommon, error) {
+	tc := &TxCommon{
+		Inputs:      make([]*Output, len(ti.Body.Inputs)),
+		MInputs:     make([]*MultiSigOut, len(ti.Body.MultiSigIns)),
+		Signs:       make(map[string]bool),
+		Outputs:     make([]*Output, len(ti.Body.Outputs)),
+		MOutputs:    make([]*MultiSigOut, len(ti.Body.MultiSigOuts)),
+		Message:     string(ti.Body.Message),
+		Recv:        ti.Received.Unix(),
+		Hash:        ti.Hash.String(),
+		IsConfirmed: ti.StatNo != imesh.StatusPending,
+		IsRejected:  ti.IsRejected,
+		StatNo:      hex.EncodeToString(ti.StatNo[:]),
+	}
+	if len(ti.Body.TicketOutput) > 0 {
+		to, err := address.Address58(cfg.Config, ti.Body.TicketOutput)
+		if err != nil {
+			return nil, err
+		}
+		tc.TicketOutput = to
+	}
+	if ti.Body.TicketInput != nil {
+		ti2, err2 := imesh.GetTxInfo(cfg.DB, ti.Body.TicketInput)
+		if err2 != nil {
+			return nil, err2
+		}
+		tc.TicketInput = ti2.Body.TicketOutput.String()
+	}
+	for i, inp := range ti.Body.Inputs {
+		ins, err := PreviousOutput(cfg, inp)
+		if err != nil {
+			return nil, err
+		}
+		tc.Inputs[i] = &Output{
+			Address: ins.Address.String(),
+			Value:   ins.Value,
+		}
+	}
+	for i, inp := range ti.Body.Outputs {
+		tc.Outputs[i] = &Output{
+			Address: inp.Address.String(),
+			Value:   inp.Value,
+		}
+	}
+	for i, inp := range ti.Body.MultiSigIns {
+		ti2, err2 := imesh.GetTxInfo(cfg.DB, inp.PreviousTX)
+		if err2 != nil {
+			return nil, err2
+		}
+		mo := ti2.Body.MultiSigOuts[inp.Index]
+		tc.MInputs[i] = &MultiSigOut{
+			M:     mo.M,
+			Value: mo.Value,
+		}
+		tc.MInputs[i].Address = mo.Address(cfg.Config)
+		tc.MInputs[i].Addresses = make([]string, len(mo.Addresses))
+		for j, a := range mo.Addresses {
+			tc.MInputs[i].Addresses[j] = a.String()
+		}
+	}
+	for i, mo := range ti.Body.MultiSigOuts {
+		tc.MOutputs[i] = &MultiSigOut{
+			M:     mo.M,
+			Value: mo.Value,
+		}
+		tc.MOutputs[i].Addresses = make([]string, len(mo.Addresses))
+		tc.MOutputs[i].Address = mo.Address(cfg.Config)
+		for j, a := range mo.Addresses {
+			tc.MOutputs[i].Addresses[j] = a.String()
+		}
+
+	}
+	return tc, nil
+}
 
 //Transaction returns txs in the wallet.
 //total balance for normal addresses per a tx(send or recv for each txs)
@@ -348,6 +442,10 @@ func Transaction(cfg *setting.Setting, typ byte) (*TxResp, error) {
 		if typ == txRejected && !ti.IsRejected {
 			continue
 		}
+		tc, err := makeTxCommon(cfg, ti)
+		if err != nil {
+			return nil, err
+		}
 		switch h.Type {
 		case tx.TypeTicketout:
 			var reason byte = reasonIssued
@@ -355,21 +453,13 @@ func Transaction(cfg *setting.Setting, typ byte) (*TxResp, error) {
 				reason = reasonMined
 			}
 			resp.Ticket = append(resp.Ticket, &ticketResp{
-				Recv:        ti.Received.Unix(),
-				Hash:        h.Hash.String(),
-				Reason:      reason,
-				IsConfirmed: ti.StatNo != imesh.StatusPending,
-				IsRejected:  ti.IsRejected,
-				StatNo:      hex.EncodeToString(ti.StatNo[:]),
+				TxCommon: tc,
+				Reason:   reason,
 			})
 		case tx.TypeTicketin:
 			resp.Ticket = append(resp.Ticket, &ticketResp{
-				Recv:        ti.Received.Unix(),
-				Hash:        h.Hash.String(),
-				Reason:      reasonSpent,
-				IsConfirmed: ti.StatNo != imesh.StatusPending,
-				IsRejected:  ti.IsRejected,
-				StatNo:      hex.EncodeToString(ti.StatNo[:]),
+				TxCommon: tc,
+				Reason:   reasonSpent,
 			})
 		}
 
@@ -382,12 +472,8 @@ func Transaction(cfg *setting.Setting, typ byte) (*TxResp, error) {
 		}
 		if v != 0 {
 			resp.NormalTx = append(resp.NormalTx, &normalTxResp{
-				Recv:        ti.Received.Unix(),
-				Hash:        h.Hash.String(),
-				Amount:      v,
-				IsRejected:  ti.IsRejected,
-				IsConfirmed: ti.StatNo != imesh.StatusPending,
-				StatNo:      hex.EncodeToString(ti.StatNo[:]),
+				TxCommon: tc,
+				Amount:   v,
 			})
 		}
 
@@ -418,13 +504,9 @@ func Transaction(cfg *setting.Setting, typ byte) (*TxResp, error) {
 		}
 		for adr, amt := range values {
 			resp.Multisig = append(resp.Multisig, &multisigResp{
-				Recv:        ti.Received.Unix(),
-				Hash:        h.Hash.String(),
-				Amount:      amt,
-				IsRejected:  ti.IsRejected,
-				IsConfirmed: ti.StatNo != imesh.StatusPending,
-				StatNo:      hex.EncodeToString(ti.StatNo[:]),
-				Address:     adr,
+				TxCommon: tc,
+				Amount:   amt,
+				Address:  adr,
 			})
 		}
 		prev = h.Hash

@@ -96,7 +96,7 @@ class Dashboard extends React.Component<IProps, IStates> {
                             <div id="scrolle" className="card bg-dark-green black-shadow db-table-card-height mCustomScrollbar" >
                                 <div className="cad-table-content">
                                     <TableHeader header={tables.header} menus={tables.menus} onSelectChange={this.onSelectChange} />
-                                    <Table data={this.state.data} fields={tables.fields} />
+                                    <Table componentsName={'dashboard'}  data={this.state.data} fields={tables.fields} />
                                 </div>
                             </div>
                         </div>

@@ -35,12 +35,14 @@ interface IProps {
 
 interface IStates {
     newSetting: IMinerSetting;
+    fee: string;
 }
 
 class Mining extends React.Component<IProps, IStates> {
     constructor(props: IProps) {
         super(props);
         this.state = {
+            fee: "0",
             newSetting: props.minerSetting,
         }
     }
@@ -52,11 +54,11 @@ class Mining extends React.Component<IProps, IStates> {
             <div className=" show active" id="tab-1" role="tabpanel" aria-labelledby="tab1">
                 <div className="row mb-2">
                     <div className="col-lg-2 col-md-3 col-sm-3 col-6">
-                        <h5 className="mining-title">Fee Mining</h5>
+                        <h5 className="mining-title">Issue Tickets</h5>
                     </div>
                     <div className="col-2">
                         <label className="c-switch">
-                            <input type="checkbox" onChange={this.handleCheckFee} checked={this.state.newSetting.RunFeeMiner} />
+                            <input type="checkbox" name="RunTicketIssuer" onChange={this.fieldChecked} checked={this.state.newSetting.RunTicketIssuer} />
                             <span className="slider round" />
                         </label>
                     </div>
@@ -67,22 +69,34 @@ class Mining extends React.Component<IProps, IStates> {
                     </div>
                     <div className="col-2">
                         <label className="c-switch">
-                            <input type="checkbox" onChange={this.handleCheckTicket} checked={this.state.newSetting.RunTicketMiner} />
+                            <input type="checkbox" name="RunTicketMiner" onChange={this.fieldChecked} checked={this.state.newSetting.RunTicketMiner} />
                             <span className="slider round" />
                         </label>
                     </div>
                 </div>
                 <div className="row mb-2">
                     <div className="col-lg-2 col-md-3 col-sm-3 col-6">
-                        <h5 className="mining-title">Issue Tickets</h5>
+                        <h5 className="mining-title">Fee Mining</h5>
                     </div>
                     <div className="col-2">
                         <label className="c-switch">
-                            <input type="checkbox" onChange={this.handleCheckIssue} checked={this.state.newSetting.RunTicketIssuer} />
+                            <input type="checkbox" name="RunFeeMiner" onChange={this.fieldChecked} checked={this.state.newSetting.RunFeeMiner} />
                             <span className="slider round" />
                         </label>
                     </div>
                 </div>
+                {
+                    this.state.newSetting.RunFeeMiner ?
+                        <div className="send-adk-form">
+                            <div className="form-inline">
+                                <input type='text' id="fee" value={this.props.minerSetting.MinimumFee} onChange={this.updateFee} className="form-control" name={name} placeholder='Fees' />ADK
+                                <span className="invalid-feedback text-warning">
+                                    invalid minimum fee, must be greater than 0
+                                    </span>
+                            </div>
+                        </div> : ''
+                }
+
                 <div className="form-group mt-md-5">
                     <button className="btn btn-cancel btn-secondary mr-2" onClick={this.revert}>Revert</button>
                     <button className="btn btn-send btn-primary" onClick={this.handleSave}>Save</button>
@@ -90,15 +104,28 @@ class Mining extends React.Component<IProps, IStates> {
             </div>
         );
     }
+    private updateFee = (event: React.ChangeEvent<HTMLInputElement>) => {
+        this.setState({
+            fee: event.currentTarget.value
+        })
+    }
+
+    private fieldChecked = (event: any) => {
+        const stat = { ...this.state.newSetting, [event.target.name]: event.target.checked }
+        this.setState({
+            newSetting: stat
+        })
+    }
     private handleSave = () => {
-        if (this.state.newSetting.RunFeeMiner && !this.state.newSetting.MinimumFee) {
-            toast.error("invalid minimum fee, must be greater than 0", {
-                autoClose: 3000,
-                position: toast.POSITION.TOP_CENTER
-            });
-            return
+        let fee = 0;
+        if (this.state.newSetting.RunFeeMiner) {
+            fee = parseInt(this.state.fee, 10)
+            if (!fee) {
+                $("#fee").addClass("is-invalid")
+                return
+            }
         }
-        updateMinerSetting(this.props.connected, this.state.newSetting, (errr: string) => {
+        updateMinerSetting(this.props.connected, { ...this.state.newSetting, MinimumFee: fee }, (errr: string) => {
             if (errr) {
                 toast.error(errr, {
                     autoClose: false,
@@ -115,24 +142,6 @@ class Mining extends React.Component<IProps, IStates> {
         })
     }
 
-    private handleCheckFee = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const stat = { ...this.state.newSetting, RunFeeMiner: e.currentTarget.checked }
-        this.setState({
-            newSetting: stat
-        })
-    }
-    private handleCheckIssue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const stat = { ...this.state.newSetting, RunTicketIssuer: e.currentTarget.checked }
-        this.setState({
-            newSetting: stat
-        })
-    }
-    private handleCheckTicket = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const stat = { ...this.state.newSetting, RunTicketMiner: e.currentTarget.checked }
-        this.setState({
-            newSetting: stat
-        })
-    }
     private revert = () => {
         this.setState({
             newSetting: this.props.minerSetting,

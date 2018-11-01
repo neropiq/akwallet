@@ -1,11 +1,11 @@
 {
-    "fields": ["QR Code", "Address", "Received",""],
-    "data":  [
-
-        {
-            "value1": "AKADRSM1c9A8utonPvu1BpyAkWY9cM55shnHcyBQTLuuD7uFZF2JLhs2b",
-            "value2": "Recv: 12345678.12345678 ADK"
-        }
+    "fields": [
+        "QR Code",
+        "Address",
+        "Received",
+        ""
+    ],
+    "data": [
+        {}
     ]
 }
-  
