@@ -156,6 +156,7 @@ type addressRecv struct {
 	String string
 	Recv   uint64
 	Sent   uint64
+	no     int
 }
 
 //GetAddressResp is a response of GetAddress.
@@ -172,8 +173,13 @@ func GetAddresses(cfg *setting.Setting) (*GetAddressResp, error) {
 	madrs := make(map[string]*addressRecv)
 
 	for adrstr := range wallet.AddressPublic {
+		a, err := wallet.GetAddress(&cfg.DBConfig, adrstr, pwd)
+		if err != nil {
+			return nil, err
+		}
 		nadrs[adrstr] = &addressRecv{
 			String: adrstr,
+			no:     a.No,
 		}
 	}
 
@@ -255,6 +261,12 @@ func GetAddresses(cfg *setting.Setting) (*GetAddressResp, error) {
 	for _, r := range madrs {
 		ret.Multisig = append(ret.Multisig, r)
 	}
+	sort.Slice(ret.Normal, func(i, j int) bool {
+		return ret.Normal[i].no < ret.Normal[j].no
+	})
+	sort.Slice(ret.Multisig, func(i, j int) bool {
+		return ret.Multisig[i].no < ret.Multisig[j].no
+	})
 	return ret, nil
 }
 

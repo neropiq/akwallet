@@ -102,6 +102,8 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 	})
 	gui.On("get_addresses", func(interface{}) interface{} {
 		adrs, err := GetAddresses(cfg)
+		log.Println("getadr", adrs.Normal)
+		log.Println("getadr", adrs.Multisig)
 		return struct {
 			*GetAddressResp
 			Error string

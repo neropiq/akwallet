@@ -54,12 +54,11 @@ class Gride extends React.Component<IProps, IState> {
         return (
             // <Popup />
             <div className="row" >
-                {
+                { this.props.address && this.props.address.length>0 &&
                     this.props.address.map((rows: any, index: number) => (
                         <div className="col-xl-4 col-lg-6 col-md-6 col-sm-12 qr-code-address" key={index}>
                             <div className="row">
                                 <div className="col-lg-4 col-md-4 col-sm-3 col-4" onClick={this.openPopupbox(rows.value1)}>
-                                    {/* <img src={require('../../assets/images/qr-code-big.png')} alt="qr-code" /> */}
                                     <div className="mx-auto text-center">
                                         <div className="bg-white   mx-auto  align-middle " style={{ width: 82, height: 82 }} >
                                             <div className="bg-white   mx-auto  align-middle " style={{ width: 1, height: 1 }} />

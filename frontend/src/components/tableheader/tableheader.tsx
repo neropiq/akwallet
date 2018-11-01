@@ -39,29 +39,32 @@ class TableHeader extends React.Component<IProps, IState> {
     public static defaultProps: IDefaultProps = {
         menus: []
     }
-    constructor(props: IProps) {    
+    constructor(props: IProps) {
         super(props);
-        this.state = {  
-            value: this.props.menus.length === 0? "" : this.props.menus[0]
+        this.state = {
+            value: this.props.menus.length === 0 ? "" : this.props.menus[0]
         };
     }
 
     public componentDidMount() {
-        if(this.props.menus.length !== 0) {
-            this.props.onSelectChange(this.props.menus[0]);
-        }
+        console.log(this.state.value)
+        this.props.menus.map((v: string, i: number) => {
+            if (v === this.state.value) {
+                this.props.onSelectChange(v);
+            }
+        })
     }
 
     public render() {
-        return(
+        return (
             <div className="card-header p-4">
                 <h3 className="card-name">{this.props.header}</h3>
                 <div className="card-heading-element">
                     {
                         (this.props.menus.length !== 0) &&
                         <select value={this.state.value} onChange={this.optionChange} className="form-control custom-select-table" name="transaction-type" id="transaction-type">
-                           {this.props.menus.map((menu: any, index: number) => <option value={menu} key={index}>{menu}</option>)}
-                        </select>                        
+                            {this.props.menus.map((menu: any, index: number) => <option value={menu} key={index}>{menu}</option>)}
+                        </select>
                     }
                 </div>
             </div>

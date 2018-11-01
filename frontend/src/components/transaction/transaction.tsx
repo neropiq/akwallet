@@ -62,7 +62,7 @@ class Transactions extends React.Component<IProps, IStates> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            data: tables_normal.data,
+            data: [],
             fields: tables_normal.fields,
             popup: false,
             popupValue: null,
@@ -121,6 +121,7 @@ class Transactions extends React.Component<IProps, IStates> {
         })
     }
     private updateTx = (filters: any, tab: any) => {
+        console.log(filters,tab)
         let no = 0;
         filters.map((f: any, i: number) => {
             if (f.active) {

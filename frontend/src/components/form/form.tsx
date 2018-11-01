@@ -199,9 +199,10 @@ class SimpleForm extends React.Component<ICustomProps & InjectedFormProps<{}, IC
 }
 
 export default reduxForm<{}, ICustomProps>({
+	destroyOnUnmount:false,
 	form: 'fieldArrays',
 	initialValues: {
 		members: [{ address: '', amount: '' }],
 		powType: "0"
-	}
+	},
 })(SimpleForm);

@@ -110,7 +110,7 @@ class PopupTx extends React.Component<IProps> {
                                                                 <p>{inp.Address}</p>
                                                                 {
                                                                     inp.Addresses.map((a: string, ii: number) => (
-                                                                        <p key={"mout" + i + "-" + ii}>{a}</p>
+                                                                        <h6 key={"mout" + i + "-" + ii}>{a}</h6>
                                                                     ))
                                                                 }
                                                             </div>

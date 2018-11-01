@@ -61,12 +61,16 @@ class SubHeader extends React.Component<IProps, IState> {
     }
     
     public componentDidMount() {
-        if(this.props.filters.length !== 0) {
-            this.props.onFilterChange(this.props.filters[0].value);
-        }
-        if (this.props.transaction.length !== 0) {
-            this.props.onTrancationFilterChange(this.props.transaction[0].value);
-        }
+        this.props.filters.map((v: any, i: number) => {
+            if (v.active) {
+                this.props.onFilterChange(v.value);
+            }
+        })
+        this.props.transaction.map((v: any, i: number) => {
+            if (v.active) {
+                this.props.onTrancationFilterChange(v.value);
+            }
+        })
     }
 
     public render() {

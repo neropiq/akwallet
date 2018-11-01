@@ -22,7 +22,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { Dispatch } from 'redux';
-import { stopSubmit, SubmissionError, touch } from 'redux-form';
+import { stopSubmit, SubmissionError, touch, reset } from 'redux-form';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';
@@ -85,7 +85,7 @@ class SendAdk extends React.Component<IProps> {
         );
     }
 
-    private submit = (values: any,dispatch:any) => {
+    private submit = (values: any, dispatch: any) => {
         // print the form values to the console
         console.log(values, this.props.loading);
         if (this.props.loading) {
@@ -148,7 +148,7 @@ class SendAdk extends React.Component<IProps> {
                     alert(e + i)
                     const a: any = { members: [] }
                     a.members[i] = { address: "Invalid address" }
-                    touch('fieldArrays',...["members["+i+"].address"])
+                    touch('fieldArrays', ...["members[" + i + "].address"])
                     dispatch(stopSubmit('fieldArrays', a))
                     ok = false
                 }
@@ -180,8 +180,10 @@ class SendAdk extends React.Component<IProps> {
                 toast.success("finished PoW", {
                     position: toast.POSITION.TOP_RIGHT
                 });
+                dispatch(reset("fieldArrays"))
                 this.props.changeLoading({ value: !this.props.loading });
             })
+            // reteurns immediately. must wait for "fisnihed_pow".
             send(this.props.connected, {
                 Comment: values.comment,
                 Dest: dest,

@@ -33,7 +33,18 @@ import CardTab from '../cardTab/cardTab';
 import Grid from '../grid/grid';
 import List from '../list/list';
 import SubHeader from '../subheader/subheader';
-import address from './address.json';
+
+const fields = [
+    "QR Code",
+    "Address",
+    "Received",
+    ""
+]
+
+interface IAddressData {
+    value1: string,
+    value2: string,
+}
 
 interface IchangeViewProps {
     newView: string;
@@ -71,7 +82,6 @@ interface IProps {
 class Address extends React.Component<IProps> {
     constructor(props: IProps) {
         super(props);
-        this.props.changeAddressValue(address.data);
     }
 
     public componentDidMount() {
@@ -128,7 +138,7 @@ class Address extends React.Component<IProps> {
                                                     {/* <div >
                                                 </div> */}
                                                 </div> :
-                                                <List tables={this.props.addressValue} titleList={address.fields} />
+                                                <List tables={this.props.addressValue} titleList={fields} />
                                         }
                                     </div>
                                 </div>
@@ -150,7 +160,7 @@ class Address extends React.Component<IProps> {
 
     private updateData = (kind: string) => {
         getAddresses(this.props.connected, (adr: IAddress) => {
-            address.data = []
+            const data:IAddressData[] = []
             switch (kind) {
                 case "Normal":
                     adr.Normal.map((adrrecv: IaddressRecv, index: number) => {
@@ -158,7 +168,7 @@ class Address extends React.Component<IProps> {
                             value1: adrrecv.String,
                             value2: "Recv: " + toADK(adrrecv.Recv) + " ADK",
                         }
-                        address.data.push(val)
+                        data.push(val)
                     })
                     break
                 case "Multisigs":
@@ -167,14 +177,14 @@ class Address extends React.Component<IProps> {
                             value1: adrrecv.String,
                             value2: "Recv: " + toADK(adrrecv.Recv) + " ADK",
                         }
-                        address.data.push(val)
+                        data.push(val)
                     })
                     break
                 default:
                     console.log("invalid address kind", kind)
                     return
             }
-            this.props.changeAddressValue(address.data);
+            this.props.changeAddressValue(data);
         })
     }
 
@@ -204,7 +214,7 @@ class Address extends React.Component<IProps> {
                 }
                 this.props.pushAddressValue(data);
                 this.onCardChange("Normal");
-                toast.success("address "+adr.Address+" was added", {
+                toast.success("address " + adr.Address + " was added", {
                     autoClose: 5000,
                     position: toast.POSITION.TOP_RIGHT
                 });

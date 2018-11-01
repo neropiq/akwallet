@@ -52,15 +52,21 @@ class CardTab extends React.Component<IProps, IState> {
     }
 
     public componentDidMount() {
-        if (this.props.tab.length !== 0) {
-            this.props.onCardChange(this.props.tab[0].value);
-        }
-        if (this.props.settingTab.length !== 0) {
-            this.props.onCardChange(this.props.settingTab[0].value);
-        }
-        if (this.props.addressTab.length !== 0) {
-            this.props.onCardChange(this.props.addressTab[0].value);
-        }
+        this.props.tab.map((v: any, i: number) => {
+            if (v.active) {
+                this.props.onCardChange(v.value);
+            }
+        })
+        this.props.settingTab.map((v: any, i: number) => {
+            if (v.active) {
+                this.props.onCardChange(v.value);
+            }
+        })
+        this.props.addressTab.map((v: any, i: number) => {
+            if (v.active) {
+                this.props.onCardChange(v.value);
+            }
+        })
     }
 
     public render() {

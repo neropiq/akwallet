@@ -66,7 +66,7 @@ class List extends React.Component<IProps> {
                             </tr>
                         </thead>
                         <tbody>
-                            {
+                            { this.props.tables && this.props.tables.length>0 &&
                                 this.props.tables.map((rows: any, index: number) => (
                                     <tr key={index} onClick={this.openPopupbox(rows.value1)} >
                                         <td key={index}>

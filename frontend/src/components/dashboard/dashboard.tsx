@@ -62,7 +62,7 @@ class Dashboard extends React.Component<IProps, IStates> {
         super(props);
         this.state = {
             carddata: cards.data,
-            data: tables.data,
+            data: [],
         }
     }
     public componentDidMount() {
