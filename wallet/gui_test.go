@@ -133,7 +133,7 @@ func TestGUI(t *testing.T) {
 		t.Error("invalid sync")
 	}
 	t.Log("sent 10ADK to normal, 5ADK to multisig synced")
-	if err := notify(s, newtx, nil); err != nil {
+	if err = notify(s, newtx, nil); err != nil {
 		t.Error(err)
 	}
 

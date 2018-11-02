@@ -88,11 +88,11 @@ func mine(s *setting.Setting) (tx.Hash, error) {
 	log.Println(tr, tr.Hash())
 	log.Println("mining", hex.EncodeToString(tr.Hash()))
 	log.Println(tr)
-	if err := tr.PoW(); err != nil {
-		return nil, err
+	if err2 := tr.PoW(); err2 != nil {
+		return nil, err2
 	}
-	if err := sendtx(s, tr); err != nil {
-		return nil, err
+	if err2 := sendtx(s, tr); err2 != nil {
+		return nil, err2
 	}
 	log.Println("succeeded to mine, txid=", tr.Hash())
 	err = s.GUI.Emit("notify", "Succeeded to mine a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})
@@ -112,8 +112,8 @@ func issueTicket(ctx context.Context, s *setting.Setting) (tx.Hash, error) {
 	if err != nil {
 		log.Println(err)
 	}
-	if err := sendtx(s, tr); err != nil {
-		return nil, err
+	if err2 := sendtx(s, tr); err2 != nil {
+		return nil, err2
 	}
 	log.Println("ticket issued,", tr.Hash())
 	err = s.GUI.Emit("notify", "Succeeded to issue a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})

@@ -112,8 +112,8 @@ func Send(conf *setting.Setting, p *tx.BuildParam) error {
 	}
 	if p.PoWType == tx.TypeNormal {
 		go func() {
-			if err := pow(conf, tr, p); err != nil {
-				log.Println(err)
+			if err2 := pow(conf, tr, p); err2 != nil {
+				log.Println(err2)
 				return
 			}
 			log.Println("finished PoW. hash=", tr.Hash())
