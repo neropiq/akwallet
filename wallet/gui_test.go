@@ -55,7 +55,9 @@ func TestGUI(t *testing.T) {
 	s.GUI = guis
 	SetupEvents(s, guis)
 	go func() {
-		wgui.Run(guis, "http://localhost:8080")
+		if err := wgui.Run(guis, "http://localhost:8080"); err != nil {
+			t.Error(err)
+		}
 	}()
 	pk, err := Register(s, "test")
 	if err != nil {
@@ -131,7 +133,9 @@ func TestGUI(t *testing.T) {
 		t.Error("invalid sync")
 	}
 	t.Log("sent 10ADK to normal, 5ADK to multisig synced")
-	notify(s, newtx, nil)
+	if err := notify(s, newtx, nil); err != nil {
+		t.Error(err)
+	}
 
 	time.Sleep(10 * time.Second)
 	confirmAll(t, true)
@@ -143,7 +147,10 @@ func TestGUI(t *testing.T) {
 		t.Error("should be confirmed")
 	}
 	t.Log("confirmed")
-	notify(s, nil, confirmed)
+	if err := notify(s, nil, confirmed); err != nil {
+		t.Error(err)
+	}
+
 	time.Sleep(1000 * time.Hour)
 	wgui.Wait(guis)
 

@@ -95,8 +95,8 @@ func mine(s *setting.Setting) (tx.Hash, error) {
 		return nil, err
 	}
 	log.Println("succeeded to mine, txid=", tr.Hash())
-	s.GUI.Emit("notify", "Succeeded to mine a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})
-	return tr.Hash(), nil
+	err = s.GUI.Emit("notify", "Succeeded to mine a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})
+	return tr.Hash(), err
 }
 
 func issueTicket(ctx context.Context, s *setting.Setting) (tx.Hash, error) {
@@ -116,10 +116,8 @@ func issueTicket(ctx context.Context, s *setting.Setting) (tx.Hash, error) {
 		return nil, err
 	}
 	log.Println("ticket issued,", tr.Hash())
-	if err := s.GUI.Emit("notify", "Succeeded to issue a ticket '"+tr.Hash().String()[:3]+"...'!", func() {}); err != nil {
-		return nil, err
-	}
-	return tr.Hash(), nil
+	err = s.GUI.Emit("notify", "Succeeded to issue a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})
+	return tr.Hash(), err
 }
 
 //RunMiner runs a miner
