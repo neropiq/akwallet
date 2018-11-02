@@ -20,12 +20,12 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { ToastContainer } from 'react-toastify';
 import { Dispatch } from 'redux';
 import { IStoreState } from '../reducers';
 import AuthHeader from './header/header';
 import Login from './login/login';
 import Signup from './signup/signup';
-import { ToastContainer } from 'react-toastify';
 
 interface IProps {
   login: boolean,

@@ -2,6 +2,7 @@
 [![GoDoc](https://godoc.org/github.com/AidosKuneen/akwallet?status.svg)](https://godoc.org/github.com/AidosKuneen/akwallet)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/AidosKuneen/akwallet/master/LICENSE)
 [![Coverage Status](https://coveralls.io/repos/github/AidosKuneen/akwallet/badge.svg?branch=master)](https://coveralls.io/github/AidosKuneen/akwallet?branch=master)
+[![GolangCI](https://golangci.com/badges/github.com/AidosKuneen/akwallet.svg)](https://golangci.com/r/github.com/AidosKuneen/akwallet) 
 
 Aidos Wallet (AKWallet)
 =====

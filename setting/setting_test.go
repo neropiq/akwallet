@@ -71,7 +71,9 @@ func setupRPC(ctx context.Context, t *testing.T) {
 	s1.RPCBind = "127.0.0.1"
 	s1.RPCPort = s1.Config.DefaultRPCPort
 	s1.UsePublicRPC = true
-	leaves.Init(s1)
+	if err := leaves.Init(s1); err != nil {
+		t.Error(err)
+	}
 	if err := imesh.Init(s1); err != nil {
 		t.Error(err)
 	}
@@ -86,7 +88,9 @@ func setupRPC(ctx context.Context, t *testing.T) {
 		t.Error(err)
 	}
 	t.Log(imesh.GetTxNo())
-	rpc.Init(s1)
+	if err := rpc.Init(s1); err != nil {
+		t.Error(err)
+	}
 	rpc.Run(ctx, s1)
 	pwd := []byte("pwd")
 	if err := rpc.New(s1, pwd); err != nil {

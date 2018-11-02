@@ -28,13 +28,14 @@ import (
 
 	"github.com/AidosKuneen/gogui"
 	"github.com/gobuffalo/packr"
-	qrcode "github.com/skip2/go-qrcode"
 )
 
 //Run starts GUI backend.
 func Run(gui *gogui.GUI, dest string) error {
 	box := packr.NewBox("./asset")
-	http.Handle("/", http.FileServer(box))
+	if dest == "" {
+		http.Handle("/", http.FileServer(box))
+	}
 	if err := gui.Start(dest); err != nil {
 		return err
 	}
@@ -50,36 +51,5 @@ func Run(gui *gogui.GUI, dest string) error {
 func Wait(gui *gogui.GUI) {
 	if err := <-gui.Finished; err != nil {
 		log.Println(err)
-	}
-}
-
-func handleQRcode(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		return
-	}
-	if err := r.ParseForm(); err != nil {
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	f := r.Form["code"]
-	if len(f) != 1 || f[0] == "" {
-		log.Println("invalid code")
-		http.Error(w, "invalid code", http.StatusBadRequest)
-		return
-	}
-	code := f[0]
-	if len(code) > 100 {
-		http.Error(w, "invalid code", http.StatusBadRequest)
-		return
-	}
-	qr, err := qrcode.New(code, qrcode.High)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Fatal(err)
-	}
-	if err := qr.Write(256, w); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		log.Fatal(err)
 	}
 }

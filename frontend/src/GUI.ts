@@ -57,7 +57,6 @@ class GUI {
         }
         this.ackfunc[this.id] = f
         this.id++
-        console.log(this.id, JSON.stringify(msg))
         this.conn.send(JSON.stringify(msg))
     }
 
@@ -92,7 +91,6 @@ class GUI {
             }
         }
         this.conn.onmessage = (event: MessageEvent) => {
-            console.log(event.data)
             const msg = JSON.parse(event.data);
             switch (msg.type) {
                 case header.connect:

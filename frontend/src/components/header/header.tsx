@@ -25,9 +25,10 @@ import { NavLink } from 'react-router-dom';
 import { Dispatch } from 'redux';
 import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';
-import { nets } from '../../utils/remote';
+import { logout, nets } from '../../utils/remote';
 
 interface IProps {
+    connected:boolean;
     icons: any;
     location: any;
     testnet: number;
@@ -175,7 +176,7 @@ class Header extends React.Component<IProps, IState> {
                                                 My Account
                                             </a>
                                             <div className="dropdown-menu profile-dropdown" aria-labelledby="droptoolMob">
-                                                <a className="dropdown-item" href="#"><i className="icon-logout" /> Logout</a>
+                                                <a className="dropdown-item" href="#" onClick={this.logout}><i className="icon-logout" /> Logout</a>
                                             </div>
                                         </li>
                                     </ul>
@@ -202,9 +203,11 @@ class Header extends React.Component<IProps, IState> {
             </div>
         );
     }
+    private logout = () => {
+        logout(this.props.connected)
+    }
 
     private handleViewed = () => {
-        console.log("!!")
         this.props.updateNotificationCount(0)
     }
 }
@@ -216,7 +219,7 @@ const mapDispatchToProps = (dispatch: Dispatch) => {
 }
 const mapStateToProps = (state: IStoreState) => {
     const { Testnet: testnet } = state.config;
-    return { testnet, noti: state.notification.notification ,notificationCount:state.notification.notificationCount}
+    return { connected:state.connected, testnet, noti: state.notification.notification ,notificationCount:state.notification.notificationCount}
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

@@ -1,4 +1,4 @@
-// +build ignore
+// +build !travis
 
 // Copyright (c) 2018 Aidos Developer
 

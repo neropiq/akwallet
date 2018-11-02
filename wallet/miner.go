@@ -116,7 +116,9 @@ func issueTicket(ctx context.Context, s *setting.Setting) (tx.Hash, error) {
 		return nil, err
 	}
 	log.Println("ticket issued,", tr.Hash())
-	s.GUI.Emit("notify", "Succeeded to issue a ticket '"+tr.Hash().String()[:3]+"...'!", func() {})
+	if err := s.GUI.Emit("notify", "Succeeded to issue a ticket '"+tr.Hash().String()[:3]+"...'!", func() {}); err != nil {
+		return nil, err
+	}
 	return tr.Hash(), nil
 }
 

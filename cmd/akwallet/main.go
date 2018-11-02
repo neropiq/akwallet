@@ -110,7 +110,11 @@ func main() {
 	ctx, cancel2 := context.WithCancel(context.Background())
 	setting.CancelMiner = cancel2
 	wallet.RunMiner(ctx, setting)
-	gui.Run(guis, "")
+	if err := gui.Run(guis, ""); err != nil {
+		log.Println(err)
+		fmt.Println(err)
+		os.Exit(1)
+	}
 	gui.Wait(guis)
 	time.Sleep(3 * time.Second)
 	cancel2()

@@ -112,8 +112,7 @@ func Send(conf *setting.Setting, p *tx.BuildParam) error {
 	}
 	if p.PoWType == tx.TypeNormal {
 		go func() {
-			pow(conf, tr, p)
-			if err != nil {
+			if err := pow(conf, tr, p); err != nil {
 				log.Println(err)
 				return
 			}

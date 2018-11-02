@@ -378,8 +378,7 @@ func TestWallet(t *testing.T) {
 		t.Error("invalid status")
 	}
 
-	stopped := false
-	Send(s, &tx.BuildParam{
+	err = Send(s, &tx.BuildParam{
 		Dest: []*tx.RawOutput{
 			&tx.RawOutput{
 				Address: a.Address58(s.Config),
@@ -388,15 +387,14 @@ func TestWallet(t *testing.T) {
 		},
 		PoWType: tx.TypeNormal,
 	})
-	stopped = true
+	if err != nil {
+		t.Error(err)
+	}
 	time.Sleep(time.Second)
 	if err = CancelPoW(s); err != nil {
 		t.Error(err)
 	}
 	time.Sleep(time.Second)
-	if !stopped {
-		t.Error("invalid cancelpow")
-	}
 
 	Logout(s)
 	err = Login(s, &LoginParam{

@@ -176,7 +176,7 @@ func updateSevers(cfg *setting.Setting, svr []string) error {
 
 func updateMinerSetting(cfg *setting.Setting, s *setting.Miner) error {
 	cfg.CancelMiner()
-	time.Sleep(3 * time.Second)
+	time.Sleep(time.Second)
 	ctx, cancel := context.WithCancel(context.Background())
 	cfg.UpdateMiner(*s, cancel)
 	RunMiner(ctx, cfg)

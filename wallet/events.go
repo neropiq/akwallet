@@ -21,7 +21,6 @@
 package wallet
 
 import (
-	"encoding/json"
 	"log"
 
 	crpc "github.com/AidosKuneen/aklib/rpc"
@@ -79,8 +78,6 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 	gui.On("get_transactions", func(typ byte) interface{} {
 		log.Println("get_transactions", typ)
 		tr, err := Transaction(cfg, typ)
-		a, err := json.Marshal(tr)
-		log.Println(string(a))
 		return struct {
 			*TxResp
 			Error string
