@@ -44,7 +44,7 @@ after_success:
 - packr
 - go get github.com/akavel/rsrc
 - go build github.com/akavel/rsrc
-- rsrc -ico ../../frontend/src/assets/images/aidos-wallet-login.png -o akwallet.syso
+- rsrc -ico ../../frontend/src/assets/images/aidos-wallet-login.ico -o akwallet.syso
 - echo "Bootstrapping linux/amd64..."
 - env GOOS=linux GOARCH=amd64 go build -o ${REPO_NAME}_${TRAVIS_TAG}_linux_amd64 -ldflags "-X ${REPO_DIR}/setting.Version=\"${TRAVIS_TAG}\""
 - echo "Bootstrapping linux/386..."
