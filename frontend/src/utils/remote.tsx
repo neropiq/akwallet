@@ -28,7 +28,7 @@ export interface InOut {
 }
 
 
-//MultiSigOut is an multisig output in transactions.
+// MultiSigOut is an multisig output in transactions.
 export interface IMultiSigInOut {
     M: number
     Addresses: string[]

@@ -70,11 +70,11 @@ class PopupTx extends React.Component<IProps> {
                                                             <div className="mb-4" key={"min" + i}>
                                                                 <h6>{toADK(inp.Value)} ADK</h6>
                                                                 <p className='text-light-green font-size'>{inp.Address}</p>
-                                                                {
+                                                                {/* {
                                                                     inp.Addresses.map((a: string, ii: number) => (
                                                                         <p key={"min" + i + "-" + ii}>{a}</p>
                                                                     ))
-                                                                }
+                                                                } */}
                                                             </div>
                                                         ))
                                                     }
@@ -108,11 +108,11 @@ class PopupTx extends React.Component<IProps> {
                                                             <div className="mb-4" key={"mout" + i}>
                                                                 <h6 >{toADK(inp.Value)} ADK</h6>
                                                                 <p className='text-light-green font-size'>{inp.Address}</p>
-                                                                {
+                                                                {/* {
                                                                     inp.Addresses.map((a: string, ii: number) => (
-                                                                        <h6 key={"mout" + i + "-" + ii}>{a}</h6>
+                                                                        <p><small key={"mout" + i + "-" + ii}>{a}</small></p>
                                                                     ))
-                                                                }
+                                                                } */}
                                                             </div>
                                                         ))
                                                     }

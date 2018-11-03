@@ -57,14 +57,14 @@ func Login(cfg *setting.Setting, param *LoginParam) error {
 		return errors.New("invalidd private key")
 	}
 	err = load(cfg, []byte(param.Password), param.PrivKey)
-	if err == nil {
+	if err == nil && cfg.Logined != nil {
 		cfg.Logined <- struct{}{}
 	}
 	if err != badger.ErrKeyNotFound {
 		return err
 	}
 	err = new(cfg, []byte(param.Password), param.PrivKey)
-	if err == nil {
+	if err == nil && cfg.Logined != nil {
 		cfg.Logined <- struct{}{}
 	}
 	return err

@@ -1,7 +1,6 @@
 const path = require("path");
 var webpack = require("webpack");
 
-
 module.exports = {
     entry: {
         main: "./src/index.tsx"
@@ -14,7 +13,6 @@ module.exports = {
         path: path.join(__dirname, 'public'),
         filename: 'bundle.js'
     },
-    performance: { hints: false },
     module: {
         rules: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
@@ -43,8 +41,9 @@ module.exports = {
             { test: /malihu-custom-scrollbar-plugin/, loader: "imports?define=>false&this=>window" }
         ]
     },
-    mode: 'development',
-    devtool: 'cheap-module-eval-source-map',
+    // mode: 'development',
+    // devtool: 'cheap-module-eval-source-map',
+    devtool: 'cheap-module-source-map',
     devServer: {
         contentBase: path.join(__dirname, 'public'),
         historyApiFallback: true
@@ -53,6 +52,6 @@ module.exports = {
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery'
-        })
+        }),
     ]
 };

@@ -28,8 +28,8 @@ import { IStoreState } from '../../reducers';
 import { logout, nets } from '../../utils/remote';
 
 interface IProps {
-    connected:boolean;
-    history:any;
+    connected: boolean;
+    history: any;
     icons: any;
     location: any;
     testnet: number;
@@ -37,7 +37,7 @@ interface IProps {
     notificationCount: number;
     changeHeader: () => void;
     updateNotificationCount: (notificationCount: number) => void;
-	setAuths:(value:boolean) => void;
+    setAuths: (value: boolean) => void;
 }
 interface IState {
     showNotification: boolean,
@@ -101,16 +101,16 @@ class Header extends React.Component<IProps, IState> {
                                     <li className="dropdown" >
                                         <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown"
                                             aria-haspopup="true" aria-expanded="false" onMouseDown={this.handleViewed} > {/* don't work if onClick (due to dropdown?)*/}
-                                            <i className="icon-bell"  />
+                                            <i className="icon-bell" />
                                             <span className="badge badge-danger" >{this.props.notificationCount > 0 ? this.props.notificationCount : ''}</span>
                                         </a>
-                                            <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
-                                                {
-                                                    this.props.noti.map((n: string, i: number) => (
-                                                        <a href='#' key={i} className="dropdown-item"> <i className="icon-user" />{n}</a>
-                                                    ))
-                                                }
-                                            </div>
+                                        <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
+                                            {
+                                                this.props.noti.map((n: string, i: number) => (
+                                                    <a href='#' key={i} className="dropdown-item"> <i className="icon-user" />{n}</a>
+                                                ))
+                                            }
+                                        </div>
                                     </li>
                                 </ul>
 
@@ -120,7 +120,7 @@ class Header extends React.Component<IProps, IState> {
                                             My Account
                                         </a>
                                         <div className="dropdown-menu profile-dropdown" aria-labelledby="dropdownMenuButton">
-                                            <a href='#' className="dropdown-item"><i className="icon-logout"  onClick={this.logout}/>Logout</a>
+                                            <a href='#' className="dropdown-item" onClick={this.logout}><i className="icon-logout" />Logout</a>
                                         </div>
                                     </li>
                                 </ul>
@@ -155,20 +155,20 @@ class Header extends React.Component<IProps, IState> {
                                 <div className="top-menu">
                                     <ul className="notification-group d-inline-block">
                                         <li className="dropdown">
-                                            <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown" 
-                                            aria-haspopup="true" aria-expanded="false"   onMouseDown={this.handleViewed}  >
+                                            <a href='#' className="dropdown-toggle" id="dropdownNotification" data-toggle="dropdown"
+                                                aria-haspopup="true" aria-expanded="false" onMouseDown={this.handleViewed}  >
                                                 {/* data-balloon="Whats up!" data-balloon-pos="down" */}
                                                 {/* data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" */}
                                                 <i className="icon-bell" />
                                                 <span className="badge badge-danger">{this.props.notificationCount > 0 ? this.props.notificationCount : ''}</span>
                                             </a>
-                                                <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
-                                                    {
-                                                        this.props.noti.map((n: string, i: number) => (
-                                                            <a href='#' key={i} className="dropdown-item"> <i className="icon-user" />{n}</a>
-                                                        ))
-                                                    }
-                                                </div>
+                                            <div className="dropdown-menu notification-dropdown" aria-labelledby="dropdownNotification">
+                                                {
+                                                    this.props.noti.map((n: string, i: number) => (
+                                                        <a href='#' key={i} className="dropdown-item"> <i className="icon-user" />{n}</a>
+                                                    ))
+                                                }
+                                            </div>
                                         </li>
                                     </ul>
 
@@ -207,7 +207,7 @@ class Header extends React.Component<IProps, IState> {
     }
     private logout = () => {
         this.props.setAuths(false);
-		this.props.history.push('/login');
+        this.props.history.push('/login');
         logout(this.props.connected)
     }
     private handleViewed = () => {
@@ -217,13 +217,13 @@ class Header extends React.Component<IProps, IState> {
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
-		setAuths:(value:boolean) => dispatch(actions.setAuths({value})),
+        setAuths: (value: boolean) => dispatch(actions.setAuths({ value })),
         updateNotificationCount: (notificationCount: any) => dispatch(actions.updateNotificationCount(notificationCount)),
     }
 }
 const mapStateToProps = (state: IStoreState) => {
     const { Testnet: testnet } = state.config;
-    return { connected:state.connected, testnet, noti: state.notification.notification ,notificationCount:state.notification.notificationCount}
+    return { connected: state.connected, testnet, noti: state.notification.notification, notificationCount: state.notification.notificationCount }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);
