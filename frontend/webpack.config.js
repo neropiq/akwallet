@@ -1,18 +1,20 @@
 const path = require("path");
 var webpack = require("webpack");
 
+
 module.exports = {
     entry: {
         main: "./src/index.tsx"
     },
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".ts", ".tsx", ".js", ".json"]
+        extensions: [".ts", ".tsx", ".js", ".json"]      
     },
     output: {
         path: path.join(__dirname, 'public'),
         filename: 'bundle.js'
     },
+    performance: { hints: false },
     module: {
         rules: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
@@ -37,7 +39,8 @@ module.exports = {
                 use: [
                     'file-loader'
                 ]
-            }
+            },
+            { test: /malihu-custom-scrollbar-plugin/, loader: "imports?define=>false&this=>window" }
         ]
     },
     mode: 'development',

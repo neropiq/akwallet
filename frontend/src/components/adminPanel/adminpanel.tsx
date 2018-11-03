@@ -160,7 +160,7 @@ class AdminPanel extends React.Component<IProps, IState> {
 					<ToastContainer />
 					{/* {this.state.popup ? <Popup textvalue={this.state.value} onclosepopup={this.closepopup}/>: ''} */}
 					{/* {this.state.popup ? <ToastContainer  />: ''} */}
-					<Header icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} />
+					<Header  icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} history={this.props.history} />
 					<div className="clearfix" />
 					<div className="page-container">
 						<Sidebar icons={sidebar.data} location={this.props.location.pathname} />
@@ -177,10 +177,6 @@ class AdminPanel extends React.Component<IProps, IState> {
 			this.props.changeCardTabSetting({ newFilter, oldFilter: this.props.settingTab });
 		});
 	}
-	private handleViewed = () => {
-		console.log("!!")
-		this.props.updateNotificationCount(0)
-	}
 }
 
 export const mapDispatchToProps = (dispatch: Dispatch) => {
@@ -193,6 +189,7 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
 		updatePrivkeys: (pks: string[]) => dispatch(actions.updatePrivkeys(pks)),
 	}
 }
+
 
 export function mapStateToProps(state: IStoreState) {
 	const { isAuthenticated } = state.login;

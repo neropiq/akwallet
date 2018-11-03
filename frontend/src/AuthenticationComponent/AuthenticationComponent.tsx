@@ -22,6 +22,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { ToastContainer } from 'react-toastify';
 import { Dispatch } from 'redux';
+import * as actions from '../actions';
 import { IStoreState } from '../reducers';
 import AuthHeader from './header/header';
 import Login from './login/login';
@@ -30,8 +31,8 @@ import Signup from './signup/signup';
 interface IProps {
   login: boolean,
   history: any,
-  setAuths: any,
   isLoginTerms: boolean
+  setAuths:(value:boolean) => void;
 }
 
 class Authentication extends React.Component<IProps, {}> {
@@ -69,6 +70,7 @@ class Authentication extends React.Component<IProps, {}> {
   private login = () => {
     // this.props.setAuths({ value: true });
     // if(this.props.isLoginTerms == true){
+      this.props.setAuths(true);
     this.props.history.push('/dashboard');
     // }
   }
@@ -76,7 +78,7 @@ class Authentication extends React.Component<IProps, {}> {
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
-
+    setAuths:(value:boolean) => dispatch(actions.setAuths({value})),
   }
 }
 const mapStateToProps = (state: IStoreState) => {
@@ -85,4 +87,4 @@ const mapStateToProps = (state: IStoreState) => {
 }
 
 
-export default connect(mapStateToProps)(Authentication);
+export default connect(mapStateToProps,mapDispatchToProps)(Authentication);

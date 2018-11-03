@@ -29,6 +29,7 @@ import { logout, nets } from '../../utils/remote';
 
 interface IProps {
     connected:boolean;
+    history:any;
     icons: any;
     location: any;
     testnet: number;
@@ -36,6 +37,7 @@ interface IProps {
     notificationCount: number;
     changeHeader: () => void;
     updateNotificationCount: (notificationCount: number) => void;
+	setAuths:(value:boolean) => void;
 }
 interface IState {
     showNotification: boolean,
@@ -118,7 +120,7 @@ class Header extends React.Component<IProps, IState> {
                                             My Account
                                         </a>
                                         <div className="dropdown-menu profile-dropdown" aria-labelledby="dropdownMenuButton">
-                                            <a href='#' className="dropdown-item"><i className="icon-logout" />Logout</a>
+                                            <a href='#' className="dropdown-item"><i className="icon-logout"  onClick={this.logout}/>Logout</a>
                                         </div>
                                     </li>
                                 </ul>
@@ -204,9 +206,10 @@ class Header extends React.Component<IProps, IState> {
         );
     }
     private logout = () => {
+        this.props.setAuths(false);
+		this.props.history.push('/login');
         logout(this.props.connected)
     }
-
     private handleViewed = () => {
         this.props.updateNotificationCount(0)
     }
@@ -214,6 +217,7 @@ class Header extends React.Component<IProps, IState> {
 
 const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
+		setAuths:(value:boolean) => dispatch(actions.setAuths({value})),
         updateNotificationCount: (notificationCount: any) => dispatch(actions.updateNotificationCount(notificationCount)),
     }
 }

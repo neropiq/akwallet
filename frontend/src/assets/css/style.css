@@ -11,6 +11,9 @@ html body a {
     transition: all 0.25s ease;
 }
 
+.font-size {
+    font-size: 14px !important;
+}
 /* demo popup start */
 
   .popup {
@@ -1056,6 +1059,15 @@ input:checked + .slider:before {
 .c-body-height {
     height: 265px;
     overflow: auto;
+}
+.adk-abs-txt {
+    position: absolute;
+    top: 9px;
+    right: 0;
+    font-size: 13px;
+}
+.adk-position-set {
+    padding-right: 35px;
 }
 /*----@media Rules----*/
 @media (min-width: 1441px) and (max-width: 1600px) {

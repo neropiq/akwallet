@@ -86,15 +86,20 @@ class Mining extends React.Component<IProps, IStates> {
                     </div>
                 </div>
                 {
-                    this.state.newSetting.RunFeeMiner ?
-                        <div className="send-adk-form">
-                            <div className="form-inline">
-                                <input type='text' id="fee" value={this.props.minerSetting.MinimumFee} onChange={this.updateFee} className="form-control" name={name} placeholder='Fees' />ADK
-                                <span className="invalid-feedback text-warning">
+                    this.state.newSetting.RunFeeMiner ?  
+                    <div className="send-adk-form">
+                        <div className="row">
+                            <div className="col-md-4 col-sm-12">                            
+                                <div className="form-group position-relative">
+                                    <input  type='text' id="fee" value={this.props.minerSetting.MinimumFee} onChange={this.updateFee} className="form-control w-100 adk-position-set" name={name} placeholder='Fees' />
+                                    <span className="adk-abs-txt">ADK</span>
+                                    <span className="invalid-feedback text-warning">
                                     invalid minimum fee, must be greater than 0
                                     </span>
+                                </div>
                             </div>
-                        </div> : ''
+                        </div>
+                    </div> : ''   
                 }
 
                 <div className="form-group mt-md-5">

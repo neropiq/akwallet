@@ -57,8 +57,8 @@ class PopupTx extends React.Component<IProps> {
                                             {
                                                 tx.Inputs && tx.Inputs.map((inp: InOut, i: number) => (
                                                     <div className="mb-4" key={"in" + i}>
-                                                        <h6 className='text-light-green'>{toADK(inp.Value)} ADK</h6>
-                                                        <p>{inp.Address}</p>
+                                                        <h6>{toADK(inp.Value)} ADK</h6>
+                                                        <p  className='text-light-green font-size'>{inp.Address}</p>
                                                     </div>
                                                 ))
                                             }
@@ -68,8 +68,8 @@ class PopupTx extends React.Component<IProps> {
                                                     {
                                                         tx.Minputs && tx.Minputs.map((inp: IMultiSigInOut, i: number) => (
                                                             <div className="mb-4" key={"min" + i}>
-                                                                <h6 className='text-light-green'>{toADK(inp.Value)} ADK</h6>
-                                                                <p>{inp.Address}</p>
+                                                                <h6>{toADK(inp.Value)} ADK</h6>
+                                                                <p className='text-light-green font-size'>{inp.Address}</p>
                                                                 {
                                                                     inp.Addresses.map((a: string, ii: number) => (
                                                                         <p key={"min" + i + "-" + ii}>{a}</p>
@@ -95,8 +95,8 @@ class PopupTx extends React.Component<IProps> {
                                             {
                                                 tx.Outputs && tx.Outputs.map((inp: InOut, i: number) => (
                                                     <div className="mb-4" key={"out" + i}>
-                                                        <h6 className='text-light-green'>{toADK(inp.Value)} ADK</h6>
-                                                        <p>{inp.Address}</p>
+                                                        <h6>{toADK(inp.Value)} ADK</h6>
+                                                        <p className='text-light-green font-size'>{inp.Address}</p>
                                                     </div>
                                                 ))
                                             }
@@ -106,8 +106,8 @@ class PopupTx extends React.Component<IProps> {
                                                     {
                                                         tx.MOutputs && tx.MOutputs.map((inp: IMultiSigInOut, i: number) => (
                                                             <div className="mb-4" key={"mout" + i}>
-                                                                <h6 className='text-light-green'>{toADK(inp.Value)} ADK</h6>
-                                                                <p>{inp.Address}</p>
+                                                                <h6 >{toADK(inp.Value)} ADK</h6>
+                                                                <p className='text-light-green font-size'>{inp.Address}</p>
                                                                 {
                                                                     inp.Addresses.map((a: string, ii: number) => (
                                                                         <h6 key={"mout" + i + "-" + ii}>{a}</h6>
