@@ -57,10 +57,17 @@ func Login(cfg *setting.Setting, param *LoginParam) error {
 		return errors.New("invalidd private key")
 	}
 	err = load(cfg, []byte(param.Password), param.PrivKey)
+	if err == nil {
+		cfg.Logined <- struct{}{}
+	}
 	if err != badger.ErrKeyNotFound {
 		return err
 	}
-	return new(cfg, []byte(param.Password), param.PrivKey)
+	err = new(cfg, []byte(param.Password), param.PrivKey)
+	if err == nil {
+		cfg.Logined <- struct{}{}
+	}
+	return err
 }
 
 //Balance represents available coins, received coins and sent coins.

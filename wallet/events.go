@@ -58,8 +58,9 @@ func SetupEvents(cfg *setting.Setting, gui *gogui.GUI) {
 		}
 	})
 	gui.On("login", func(p *LoginParam) interface{} {
+		log.Println("login")
 		err := errString(Login(cfg, p))
-		log.Println(p, err)
+		log.Println("end of login")
 		return err
 	})
 

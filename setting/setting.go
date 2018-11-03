@@ -105,6 +105,7 @@ type Setting struct {
 	aklib.DBConfig `msgpack:"-" json:"-"`
 	GUI            gui                `msgpack:"-" json:"-"`
 	CancelPoW      context.CancelFunc `msgpack:"-" json:"-"`
+	Logined        chan struct{}      `msgpack:"-" json:"-"`
 }
 
 //Load parse a json file fname , open DB and returns Settings struct .
@@ -112,6 +113,8 @@ func Load(rootdir string, net int) (*Setting, error) {
 	var se Setting
 	var err error
 
+	se.Logined = make(chan struct{})
+	se.Testnet = net
 	cfg := aklib.Configs[net]
 	dbDir := filepath.Join(baseDir(rootdir, cfg), "db")
 	if err = os.MkdirAll(dbDir, 0755); err != nil {
@@ -218,7 +221,7 @@ func (cfg *Setting) SetClient(servers []string) error {
 			continue
 		}
 		if ni.Testnet != byte(cfg.Testnet) {
-			log.Println(s, "wrong net")
+			log.Println("net", cfg.Testnet, "is wrong. Remote is", ni.Testnet)
 			continue
 		}
 		ok = true

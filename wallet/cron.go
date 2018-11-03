@@ -41,52 +41,63 @@ import (
 //Start initialize and starts cron jobs.
 func Start(ctx context.Context, s *setting.Setting) {
 	go func() {
+		log.Println("starting cron...")
 		ctx2, cancel2 := context.WithCancel(ctx)
 		defer cancel2()
 		for {
 			select {
 			case <-ctx2.Done():
 				return
-			case <-time.After(3 * time.Second):
-				func() {
-					mutex.Lock()
-					defer mutex.Unlock()
-					_, err := searchLastAddress(s, true)
-					if err != nil {
-						log.Println(err)
-						return
-					}
-					updatedAdr2, err := searchLastAddress(s, false)
-					if err != nil {
-						log.Println(err)
-						return
-					}
-					newtx, err := syncDB(s, true)
-					if err != nil {
-						log.Println(err)
-						return
-					}
-					//addresses for changes should not be used for receiving from others.
-					//so update db only if change addresses were updated by other wallets.
-					if updatedAdr2 > 0 {
-						if _, err = syncDB(s, false); err != nil {
-							log.Println(err)
-							return
-						}
-					}
-					confirmed, err := checkConfirmed(s)
-					if err != nil {
-						log.Println(err)
-						return
-					}
-					if err := notify(s, newtx, confirmed); err != nil {
-						log.Println(err)
-						return
-					}
-				}()
+			case <-s.Logined:
+				cron(s)
+			case <-time.After(3 * time.Minute):
+				cron(s)
 			}
 		}
 	}()
+}
+
+func cron(s *setting.Setting) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	if wallet == nil {
+		log.Println("not logged in")
+		return
+	}
+	log.Println("running cron...")
+	_, err := searchLastAddress(s, true)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	updatedAdr2, err := searchLastAddress(s, false)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	newtx, err := syncDB(s, true)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	//addresses for changes should not be used for receiving from others.
+	//so update db only if change addresses were updated by other wallets.
+	if updatedAdr2 > 0 {
+		if _, err = syncDB(s, false); err != nil {
+			log.Println(err)
+			return
+		}
+	}
+	confirmed, err := checkConfirmed(s)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if err := notify(s, newtx, confirmed); err != nil {
+		log.Println(err)
+		return
+	}
+	log.Println("end of cron")
 }
 
 //create addresses which were created by other wallets.
@@ -106,7 +117,6 @@ func searchLastAddress(s *setting.Setting, isPublic bool) (int, error) {
 			break
 		}
 	}
-	log.Println(i)
 	if i*50 == math.MaxInt32 {
 		return 0, errors.New("used too many addresses")
 	}
@@ -147,6 +157,8 @@ func isUsed(s *setting.Setting, isPublic bool, index uint32) (bool, error) {
 	if err != nil {
 		return false, err
 	}
+	log.Println(idx, index)
+
 	var hist []*tx.InoutHash
 	err = s.CallRPC(func(cl setting.RPCIF) error {
 		var err2 error

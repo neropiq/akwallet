@@ -27,14 +27,13 @@ import (
 	"time"
 
 	"github.com/AidosKuneen/gogui"
-	"github.com/gobuffalo/packr"
 )
 
 //Run starts GUI backend.
 func Run(gui *gogui.GUI, dest string) error {
-	box := packr.NewBox("./asset")
+	// box := packr.NewBox("./public")
 	if dest == "" {
-		http.Handle("/", http.FileServer(box))
+		http.Handle("/", http.FileServer(http.Dir("./public")))
 	}
 	if err := gui.Start(dest); err != nil {
 		return err

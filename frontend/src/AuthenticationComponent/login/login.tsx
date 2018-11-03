@@ -77,7 +77,7 @@ class Login extends React.Component<IProps, IStates> {
                             onChange={this.handleChange} placeholder="Private Key" list="pks" />
                         <datalist id="pks">
                             {
-                                this.props.privkeys.map((p: string, index: number) =>
+                                this.props.privkeys && this.props.privkeys.map((p: string, index: number) =>
                                     <option key={index} value={p} />
                                 )
                             }

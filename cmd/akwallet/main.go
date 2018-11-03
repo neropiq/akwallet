@@ -49,7 +49,7 @@ func main() {
 		os.Exit(1)
 	}
 	defaultpath := filepath.Join(usr.HomeDir, ".akwallet")
-	var verbose, update, debug bool
+	var verbose, update, debug, remove bool
 	var rootdir string
 	var net int
 	flag.BoolVar(&verbose, "verbose", false, "outputs logs to stdout.")
@@ -57,6 +57,7 @@ func main() {
 	flag.StringVar(&rootdir, "dbpath", defaultpath, "db path")
 	flag.BoolVar(&debug, "debug", false, "debug to monitor performance")
 	flag.IntVar(&net, "net", 0, "network to use. 0=mainnet 1=testnet")
+	flag.BoolVar(&remove, "remove", false, "remove DB (danger)")
 	flag.Parse()
 
 	if net != 0 && net != 1 && net != 2 {
@@ -93,6 +94,15 @@ func main() {
 		fmt.Println(err2)
 		os.Exit(1)
 	}
+	if remove {
+		dbDir := filepath.Join(rootdir, filepath.Join(setting.BaseDir(), "db"))
+		if err := os.RemoveAll(dbDir); err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("db is removed from", dbDir)
+		os.Exit(0)
+	}
+
 	if !verbose {
 		l := &lumberjack.Logger{
 			Filename:   filepath.Join(setting.BaseDir(), "akwallet.log"),
@@ -102,7 +112,6 @@ func main() {
 		}
 		log.SetOutput(l)
 	}
-
 	wallet.Start(ctx, setting)
 	guis := gogui.New()
 	setting.GUI = guis
