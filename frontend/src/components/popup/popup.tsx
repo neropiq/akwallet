@@ -31,13 +31,13 @@ class Popup extends React.Component<Props> {
                                         </div>
                                         <div id="popupscrollecard1" className="card-body">
                                             <div className="mb-4">
-                                                <h6 className='text-light-green'>{this.props.PopUpvalue.input.value1} ADK</h6>
-                                                <p>{this.props.PopUpvalue.input.data}</p>
+                                                <h6>{this.props.PopUpvalue.input.value1} ADK</h6>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.input.data}</p>
                                             </div>
                                             <div>
                                                 <h6 className="card-name mb-3 text-uppercase">MULTISIG INPUTS</h6>  
-                                                <h6 className='text-light-green'>{this.props.PopUpvalue.input.value1} ADK</h6>
-                                                <p>{this.props.PopUpvalue.input.data}</p>
+                                                <h6>{this.props.PopUpvalue.input.value1} ADK</h6>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.input.data}</p>
                                             </div>                                         
                                         </div>
                                     </div>
@@ -52,22 +52,22 @@ class Popup extends React.Component<Props> {
                                         </div>
                                         <div id="popupscrollecard2" className="card-body c-body-height">
                                             <div className="mb-4">
-                                                <h6 className='text-light-green'>{this.props.PopUpvalue.output.value1} ADK</h6>
-                                                <p>{this.props.PopUpvalue.output.data}</p>
+                                                <h6>{this.props.PopUpvalue.output.value1} ADK</h6>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.output.data}</p>
                                             </div>
 
                                             <div className="mb-4">
-                                                <h6 className='text-light-green'>{this.props.PopUpvalue.output.value1} ADK</h6>
-                                                <p>{this.props.PopUpvalue.output.data}</p>
+                                                <h6>{this.props.PopUpvalue.output.value1} ADK</h6>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.output.data}</p>
                                             </div>
 
                                             <div>
                                                 <h6 className="card-name mb-3 text-uppercase">MULTISIG OUTPUTS</h6>  
-                                                <h6 className='text-light-green'>{this.props.PopUpvalue.output.value1} ADK</h6>
-                                                <p>{this.props.PopUpvalue.output.data}</p>
-                                                <p>{this.props.PopUpvalue.output.data}</p>
-                                                <p>{this.props.PopUpvalue.output.data}</p>
-                                                <p>{this.props.PopUpvalue.output.data}</p>                                                
+                                                <h6>{this.props.PopUpvalue.output.value1} ADK</h6>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.output.data}</p>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.output.data}</p>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.output.data}</p>
+                                                <p className='text-light-green font-size'>{this.props.PopUpvalue.output.data}</p>                                                
                                             </div>                                              
                                         </div>
                                     </div>

@@ -5,12 +5,13 @@ import Signup from './signup/signup';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { State } from '../reducers';
-
+import * as actions from '../actions';
 interface props {
   login:boolean,
   history:any,
-  setAuths:any,
-  isLoginTerms:boolean
+  // setAuths:any,
+  isLoginTerms:boolean,
+  setAuths:(value:boolean) => void;
 }
 
 class Authentication extends React.Component< props , {}> {
@@ -25,6 +26,7 @@ class Authentication extends React.Component< props , {}> {
   login = () => {
     // this.props.setAuths({ value: true });
     if(this.props.isLoginTerms == true){
+        this.props.setAuths(true);
         this.props.history.push('/dashboard');
     }
   }
@@ -54,7 +56,7 @@ class Authentication extends React.Component< props , {}> {
 
 const mapDispatchToProps = (dispatch:Dispatch) => {
   return {
-
+    setAuths:(value:boolean) => dispatch(actions.setAuths({value})),
   }
 }
 const  mapStateToProps = (state :State)  => {
@@ -63,4 +65,4 @@ const  mapStateToProps = (state :State)  => {
 }
 
 
-export default connect(mapStateToProps)(Authentication);
+export default connect(mapStateToProps,mapDispatchToProps)(Authentication);

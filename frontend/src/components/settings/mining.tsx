@@ -48,8 +48,13 @@ class Mining extends React.Component {
                 {
                     this.state.CoinMining ?  
                     <div className="send-adk-form">
-                        <div className="form-group">
-                            <input  type='text' className="form-control" name={name} placeholder='Fees' />
+                        <div className="row">
+                            <div className="col-md-4 col-sm-12">                            
+                                <div className="form-group position-relative">
+                                    <input  type='text' className="form-control w-100 adk-position-set" name={name} placeholder='Fees' />
+                                    <span className="adk-abs-txt">ADK</span>
+                                </div>
+                            </div>
                         </div>
                     </div> : ''   
                 }

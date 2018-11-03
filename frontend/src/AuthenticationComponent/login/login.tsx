@@ -49,10 +49,8 @@ class Login extends React.Component<Props,state> {
     termsChecked = () => {
         this.props.setCheckLoginTerms({ chackedLoginTerms: !this.props.isLoginTerms });
     }
-    inputPrivateKeyChange = (e:any) =>{
-       
-        var value = e.target.value;
-        
+    inputPrivateKeyChange = (e:any) =>{       
+        var value = e.target.value;        
         if(e.target.value.length > 0){
             this.setState(() => ({
                 showSuggest: true,
@@ -63,9 +61,14 @@ class Login extends React.Component<Props,state> {
                 showSuggest: false,
                 suggestValue:value
             }));
+        }            
+    }
+    _handleKeyPress = (e:any) => {        
+        if (e.key === 'Enter') {        
+          this.setState(() => ({
+            showSuggest: false            
+          }));
         }
-       
-        
     }
   public render() { 
 
@@ -77,7 +80,7 @@ class Login extends React.Component<Props,state> {
             </div>
             <form className="aidos-kuneen-form">
                 <div className="form-group position-relative">
-                    <input type="text" className="form-control custom-control w-80" name="Private Key" placeholder="Private Key" value={this.state.suggestValue}    onChange={this.inputPrivateKeyChange}/>
+                    <input type="text" className="form-control custom-control w-80" name="Private Key" placeholder="Private Key" value={this.state.suggestValue} onKeyPress={this._handleKeyPress}   onChange={this.inputPrivateKeyChange}/>
                     {this.state.showSuggest ? 
                         <ul   className="suggestionCustom">
                             {

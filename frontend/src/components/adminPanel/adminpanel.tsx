@@ -41,6 +41,7 @@ interface Props {
 	history: any;
 	location: any;
 	settingTab: any;
+	setAuths:(value:boolean) => void;
 	updateNotificationCount: ( notification_count:number ) => void;
 	changeCardTabSetting: ({ newFilter, oldFilter }: changeCardTabSettingProps) => void;
 }
@@ -86,7 +87,7 @@ class AdminPanel extends  React.Component<Props, state> {
 		// }
 	}
 	toasterCalled(){
-		console.log('totacer functin called');
+		
 		toast.success("Success Notification !", {
 			position: toast.POSITION.TOP_RIGHT
 		});
@@ -111,10 +112,13 @@ class AdminPanel extends  React.Component<Props, state> {
 		});
 	}
 	
-	onNotificationClick =() =>{
-		console.log('notification click');
+	onNotificationClick =() =>{	
 		var count = 0;
 		this.props.updateNotificationCount(count);
+	}
+	logout = () =>{
+		this.props.setAuths(false);
+		this.props.history.push('/login');
 	}
 
     public render() {     
@@ -126,7 +130,7 @@ class AdminPanel extends  React.Component<Props, state> {
 				<ToastContainer  />
 				{/* {this.state.popup ? <Popup textvalue={this.state.value} onclosepopup={this.closepopup}/>: ''} */}
 				{/* {this.state.popup ? <ToastContainer  />: ''} */}
-				<Header  icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} notiCount={this.props.notification_count} onNotificationClick={this.onNotificationClick} />
+				<Header  icons={sidebar.data} location={this.props.location.pathname} changeHeader={this.changeHeader} notiCount={this.props.notification_count} onNotificationClick={this.onNotificationClick} logOut={this.logout} />
 				<div className="clearfix" ></div>
 				<div className="page-container">
 					<Sidebar icons={sidebar.data} location={this.props.location.pathname} />
@@ -142,6 +146,7 @@ export const mapDispatchToProps = (dispatch: Dispatch) => {
     return {
 		changeCardTabSetting: ({ newFilter, oldFilter }: changeCardTabSettingProps) => dispatch(actions.changeCardTabSetting({ newFilter, oldFilter })),		
 		updateNotificationCount: ( notification_count:any) => dispatch(actions.updateNotificationCount( notification_count )),
+		setAuths:(value:boolean) => dispatch(actions.setAuths({value})),
     }
   }
 

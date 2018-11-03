@@ -8,6 +8,7 @@ interface Props {
     notiCount:number;
     changeHeader: () => void;
     onNotificationClick: () => void;
+    logOut: () => void;
 }
 interface state {
     showNotification:boolean
@@ -128,7 +129,7 @@ class Header extends React.Component<Props,state> {
                                             <a href='#' className="dropdown-item"> <i className="icon-user"></i> Edit Profile</a>
                                             <a href='#' className="dropdown-item"><i className="icon-key"></i> Change Password</a>
                                             <NavLink id="migrate" className="dropdown-item" to="/setting" onClick={this.props.changeHeader}><i className="icofont-spinner-alt-3"></i> Migration</NavLink>
-                                            <a href='#' className="dropdown-item"><i className="icon-logout"></i> Logout</a>
+                                            <a href='#' className="dropdown-item" onClick={()=>this.props.logOut()}><i className="icon-logout"></i> Logout</a>
                                         </div>
                                         <span className="Profile-name">Nick</span>
                                     </li>
@@ -198,7 +199,7 @@ class Header extends React.Component<Props,state> {
                                                 <a className="dropdown-item" href="#"> <i className="icon-user"></i> Edit Profile</a>
                                                 <a className="dropdown-item" href="#"><i className="icon-key"></i> Change Password</a>
                                                 <NavLink className="dropdown-item" to="/setting"><i className="icofont-spinner-alt-3"></i> Migration</NavLink>
-                                                <a className="dropdown-item" href="#"><i className="icon-logout"></i> Logout</a>
+                                                <a className="dropdown-item" href="#" onClick={()=>this.props.logOut()}><i className="icon-logout"></i> Logout</a>
                                             </div>
                                             <span className="Profile-name">Nick</span>
                                         </li>
