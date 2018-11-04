@@ -118,6 +118,9 @@ func Send(conf *setting.Setting, p *tx.BuildParam) error {
 			}
 			log.Println("finished PoW. hash=", tr.Hash())
 		}()
+		if conf.ForceUpdate != nil {
+			conf.ForceUpdate <- struct{}{}
+		}
 		return nil
 	}
 	if err = tr.Check(conf.Config, p.PoWType); err != nil {

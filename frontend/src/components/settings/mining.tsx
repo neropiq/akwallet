@@ -25,7 +25,7 @@ import { Dispatch } from 'redux';
 import * as actions from '../../actions';
 import { IConfigEntity } from '../../model';
 import { IStoreState } from '../../reducers';
-import { getSettings, IMinerSetting, updateMinerSetting } from '../../utils/remote';
+import { getSettings, IMinerSetting, toE8, updateMinerSetting } from '../../utils/remote';
 
 interface IProps {
     connected: boolean;
@@ -42,7 +42,7 @@ class Mining extends React.Component<IProps, IStates> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            fee: "0",
+            fee: "0.05",
             newSetting: props.minerSetting,
         }
     }
@@ -86,20 +86,20 @@ class Mining extends React.Component<IProps, IStates> {
                     </div>
                 </div>
                 {
-                    this.state.newSetting.RunFeeMiner ?  
-                    <div className="send-adk-form">
-                        <div className="row">
-                            <div className="col-md-4 col-sm-12">                            
-                                <div className="form-group position-relative">
-                                    <input  type='text' id="fee" value={this.state.fee} onChange={this.updateFee} className="form-control w-100 adk-position-set" name={name} placeholder='Fees' />
-                                    <span className="adk-abs-txt">ADK</span>
-                                    <span className="invalid-feedback text-warning">
-                                    invalid minimum fee, must be greater than 0
+                    this.state.newSetting.RunFeeMiner ?
+                        <div className="send-adk-form">
+                            <div className="row">
+                                <div className="col-md-4 col-sm-12">
+                                    <div className="form-group position-relative">
+                                        <input type='text' id="fee" value={this.state.fee} onChange={this.updateFee} className="form-control w-100 adk-position-set" name={name} placeholder='Fees' />
+                                        <span className="adk-abs-txt">ADK</span>
+                                        <span className="invalid-feedback text-warning">
+                                            invalid minimum fee, must be greater than 0
                                     </span>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div> : ''   
+                        </div> : ''
                 }
 
                 <div className="form-group mt-md-5">
@@ -130,7 +130,7 @@ class Mining extends React.Component<IProps, IStates> {
                 return
             }
         }
-        updateMinerSetting(this.props.connected, { ...this.state.newSetting, MinimumFee: fee }, (errr: string) => {
+        updateMinerSetting(this.props.connected, { ...this.state.newSetting, MinimumFee: toE8(fee) }, (errr: string) => {
             if (errr) {
                 toast.error(errr, {
                     autoClose: false,

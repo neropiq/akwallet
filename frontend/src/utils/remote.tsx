@@ -128,6 +128,9 @@ export const formatDate = (unix: number) => {
 
 }
 
+export const toE8 = (t: number) => {
+    return t * 100000000
+}
 
 export const toADK = (t: number) => {
     return t / 100000000

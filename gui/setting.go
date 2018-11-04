@@ -27,13 +27,27 @@ import (
 	"time"
 
 	"github.com/AidosKuneen/gogui"
+	"github.com/gobuffalo/packr"
 )
+
+//go:generate packr
 
 //Run starts GUI backend.
 func Run(gui *gogui.GUI, dest string) error {
-	// box := packr.NewBox("./public")
+	// p, err := os.Getwd()
+	// if err != nil {
+	// 	return err
+	// }
+	// wwwPath := filepath.Join(p, "public")
+	box := packr.NewBox("../cmd/akwallet/public")
+	str, err := box.FindString("index.html")
+	if err != nil {
+		log.Fatal(err)
+	}
+	log.Println(str)
 	if dest == "" {
-		http.Handle("/", http.FileServer(http.Dir("./public")))
+		// http.Handle("/", http.FileServer(http.Dir("./public")))
+		http.Handle("/", http.FileServer(box))
 	}
 	if err := gui.Start(dest); err != nil {
 		return err

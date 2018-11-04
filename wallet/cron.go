@@ -48,7 +48,7 @@ func Start(ctx context.Context, s *setting.Setting) {
 			select {
 			case <-ctx2.Done():
 				return
-			case <-s.Logined:
+			case <-s.ForceUpdate:
 				cron(s)
 			case <-time.After(3 * time.Minute):
 				cron(s)

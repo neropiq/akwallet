@@ -105,7 +105,7 @@ type Setting struct {
 	aklib.DBConfig `msgpack:"-" json:"-"`
 	GUI            gui                `msgpack:"-" json:"-"`
 	CancelPoW      context.CancelFunc `msgpack:"-" json:"-"`
-	Logined        chan struct{}      `msgpack:"-" json:"-"`
+	ForceUpdate    chan struct{}      `msgpack:"-" json:"-"`
 }
 
 //Load parse a json file fname , open DB and returns Settings struct .
@@ -113,7 +113,7 @@ func Load(rootdir string, net int) (*Setting, error) {
 	var se Setting
 	var err error
 
-	se.Logined = make(chan struct{})
+	se.ForceUpdate = make(chan struct{})
 	se.Testnet = net
 	cfg := aklib.Configs[net]
 	dbDir := filepath.Join(baseDir(rootdir, cfg), "db")

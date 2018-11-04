@@ -202,6 +202,7 @@ export default reduxForm<{}, ICustomProps>({
 	destroyOnUnmount:false,
 	form: 'fieldArrays',
 	initialValues: {
+		Fee:"0.05",
 		members: [{ address: '', amount: '' }],
 		powType: "0"
 	},

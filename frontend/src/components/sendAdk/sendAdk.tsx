@@ -26,7 +26,7 @@ import { reset, stopSubmit, SubmissionError, touch } from 'redux-form';
 import Scrollbar from 'smooth-scrollbar';
 import * as actions from '../../actions';
 import { IStoreState } from '../../reducers';
-import { cancelPow, IRawOutput, send, validateAddresses } from '../../utils/remote';
+import { cancelPow, IRawOutput, send, toE8, validateAddresses } from '../../utils/remote';
 import { socket } from '../adminPanel/adminpanel';
 import Form from '../form/form';
 import SubHeader from '../subheader/subheader';
@@ -165,7 +165,7 @@ class SendAdk extends React.Component<IProps> {
                 if (adrval.address !== "" && amount && amount > 0) {
                     dest.push({
                         Address: adrval.address,
-                        Value: parseInt(adrval.amount, 10),
+                        Value: toE8(parseInt(adrval.amount, 10)),
                     })
                 }
             })

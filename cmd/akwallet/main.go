@@ -95,9 +95,14 @@ func main() {
 		os.Exit(1)
 	}
 	if remove {
-		dbDir := filepath.Join(rootdir, filepath.Join(setting.BaseDir(), "db"))
+		if err := setting.DB.Close(); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
+		dbDir := filepath.Join(setting.BaseDir(), "db")
 		if err := os.RemoveAll(dbDir); err != nil {
 			fmt.Println(err)
+			os.Exit(1)
 		}
 		fmt.Println("db is removed from", dbDir)
 		os.Exit(0)
