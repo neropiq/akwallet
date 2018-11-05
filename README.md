@@ -23,23 +23,21 @@ are required to compile.
 
 
 ## Install
+
     $ git clone github.com/AidosKuneen/akwallet
     $ cd frontend
     $ yarn install
     $ yarn build
     $ cd ..
     $ go generate ./...
+    $ cd cmd/akwallet
     $ go build
+    $ ./akwallet
 
 
 ## Demo
 
-https://aidoskuneen.github.io/
-
-
-## Usage
-
-
+<iframe width="560" height="315" src="https://www.youtube.com/embed/_a2SzlU4uCU" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## Dependencies and Licenses
 
