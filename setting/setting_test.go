@@ -51,7 +51,7 @@ func setupRPC(ctx context.Context, t *testing.T) {
 	if err2 != nil {
 		panic(err2)
 	}
-
+	s1.Testnet = 2
 	s1.Config = aklib.DebugConfig
 	s1.MaxConnections = 1
 	s1.Bind = "127.0.0.1"
