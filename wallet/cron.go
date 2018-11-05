@@ -175,14 +175,22 @@ func checkConfirmed(s *setting.Setting) ([]tx.Hash, error) {
 		return nil, err
 	}
 	var unc []string
+loop:
 	for _, h := range histdb {
+		log.Println(h.Hash, h.Index, h.InoutHash, h.Received, h.Type)
 		ti, err2 := imesh.GetTxInfo(s.DB, h.Hash)
 		log.Println(ti.Hash, ti.StatNo)
 		if err2 != nil {
 			return nil, err2
 		}
 		if ti.StatNo == imesh.StatusPending {
-			unc = append(unc, hex.EncodeToString(ti.Hash))
+			tis := hex.EncodeToString(ti.Hash)
+			for _, u := range unc {
+				if u == tis {
+					continue loop
+				}
+			}
+			unc = append(unc, tis)
 		}
 	}
 	if len(unc) == 0 {
@@ -245,7 +253,6 @@ func syncDB(s *setting.Setting, isPublic bool) ([]*walletImpl.History, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println("histdb", histdb)
 	var news []*walletImpl.History
 	for adr := range adrmap {
 		var hist []*tx.InoutHash
@@ -257,9 +264,10 @@ func syncDB(s *setting.Setting, isPublic bool) ([]*walletImpl.History, error) {
 		if err != nil {
 			return nil, err
 		}
-		log.Println("getlasthistory", hist)
 	loop:
-		for _, h := range hist {
+		//modify hist in loop, so cannot use range
+		for i := 0; i < len(hist); i++ {
+			h := hist[i]
 			log.Println(h.Hash, h.Index, h.Type)
 			for _, hdb := range histdb {
 				if bytes.Equal(hdb.InoutHash.Bytes(), h.Bytes()) {
@@ -267,15 +275,49 @@ func syncDB(s *setting.Setting, isPublic bool) ([]*walletImpl.History, error) {
 				}
 			}
 			var tr *tx.Transaction
-			err3 := s.CallRPC(func(cl setting.RPCIF) error {
-				var err2 error
-				tr, err2 = cl.GetRawTx(h.Hash.String())
-				return err2
-			})
-			if err3 != nil {
-				return nil, err3
+			var err error
+			if tr, err = imesh.GetTx(s.DB, h.Hash); err != nil {
+				err3 := s.CallRPC(func(cl setting.RPCIF) error {
+					var err2 error
+					tr, err2 = cl.GetRawTx(h.Hash.String())
+					return err2
+				})
+				if err3 != nil {
+					return nil, err3
+				}
 			}
-			if err := putTx(s, tr); err != nil {
+			var prevH *tx.InoutHash
+			switch h.Type {
+			case tx.TypeIn:
+				prevH = &tx.InoutHash{
+					Hash:  tr.Inputs[h.Index].PreviousTX,
+					Index: tr.Inputs[h.Index].Index,
+					Type:  tx.TypeOut,
+				}
+			case tx.TypeMulin:
+				prevH = &tx.InoutHash{
+					Hash:  tr.MultiSigIns[h.Index].PreviousTX,
+					Index: tr.MultiSigIns[h.Index].Index,
+					Type:  tx.TypeMulout,
+				}
+			case tx.TypeTicketin:
+				prevH = &tx.InoutHash{
+					Hash:  tr.TicketInput,
+					Index: 0,
+					Type:  tx.TypeTicketout,
+				}
+			}
+			if prevH != nil {
+				ok, err := imesh.Has(s.DB, prevH.Hash)
+				if err != nil {
+					return nil, err
+				}
+				if !ok {
+					log.Println(prevH.Hash)
+					hist = append(hist, prevH)
+				}
+			}
+			if err := putTx(s, tr, h); err != nil {
 				return nil, err
 			}
 			log.Println("put", tr.Hash())

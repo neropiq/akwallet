@@ -26,6 +26,7 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/AidosKuneen/aklib/address"
 	"github.com/AidosKuneen/aklib/tx"
@@ -117,10 +118,11 @@ func Send(conf *setting.Setting, p *tx.BuildParam) error {
 				return
 			}
 			log.Println("finished PoW. hash=", tr.Hash())
+			if conf.ForceUpdate != nil {
+				time.Sleep(5 * time.Second)
+				conf.ForceUpdate <- struct{}{}
+			}
 		}()
-		if conf.ForceUpdate != nil {
-			conf.ForceUpdate <- struct{}{}
-		}
 		return nil
 	}
 	if err = tr.Check(conf.Config, p.PoWType); err != nil {

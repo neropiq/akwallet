@@ -34,19 +34,8 @@ import (
 
 //Run starts GUI backend.
 func Run(gui *gogui.GUI, dest string) error {
-	// p, err := os.Getwd()
-	// if err != nil {
-	// 	return err
-	// }
-	// wwwPath := filepath.Join(p, "public")
-	box := packr.NewBox("../cmd/akwallet/public")
-	str, err := box.FindString("index.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	log.Println(str)
+	box := packr.NewBox("../frontend/public")
 	if dest == "" {
-		// http.Handle("/", http.FileServer(http.Dir("./public")))
 		http.Handle("/", http.FileServer(box))
 	}
 	if err := gui.Start(dest); err != nil {

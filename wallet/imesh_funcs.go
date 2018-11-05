@@ -87,7 +87,7 @@ func putTxFromRemote(conf *setting.Setting, h tx.Hash) error {
 
 //stores a tx with input txs for calling PutAddress.
 //need to call the func for updating tx relations with addresses.
-func putTx(conf *setting.Setting, tr *tx.Transaction) error {
+func putTx(conf *setting.Setting, tr *tx.Transaction, h *tx.InoutHash) error {
 	for _, inp := range tr.MultiSigIns {
 		if _, err := imesh.GetTxInfo(conf.DB, inp.PreviousTX); err == nil {
 			continue

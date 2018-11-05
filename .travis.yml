@@ -26,15 +26,14 @@ before_install:
 - export PATH=$PATH:$GOPATH/bin
 - gometalinter --install --update
 - go get -u github.com/gobuffalo/packr/...
-- go generate -x ./...
 - npm install --global yarn
 
 script:
 - cd frontend
 - yarn install
 - yarn build
-- mv public ../cmd/akwallet/asset
 - cd ..
+- go generate -x ./...
 - travis_wait 30 go test ./... -v -tags travis -covermode=count -coverprofile=coverage.out -timeout 100m -p 1
 
 after_success:
